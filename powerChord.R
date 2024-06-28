@@ -10,10 +10,11 @@ Nfine = 144
 drts  = Inf
 fmin  = 1
 fmax  = 24
-
+Niter = 3
 
 c(1:10) %>% mclapply(mc.cores=10,function(ind){
   
+  for (jj in c(1:Niter)){
   xfreq = runif(Nfreq)
   
   model=list()
@@ -39,17 +40,12 @@ c(1:10) %>% mclapply(mc.cores=10,function(ind){
   model$vtype      = c(rep('B',Nfine),'C')
   
   model$quadcon=QC
-  #model$quadcon=list()
-  #model$quadcon[[1]]=QC
-  # add quadratic constraints
-  #if (w_wc == 0){
-  #}else{
-  #  
-  #}
   
   # gurobi settings
   params = list(Presolve=2,MIPFocus=3,NumericFocus=3,Threads=1,WorkLimit=10)
   
   # solve
   sol=gurobi(model,params)
+    
+  } 
 })

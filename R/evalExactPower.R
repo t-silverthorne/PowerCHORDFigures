@@ -12,7 +12,6 @@
 #' 
 #' @note
 #' Assumes the noise has mean zero and unit standard deviation.
-#' In these units, amplitude can be interpreted as the signal to noise ratio.
 #' 
 #' @return statistical power 
 #' @author Turner Silverthorne

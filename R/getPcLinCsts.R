@@ -1,4 +1,8 @@
-getPcLinCsts=function(Nmeas,Nfine,drts){
+require(dplyr)
+getPcLinCsts=function(Nmeas=48,Nfine=288,drts=Inf){
+  if(Nmeas>Nfine){
+    stop('Invalid constraint: Nmeas>Nfine, must increase Nfine')
+  }
   # construct linear constraint matrix
   zero_vec        = rep(0,Nfine+1)
   lin_csts        = list()
