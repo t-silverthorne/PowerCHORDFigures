@@ -613,6 +613,27 @@
       ],
       "Hash": "7ce2733a9826b3aeb1775d56fd305472"
     },
+    "matrixStats": {
+      "Package": "matrixStats",
+      "Version": "1.3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "4b3ea27a19d669c0405b38134d89a9d1"
+    },
+    "matrixTests": {
+      "Package": "matrixTests",
+      "Version": "0.2.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "matrixStats"
+      ],
+      "Hash": "0700b002a90ce6bb3b51c05ab7043eb6"
+    },
     "memoise": {
       "Package": "memoise",
       "Version": "2.0.1",
@@ -949,7 +970,7 @@
     },
     "roxygen2": {
       "Package": "roxygen2",
-      "Version": "7.3.1",
+      "Version": "7.3.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -971,7 +992,7 @@
         "withr",
         "xml2"
       ],
-      "Hash": "c25fe7b2d8cba73d1b63c947bf7afdb9"
+      "Hash": "6ee25f9054a70f44d615300ed531ba8d"
     },
     "rprojroot": {
       "Package": "rprojroot",
