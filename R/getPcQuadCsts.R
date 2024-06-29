@@ -1,4 +1,4 @@
-getPcQuadCsts=function(xfreq,fmin,fmax,Nfreq,Nfine,Nmeas){
+getPcQuadCsts=function(vfreq,fmin,fmax,Nfreq,Nfine,Nmeas){
   QC=list() # list of quadratic constraints
   
   # matrices for regularization term 
@@ -6,7 +6,7 @@ getPcQuadCsts=function(xfreq,fmin,fmax,Nfreq,Nfine,Nmeas){
   fvec = seq(from=fmin,to=fmax,length.out=Nfreq)
   
   for (ii in c(1:Nfreq)){
-    xf     = xfreq[ii] 
+    vf     = vfreq[ii] 
     freq   = fvec[ii]
     cvec   = cos(2*pi*freq*tau)
     svec   = sin(2*pi*freq*tau)
@@ -26,7 +26,7 @@ getPcQuadCsts=function(xfreq,fmin,fmax,Nfreq,Nfine,Nmeas){
     Cm21   = Cmat[(Nfine+1):(2*Nfine),1:Nfine]
     Cm22   = Cmat[(Nfine+1):(2*Nfine),(Nfine+1):(2*Nfine)]
    
-    qcmat  = xf*Cm11 + (1-xf)*Cm22 + sqrt(xf)*sqrt(1-xf)*(Cm12+Cm21)
+    qcmat  = vf*Cm11 + (1-vf)*Cm22 + sqrt(vf)*sqrt(1-vf)*(Cm12+Cm21)
     qcmat  = cbind(rbind(qcmat,rep(0,Nfine)),rep(0,Nfine+1))
     qc     = c(rep(0,Nfine),-1)
     beta   = 0

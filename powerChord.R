@@ -15,7 +15,7 @@ Niter = 3
 c(1:10) %>% mclapply(mc.cores=10,function(ind){
   
   for (jj in c(1:Niter)){
-  xfreq = runif(Nfreq)
+  vfreq = runif(Nfreq)
   
   model=list()
   
@@ -23,7 +23,7 @@ c(1:10) %>% mclapply(mc.cores=10,function(ind){
   LC = getPcLinCsts(Nmeas,Nfine,drts)
   
   # construct quadratic constraints
-  QC = getPcQuadCsts(xfreq,fmin,fmax,Nfreq,Nfine)
+  QC = getPcQuadCsts(vfreq,fmin,fmax,Nfreq,Nfine)
   
   # add linear constraints to gurobi model 
   model$A          = LC$A
