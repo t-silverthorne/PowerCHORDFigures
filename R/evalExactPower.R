@@ -16,7 +16,7 @@
 #' @return statistical power 
 #' @author Turner Silverthorne
 #' @export
-evalExactPower <- function(t,param,alpha=.05,method='schur'){
+evalExactPower <- function(t,param,alpha=.05,method='schur',lambda_in=NULL){
 # return power of one-frequency cosinor model
   Amp    = param[['Amp']]
   freq   = param[['freq']]
@@ -37,6 +37,8 @@ evalExactPower <- function(t,param,alpha=.05,method='schur'){
     invB   = D - b%*%t(b)/N
     beta   = matrix(c(Amp*cos(acro),Amp*sin(acro)),nrow=2)
     lambda = t(beta)%*%invB%*%beta
+  }else if (method=='ncp'){
+    lambda = lambda_in
   }else if (method=='old'){
     cvec   = Amp*cos(2*pi*freq*t-acro)
     lambda = as.numeric(t(cvec)%*%cvec)
