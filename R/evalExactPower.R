@@ -22,7 +22,7 @@ evalExactPower <- function(t,param,alpha=.05,method='schur',lambda_in=NULL){
   freq   = param[['freq']]
   acro   = param[['acro']]
   N      = length(t)
-  
+   
   if (method=='full'){
     A      = matrix(c(0,0,1,0,0,1),nrow=3,byrow=T)
     X      = matrix(c(rep(1,N),cos(2*pi*freq*t),sin(2*pi*freq*t)),ncol=3)

@@ -31,7 +31,8 @@ getPcQuadCsts=function(vfreq,fmin,fmax,Nfreq,Nfine,Nmeas){
     qc     = c(rep(0,Nfine),-1)
     beta   = 0
     sense  = '>'
-    QC[[ii]] = list(Qc=qcmat,q=qc,rhs=beta,sense=sense)
+    QC[[ii]] = list(Qc=qcmat,q=qc,rhs=beta,sense=sense,
+                    Cm11=Cm11,Cm12=Cm12,Cm21=Cm21,Cm22=Cm22)
   }
   return(QC)
 } 

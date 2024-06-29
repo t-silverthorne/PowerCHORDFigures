@@ -1,4 +1,5 @@
-runQuadPC=function(mu=48,vfreq=NULL,WLim=10,Nfine=144,fmin=1,fmax=24,Nfreq=49,drts=Inf,model=NULL,...){
+require(gurobi)
+runQuadPC=function(mu=48,vfreq=NULL,WorkLim=10,Nfine=144,fmin=1,fmax=24,Nfreq=49,drts=Inf,model=NULL,...){
   Nmeas = sum(mu)
   tau   = c(1:Nfine)/Nfine-1/Nfine
     
@@ -30,7 +31,7 @@ runQuadPC=function(mu=48,vfreq=NULL,WLim=10,Nfine=144,fmin=1,fmax=24,Nfreq=49,dr
   model$vtype      = c(rep('B',Nfine),'C')
   
   model$quadcon=QC
-  params = list(WorkLimit=10,...)
+  params = list(WorkLimit=WorkLim,...)
     
-  return(gurobi(model,params))
+  return(list(sol=gurobi(model,params),Qmats=QC))
 }

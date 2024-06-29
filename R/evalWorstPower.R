@@ -1,9 +1,10 @@
 evalWorstPower=function(mt,param,alpha=.05,method='eig'){
   Amp    = param[['Amp']]
   freq   = param[['freq']]
-  acro   = param[['acro']]
   N      = length(t)
-
+  if (length(freq)>1){
+    stop('Use evalWorstPowerMutliFreq for handling multiple frequencies')
+  }
   if (method=='eig'){
     A       = matrix(c(0,0,1,0,0,1),nrow=3,byrow=T)
     Xr      = matrix(c(cos(2*pi*freq*mt),sin(2*pi*freq*mt)),ncol=2)

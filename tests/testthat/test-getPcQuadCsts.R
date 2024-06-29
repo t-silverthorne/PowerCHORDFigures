@@ -53,7 +53,8 @@ test_that("agreement with several freqs", {
   mt = tau[mu>0] # continuous time
   
   A  = matrix(c(0,0,1,0,0,1),nrow=3,byrow=T)
-  
+  qform1=c()
+  qform2=c()
   fvec = seq(from=fmin,to=fmax,length.out=Nfreq)
   for(ii in c(1:Nfreq)){
     Binv = QC[[ii]]$Qc
