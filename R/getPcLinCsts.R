@@ -1,14 +1,14 @@
 require(dplyr)
-getPcLinCsts=function(Nmeas=48,Nfine=288,drts=Inf){
+getPcLinCsts=function(Nmeas=48,Nfine=288,drts=Inf,npar=1){
   if(Nmeas>Nfine){
     stop('Invalid constraint: Nmeas>Nfine, must increase Nfine')
   }
   # construct linear constraint matrix
-  zero_vec        = rep(0,Nfine+1)
+  zero_vec        = rep(0,Nfine+npar)
   lin_csts        = list()
   rhs_list        = list()
   sense_list      = list()
-  lin_csts[[1]]   = c(rep(1,Nfine),0)
+  lin_csts[[1]]   = c(rep(1,Nfine),rep(0,npar))
   rhs_list[[1]]   = Nmeas
   sense_list[[1]] = '=' 
   
@@ -21,7 +21,7 @@ getPcLinCsts=function(Nmeas=48,Nfine=288,drts=Inf){
     rhs_list[[2]]              = sum(lin_cstr_vec)
     sense_list[[2]]            = '>'
   }
-  A =lin_csts %>% unlist() %>% matrix(byrow=T,ncol=Nfine+1)
+  A =lin_csts %>% unlist() %>% matrix(byrow=T,ncol=Nfine+npar)
   return(list(A          = A,
               sense_list = sense_list,
               rhs_list   = rhs_list))
