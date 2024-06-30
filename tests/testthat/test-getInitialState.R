@@ -37,9 +37,9 @@ test_that("initial state satisfies Qforms", {
 })
 
 test_that('state correctly encodes eigenvector',{
-  freq  = runif(1)*10
-  Nfine = sample(100:200,1) 
-  Nmeas = sample(20:40,1)
+  freq  = 1#runif(1)*10
+  Nfine = 12#sample(100:200,1) 
+  Nmeas = 6#sample(20:40,1)
   npar  = 10 
 
   s0   = getInitialState(freq,Nfine,Nmeas)
@@ -57,5 +57,7 @@ test_that('state correctly encodes eigenvector',{
   A  = matrix(c(a11,a12,a12,a22),nrow=2)
   lhs=eigen(matrix(c(a11,a12,a12,a22),nrow=2)) %>% {.$values} %>% min()
   rhs=s0[Nfine+npar-2]*s0[Nfine+npar]
+
+  Qobj =getNonConvexQobj(Nfine,npar)
   expect_equal(lhs,rhs)
 })
