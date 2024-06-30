@@ -1,16 +1,16 @@
 require(devtools)
 require(dplyr)
 load_all()
-Nfine   = 288
-Niter   = 200
+Nfine   = 144
+Niter   = 5
 fmin    = 1 
 fmax    = 24 
-Nfreq   = 49 
-Nftest  = 2^10 
-WorkLim = 200 
+Nfreq   = 2 
+Nftest  = 2 
+WorkLim = 30 
 
 vfreq = runif(Nfreq)
-mu    = 40
+mu    = 30
 tau   = c(1:Nfine)/Nfine-1/Nfine
 pwr_now = rep(NaN,Niter)
 travel  = rep(NaN,Niter)
@@ -40,8 +40,6 @@ for (iter in 1:Niter){
   mt = tau[mu>0]
   pwr_now[iter] = evalWorstPowerMultiFreq(mt,list(Amp=1,fmin=fmin,fmax=fmax,Nfreq=Nftest))
   travel[iter] =norm(matrix(vfreq-vfreq_old))
-  cat(paste0('\n\n\nCURRENT POWER ',pwr_now[iter],'\n'))
-  cat(paste0('Eigen travel: ',travel[iter],'\n\n\n'))
+  cat(paste0('CURRENT POWER ',pwr_now,'\n'))
+  cat(paste0('Eigen travel: ',travel,'\n'))
 }
-cat(paste0(pwr_now,'\n'))
-cat(paste0(travel,'\n'))
