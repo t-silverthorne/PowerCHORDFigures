@@ -432,17 +432,6 @@
       ],
       "Hash": "e0b3a53876554bd45879e596cdb10a52"
     },
-    "gurobi": {
-      "Package": "gurobi",
-      "Version": "10.0-3",
-      "Source": "Local",
-      "RemoteType": "local",
-      "RemoteUrl": "/opt/gurobi1003/linux64/R/gurobi_10.0-3_R_4.2.0.tar.gz",
-      "Requirements": [
-        "slam"
-      ],
-      "Hash": "5f7654917ed05aa6ae22b2b8d111ebeb"
-    },
     "highr": {
       "Package": "highr",
       "Version": "0.11",
