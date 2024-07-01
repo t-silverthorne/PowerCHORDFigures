@@ -1,10 +1,10 @@
 require(devtools)
 load_all()
 
-freq  = 1
+freq  = 24
 npar  = 10 
-Nfine = 24 
-Nmeas = 6 
+Nfine = 144 
+Nmeas = 48 
 
 #require(gurobi)
 
@@ -40,7 +40,7 @@ if (check_start){
   model$ub         = rep(1e1,Nfine+npar) 
 }
 
-sol=gurobi(model,params=list(WorkLimit=100,Threads=12,MIPFocus=2))
+sol=gurobi(model,params=list(WorkLimit=1000,Threads=12))
 
 tau = c(1:Nfine)/Nfine-1/Nfine
 mt  = tau[sol$x[1:Nfine]>0]

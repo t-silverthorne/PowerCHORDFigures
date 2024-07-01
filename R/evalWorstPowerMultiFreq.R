@@ -12,9 +12,9 @@ evalWorstPowerMultiFreq=function(mt,param,alpha=.05,method='eig',returnType='min
   })
 
   if (returnType=='min'){
-    return(min(worst_pwrs))
+    return(min(unlist(worst_pwrs)))
   }else if(returnType=='all'){
-    return(worst_pwrs)
+    return(unlist(worst_pwrs))
   }else{
     stop('Unknown return type')
   }
