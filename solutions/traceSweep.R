@@ -14,10 +14,10 @@ WorkLimit = 60
 Threads   = 12
 
 sols_master = c(1:dim(pars)[1])%>%lapply(function(ind){
-  fmin=pars[ind,]$fmin
-  fmax=pars[ind,]$fmax
-  Nmeas=pars[ind,]$fmax
-  sol=runPcTrace(Nmeas=Nmeas,fmin=fmin,fmax=fmax,Nfreq=Nfreq,Nfine=Nfine,
+  fmin  = pars[ind,]$fmin
+  fmax  = pars[ind,]$fmax
+  Nmeas = pars[ind,]$Nmeas
+  sol   = runPcTrace(Nmeas=Nmeas,fmin=fmin,fmax=fmax,Nfreq=Nfreq,Nfine=Nfine,
               WorkLimit=WorkLimit,Threads=Threads)
   
   return(list(pars=pars[ind,],sol=sol))
