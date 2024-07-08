@@ -72,10 +72,11 @@ test_that('sign condition on components of initial state',{
 
   s0[1:Nfine]
   expect_gte(s0[Nfine+1],0)
-  #expect_lte(s0[Nfine+2],0) # INDEFINITE
+  #expect_gte(s0[Nfine+2],0) # INDEFINITE
   expect_gte(s0[Nfine+3],0)
   expect_gte(s0[Nfine+4],0)
   expect_lte(s0[Nfine+5],0) # can prove, factor square
+  expect_lte(s0[Nfine+6],0) 
   expect_gte(s0[Nfine+7],0)
   expect_gte(s0[Nfine+8],0)
   expect_gte(s0[Nfine+9],0)
