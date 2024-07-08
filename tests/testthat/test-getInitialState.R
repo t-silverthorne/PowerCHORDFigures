@@ -37,9 +37,9 @@ test_that("initial state satisfies Qforms", {
 })
 
 test_that('state correctly encodes eigenvector',{
-  freq  = 1#runif(1)*10
-  Nfine = 12#sample(100:200,1) 
-  Nmeas = 6#sample(20:40,1)
+  freq  = runif(1)*10
+  Nfine = sample(100:200,1) 
+  Nmeas = sample(20:40,1)
   npar  = 10 
 
   s0   = getInitialState(freq,Nfine,Nmeas)
@@ -60,4 +60,24 @@ test_that('state correctly encodes eigenvector',{
 
   Qobj =getNonConvexQobj(Nfine,npar)
   expect_equal(lhs,rhs)
+})
+
+test_that('sign condition on components of initial state',{
+  freq  = runif(1)*20
+  Nfine = sample(100:200,1) 
+  Nmeas = sample(20:40,1)
+  npar  = 10 
+
+  s0   = getInitialState(freq,Nfine,Nmeas)
+
+  s0[1:Nfine]
+  expect_gte(s0[Nfine+1],0)
+  #expect_lte(s0[Nfine+2],0) # INDEFINITE
+  expect_gte(s0[Nfine+3],0)
+  expect_gte(s0[Nfine+4],0)
+  expect_lte(s0[Nfine+5],0) # can prove, factor square
+  expect_gte(s0[Nfine+7],0)
+  expect_gte(s0[Nfine+8],0)
+  expect_gte(s0[Nfine+9],0)
+  expect_gte(s0[Nfine+10],0)
 })

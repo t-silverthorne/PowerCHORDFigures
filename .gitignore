@@ -50,3 +50,4 @@ rsconnect/
 .vscode/settings.json
 
 */*.out
+sandbox/revised_powerSweep.png
