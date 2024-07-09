@@ -53,3 +53,5 @@ rsconnect/
 
 */*.out
 sandbox/revised_powerSweep.png
+matlab/getMaxEig.asv
+matlab/run_anneal.asv

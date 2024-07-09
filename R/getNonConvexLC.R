@@ -40,9 +40,10 @@ getNonConvexLC=function(Nmeas=48,Nfine=288,npar=10,con_mode='exact'){
     A7 =cbind(Matrix(rep(0,Nfine*ncstr),nrow=ncstr),sparseMatrix(c(7),c(ip6),x=1,dims=c(ncstr,npar)))
     A8 =cbind(Matrix(rep(0,Nfine*ncstr),nrow=ncstr),sparseMatrix(c(8),c(ip7),x=1,dims=c(ncstr,npar)))
     A =A1+A2+A3+A4+A5+A6+A7+A8
+    thr=0
     sense_list = list('=','<',
                      '>','<','<','>','>','>')
-    rhs_list = list(Nmeas,0,0,0,0,0,0,0)
+    rhs_list = list(Nmeas,0,thr,-thr,-thr,thr,thr,thr)
 
   }else{
     stop('unknown constraint mode')

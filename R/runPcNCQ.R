@@ -27,10 +27,14 @@ runPcNCQ=function(freq=1,Nfine=288,Nmeas=48,con_mode='exact',check_start=F,...){
     model$lb         = model$start 
     model$ub         = model$start 
   }else{
-    model$lb         = rep(-1e1,Nfine+npar)
-    model$ub         = rep(1e1,Nfine+npar) 
+    model$lb         = rep(-Nmeas,Nfine+npar)
+    model$ub         = rep(Nmeas,Nfine+npar) 
+    #U=Nmeas
+    #L=0.5
+    #model$lb         = c(rep(0,Nfine),c(-U,-U,-U,L,-U,-U,L,L,L,L))
+    #model$ub         = c(rep(1,Nfine),c( U, U, U,U,-L,-L,U,U,U,U))
   }
 
   sol=gurobi(model,params=list(...))
-
+  return(list(sol=sol,model=model))
 }
