@@ -17,8 +17,7 @@ for ii=1:length(fv)
 end
 assert(max(er)<1e-12)
 
-%%
-% check using it on multiple times agrees
+% check using it on multiple measurement schedules agrees
 Nm = 40;
 t1=rand(Nm,1);
 t2=rand(Nm,1);

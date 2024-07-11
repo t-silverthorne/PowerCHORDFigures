@@ -54,3 +54,4 @@ rsconnect/
 */*.out
 sandbox/revised_powerSweep.png
 matlab/*.asv
+matlab/sandbox/*.asv

@@ -1,5 +1,5 @@
 function emax = getMinEig(t,freq,method)
-% return max eigenvalue of B inverse
+% return min eigenvalue of B inverse
 arguments
     t;
     freq;
