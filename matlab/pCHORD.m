@@ -1,7 +1,8 @@
-function [prob,mu,eta] = pCHORD(n,Nm,fvec,options,relax)
+function [prob,mu,eta] = pCHORD(n,Nm,fvec,options,do_warmstart,relax)
 arguments % can leave options blank and yet YALMIP decide on everything
     n;Nm;fvec;
     options = sdpsettings();
+    do_warmstart = true;
     relax   = false;
 end
 
@@ -31,8 +32,10 @@ eta0=min(eta0);
 
 h =-eta; % objective to be minimized (YALMIP only does minimzation)
 
-warmstart(mu,mu0);
-warmstart(eta,eta0);
+if do_warmstart
+    warmstart(eta,eta0);
+    warmstart(mu,mu0);
+end
 
 warning('off','all') % TODO: make this optional in future
 prob=optimize(F,h,options);% solve
