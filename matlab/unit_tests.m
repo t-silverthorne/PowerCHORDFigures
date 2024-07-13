@@ -29,3 +29,22 @@ tboth = reshape(tboth,Nm,1,1,[]);
 [~,rboth] = getMinEigMulti(tboth,1,24,1000);
 
 assert(all(rboth(:,:,:,1)==r1) & all(rboth(:,:,:,2)==r2))
+
+
+%% getFourQuadBlocks
+n = 24;
+Nm= n-1;
+freq = 5*rand;
+tau= (1:n)/n -1/n;
+
+t = tau(2:end);
+
+mu = [0; ones(n-1,1)];
+
+[Cm11,Cm12,Cm21,Cm22]=getFourQuadBlocks(n,Nm,freq);
+
+min(eig([mu'*Cm11*mu mu'*Cm12*mu; mu'*Cm21*mu mu'*Cm22*mu]))
+
+getMinEig(t',freq)
+[~,fv]=getMinEigMulti(t',freq,freq,1,false)
+
