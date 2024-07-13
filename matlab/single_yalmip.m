@@ -1,41 +1,28 @@
 run('~/startup.m')
-
-mkdir '~/research/powerCHORD2/matlab/yalmip_sweep'
+mkdir '~/research/powerCHORD2/matlab/yalmip_single'
 addpath('~/research/powerCHORD2/matlab/')
-fmin = 1:2:12;
-fmax = 1:2:24;
-df   = .5;
-n    = 144;
-[fmin,fmax,Nmeas]=ndgrid(fmin,fmax,[16,24,32,48]);
+fmin    = 1;
+fmax    = 24;
+Nmeas   = 48;
+n       = 144;
+fvec    = (fmin:.5:fmax);
 
-pars=[fmin(:) fmax(:) Nmeas(:)];
-pars=pars(pars(:,1)<=pars(:,2),:); % want fmin<=fmax
-
-maxT=60*60;
+maxT=60*60*24;
 options = sdpsettings('solver','bmibnb', ...
                     'bmibnb.uppersolver','fmincon', ...   % can't be mosek
                     'bmibnb.lowersolver','mosek', ...   % has to be mosek
                     'bmibnb.lpsolver','mosek', ... % can be gurobi or mosek
                     'bmibnb.maxtime',maxT, ...
                     'bmibnb.maxiter',Inf,...
-                    'bmibnb.lpreduce',0,...
                     'savesolveroutput',1,...
                     'warmstart',1);
-'options defined'
 
-ii      = str2double(getenv('SLURM_ARRAY_TASK_ID'));
-fmin    = pars(ii,1);
-fmax    = pars(ii,2);
-Nmeas   = pars(ii,3);
-fvec    = (fmin:df:fmax);
-
-fname = strcat('~/research/powerCHORD2/matlab/yalmip_sweep/', ...
+fname = strcat('~/research/powerCHORD2/matlab/yalmip_single/', ...
                'Nmeas_',num2str(Nmeas),...
                '_fmin_',num2str(fmin),...
                '_fmax_',num2str(fmax),...
                '_maxT_',num2str(maxT),...
                '_n_',num2str(n),...
-               '_lpred_','off',...
                '.mat');
 'fname defined'
 
