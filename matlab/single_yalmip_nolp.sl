@@ -12,4 +12,4 @@
 # Choose a version of MATLAB by loading a module:
 module load matlab/2023b.2
 # Remove -singleCompThread below if you are using parallel commands:
-matlab -nojvm -singleCompThread -batch "single_yalmip"
+matlab -nojvm -singleCompThread -batch "single_yalmip_nolp"
