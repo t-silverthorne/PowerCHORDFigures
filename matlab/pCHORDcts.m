@@ -27,7 +27,24 @@ switch settings.method
             Tmat(:,Jcand>Jnow) = Tcand(:,Jcand>Jnow);
         end
         [~,eigfinal] = getMinEigMulti(Tmat,fmin,fmax,Nfreq,useGPUglob);
+       
+    case 'simulAnneal'
+        % unpack
+        useGPUglob = settings.useGPUglob;
+        maxIter    = settings.Niter;
+        maxTime    = settings.maxTime;
+        cfun       = @(t) -Out2(@getMinEigMulti,t,fmin,fmax,Nfreq,useGPUglob,'min');
+       
+        % optimize
+        opts       = optimoptions('simulannealbnd', ...
+                     'MaxIterations',maxIter, ...
+                     'HybridFcn','patternsearch','MaxTime',maxTime);
+        t          = simulannealbnd(cfun,rand(Nm,1),zeros(Nm,1),ones(Nm,1),opts);
         
+        % get output
+        Tmat         = t;
+        [~,eigfinal] = getMinEigMulti(t,fmin,fmax,Nfreq,useGPUglob,'min');
+        scores       = []; %TODO: record evolution of eigenvalue during simulated annealing
     otherwise
         error('method not yet implemented')
 end
