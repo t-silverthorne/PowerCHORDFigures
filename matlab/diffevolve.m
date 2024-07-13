@@ -1,17 +1,16 @@
 Nm    = 48;
-Npop  = 1e2;
+Npop  = 5e2;
 fmin  = 1;
 fmax  = 24;
 Nfreq = 2^10;
 
-eps = .05;
+eps = .01;
 Tmat     = rand(Nm,Npop);
 
 useGPUglob=true;
-Niter = 500;
+Niter = 150;
 tic;
-scores=NaN(1,Niter)
-
+scores=NaN(1,Niter);
 
 for ii=1:Niter
     % score population
@@ -29,4 +28,5 @@ for ii=1:Niter
     Tmat(:,Jcand>Jnow) = Tcand(:,Jcand>Jnow);
 end
 toc
+hold on
 plot(1:Niter,scores,'.k')
