@@ -2,8 +2,8 @@ mkdir 'sweep_diffevolve'
 
 % differential evolution settings
 settings.method     = 'diffEvolve';
-settings.Npop       = 5e2;
-settings.Niter      = 200;
+settings.Npop       = 1e3;
+settings.Niter      = 500;
 settings.eps        = .01;
 settings.useGPUglob = true;
 
@@ -18,10 +18,11 @@ pars=pars(pars(:,1)<=pars(:,2),:); % want fmin<=fmax
 
 
 for ii=1:size(pars,1)
+		ii 
     fmin    = pars(ii,1);
     fmax    = pars(ii,2);
     Nmeas   = pars(ii,3);
-    
+		    
     fname = strcat('sweep_diffevolve/', ...
                    'Nmeas_',num2str(Nmeas),...
                    '_fmin_',num2str(fmin),...
