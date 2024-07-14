@@ -11,7 +11,7 @@ switch settings.method
 
         % initial population
         Tmat       = rand(Nm,Npop);
-        scores     = NaN(1,Niter);
+        scores     = [];
         tic
         while (ii <=Niter) && (toc<time_max)
             % score population
