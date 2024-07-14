@@ -13,6 +13,7 @@ switch settings.method
         Tmat       = rand(Nm,Npop);
         scores     = [];
         tic
+        ii=1;
         while (ii <=Niter) && (toc<time_max)
             % score population
             [~,Jnow] = getMinEigMulti(Tmat,fmin,fmax,Nfreq,useGPUglob);

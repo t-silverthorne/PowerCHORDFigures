@@ -1,10 +1,11 @@
-mkdir 'sweep_diffevolve'
+dirname = 'sweep_diffevolve_1hr/';
+mkdir(dirname); 
 
 % differential evolution settings
 settings.method     = 'diffEvolve';
 settings.Npop       = 1e3;
 settings.Niter      = Inf;
-settings.time_max   = 10;
+settings.time_max   = 60*60;
 settings.eps        = .01;
 settings.useGPUglob = true;
 
@@ -17,14 +18,15 @@ n    = 144;
 pars=[fmin(:) fmax(:) Nmeas(:)];
 pars=pars(pars(:,1)<=pars(:,2),:); % want fmin<=fmax
 
+dev=gpuDevice(1); % should be the Quadpro RTX 5000
 parpool(10)
-parfor ii=1:size(pars,1)
-	ii 
-    fmin    = pars(ii,1);
-    fmax    = pars(ii,2);
-    Nmeas   = pars(ii,3);
+parfor jj = 1:size(pars,1)
+    gpuDevice(1);
+    fmin    = pars(jj,1);
+    fmax    = pars(jj,2);
+    Nmeas   = pars(jj,3);
 		    
-    fname = strcat('sweep_diffevolve/', ...
+    fname = strcat(dirname,...
                    'Nmeas_',num2str(Nmeas),...
                    '_fmin_',num2str(fmin),...
                    '_fmax_',num2str(fmax),...
