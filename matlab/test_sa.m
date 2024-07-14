@@ -2,12 +2,12 @@ cd('~/research/powerCHORD2/matlab')
 fmin  = 1;
 fmax  = 24;
 Nfreq = 1e3;
-Nmeas = 48
+Nmeas = 32 
 
 % try diffEvolve
 settings.useGPUglob = true;
 settings.method     = 'diffEvolve';
-settings.Niter      = 200;
+settings.Niter      = 1e3;
 settings.eps        = .01;
 settings.Npop       = 500;
 
