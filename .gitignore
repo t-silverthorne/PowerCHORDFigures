@@ -57,3 +57,7 @@ matlab/*.asv
 matlab/sandbox/*.asv
 matlab/sweep_yalmip.mat
 matlab/fname.mat
+matlab/temp
+matlab/temp.csv
+solutions/diff_evolve_sols.csv
+solutions/powerCHORD_sols.csv
