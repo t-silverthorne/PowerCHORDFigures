@@ -16,7 +16,7 @@ df$ncp    = as.numeric(df$ncp)
 head(df)
 
 am     = annmatrix(df_time,rann=data.frame(df[,1:7]))
-
+saveRDS(am,'solutions/matlab_solutions.RDS')
 df = am@''
 
 df <- df %>%
