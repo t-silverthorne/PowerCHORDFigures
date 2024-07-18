@@ -2,42 +2,38 @@ function [Tmat,eigfinal,scores] = pCHORDcts(Nm,fmin,fmax,Nfreq,settings)
 
 switch settings.method
     case 'diffEvolveCR' % differential evolution with crossover
-        error('not yet implemented')
+        
         % unpack
         Npop       = settings.Npop;
         Niter      = settings.Niter;
         time_max   = settings.time_max;
         eps        = settings.eps;
         useGPUglob = settings.useGPUglob;
-Tmat       = rand(Nm,Npop);
+        
+        Tmat       = rand(Nm,Npop);
         scores     = [];
         tic
         ii=1;
         while (ii <=Niter) && (toc<time_max)
             ii
             % score population
-            [~,Jnow] = getMinEigMulti(Tmat,fmin,fmax,Nfreq,useGPUglob);
-            scores(ii) = max(Jnow);
+            [~,Jnow]         = getMinEigMulti(Tmat,fmin,fmax,Nfreq,useGPUglob);
+            scores(ii)       = max(Jnow);
             
-            % select parents
-            switch settings.diffEVsample
-                case 'uniform'
-                    cind      = cell2mat(arrayfun(@(ii) randsample(1:Npop, ...
-                                               3,false)', ...
-                                 1:Npop,'UniformOutput',false));                                    
-                case 'fitness'
-                    cind      = cell2mat(arrayfun(@(ii) randsample([1:(ii-1) (ii+1):Npop], ...
-                                               3,true,Jnow([1:(ii-1) (ii+1):Npop]))', ...
-                                 1:Npop,'UniformOutput',false));                    
-            end
+            % evolution
+            cind             = cell2mat(arrayfun(@(ii) randsample(1:Npop,3,false)',1:Npop,'UniformOutput',false));
+            Tcand            = Tmat(:,cind(1,:)) + eps*(Tmat(:,cind(2,:)) - Tmat(:,cind(3,:)));
+            Tcand            = mod(Tcand,1);
 
-            % score candidates
-            Tcand     = Tmat(:,cind(1,:)) + eps*(Tmat(:,cind(2,:)) - Tmat(:,cind(3,:)));
-            Tcand     = mod(Tcand,1);
-            [~,Jcand] = getMinEigMulti(Tcand,fmin,fmax,Nfreq,useGPUglob);
+            % crossover
+            Tcr              = Tnow;
+            ind_cross        = rand(Nm,Npop)<settings.CR;
+            Tcr(ind_cross)   = Tcand(ind_cross);
+            
             
             % evolve population
-            Tmat(:,Jcand>Jnow) = Tcand(:,Jcand>Jnow);
+            [~,Jcr]          = getMinEigMulti(Tcr,fmin,fmax,Nfreq,useGPUglob);
+            Tmat(:,Jcr>Jnow) = Tcr(:,Jcr>Jnow);
 
             ii=ii+1;
         end
@@ -78,10 +74,10 @@ Tmat       = rand(Nm,Npop);
             % score candidates
             Tcand     = Tmat(:,cind(1,:)) + eps*(Tmat(:,cind(2,:)) - Tmat(:,cind(3,:)));
             Tcand     = mod(Tcand,1);
-            [~,Jcand] = getMinEigMulti(Tcand,fmin,fmax,Nfreq,useGPUglob);
+            [~,Jcr] = getMinEigMulti(Tcand,fmin,fmax,Nfreq,useGPUglob);
             
             % evolve population
-            Tmat(:,Jcand>Jnow) = Tcand(:,Jcand>Jnow);
+            Tmat(:,Jcr>Jnow) = Tcand(:,Jcr>Jnow);
 
             ii=ii+1;
         end
