@@ -8,6 +8,7 @@ switch settings.method
         Niter      = settings.Niter;
         time_max   = settings.time_max;
         eps        = settings.eps;
+        CR         = settings.CR;
         useGPUglob = settings.useGPUglob;
         
         Tmat       = rand(Nm,Npop);
@@ -15,7 +16,6 @@ switch settings.method
         tic
         ii=1;
         while (ii <=Niter) && (toc<time_max)
-            ii
             % score population
             [~,Jnow]         = getMinEigMulti(Tmat,fmin,fmax,Nfreq,useGPUglob);
             scores(ii)       = max(Jnow);
@@ -26,8 +26,8 @@ switch settings.method
             Tcand            = mod(Tcand,1);
 
             % crossover
-            Tcr              = Tnow;
-            ind_cross        = rand(Nm,Npop)<settings.CR;
+            Tcr              = Tmat;
+            ind_cross        = rand(Nm,Npop)<CR;
             Tcr(ind_cross)   = Tcand(ind_cross);
             
             
@@ -54,7 +54,6 @@ switch settings.method
         tic
         ii=1;
         while (ii <=Niter) && (toc<time_max)
-            ii
             % score population
             [~,Jnow] = getMinEigMulti(Tmat,fmin,fmax,Nfreq,useGPUglob);
             scores(ii) = max(Jnow);
