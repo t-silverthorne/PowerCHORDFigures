@@ -1,9 +1,9 @@
 run('~/startup.m')
 
-mkdir '~/research/powerCHORD2/matlab/yalmip_sweep'
+mkdir '~/research/powerCHORD2/matlab/sweep_yalmip_even'
 addpath('~/research/powerCHORD2/matlab/')
-fmin = 1:2:12;
-fmax = 1:2:24;
+fmin = [1 2:2:12];
+fmax = [1 2:2:24];
 df   = .5;
 n    = 144;
 [fmin,fmax,Nmeas]=ndgrid(fmin,fmax,[16,24,32,48]);
