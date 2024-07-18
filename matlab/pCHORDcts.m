@@ -1,6 +1,45 @@
 function [Tmat,eigfinal,scores] = pCHORDcts(Nm,fmin,fmax,Nfreq,settings)
 
 switch settings.method
+    case 'diffEvolveCR' % differential evolution with crossover
+        
+        % unpack
+        Npop       = settings.Npop;
+        Niter      = settings.Niter;
+        time_max   = settings.time_max;
+        eps        = settings.eps;
+        useGPUglob = settings.useGPUglob;
+        
+        Tmat       = rand(Nm,Npop);
+        scores     = [];
+        tic
+        ii=1;
+        while (ii <=Niter) && (toc<time_max)
+            ii
+            % score population
+            [~,Jnow]         = getMinEigMulti(Tmat,fmin,fmax,Nfreq,useGPUglob);
+            scores(ii)       = max(Jnow);
+            
+            % evolution
+            cind             = cell2mat(arrayfun(@(ii) randsample(1:Npop,3,false)',1:Npop,'UniformOutput',false));
+            Tcand            = Tmat(:,cind(1,:)) + eps*(Tmat(:,cind(2,:)) - Tmat(:,cind(3,:)));
+            Tcand            = mod(Tcand,1);
+
+            % crossover
+            Tcr              = Tnow;
+            ind_cross        = rand(Nm,Npop)<settings.CR;
+            Tcr(ind_cross)   = Tcand(ind_cross);
+            
+            
+            % evolve population
+            [~,Jcr]          = getMinEigMulti(Tcr,fmin,fmax,Nfreq,useGPUglob);
+            Tmat(:,Jcr>Jnow) = Tcr(:,Jcr>Jnow);
+
+            ii=ii+1;
+        end
+        [~,eigfinal] = getMinEigMulti(Tmat,fmin,fmax,Nfreq,useGPUglob);
+       
+
     case 'diffEvolve'
         % unpack
         Npop       = settings.Npop;
@@ -15,21 +54,30 @@ switch settings.method
         tic
         ii=1;
         while (ii <=Niter) && (toc<time_max)
+            ii
             % score population
             [~,Jnow] = getMinEigMulti(Tmat,fmin,fmax,Nfreq,useGPUglob);
             scores(ii) = max(Jnow);
             
             % select parents
-            cind      = cell2mat(arrayfun(@(ii) randsample([1:(ii-1) (ii+1):Npop], ...
+            switch settings.diffEVsample
+                case 'uniform'
+                    cind      = cell2mat(arrayfun(@(ii) randsample(1:Npop, ...
+                                               3,false)', ...
+                                 1:Npop,'UniformOutput',false));                                    
+                case 'fitness'
+                    cind      = cell2mat(arrayfun(@(ii) randsample([1:(ii-1) (ii+1):Npop], ...
                                                3,true,Jnow([1:(ii-1) (ii+1):Npop]))', ...
-                                 1:Npop,'UniformOutput',false));
+                                 1:Npop,'UniformOutput',false));                    
+            end
+
             % score candidates
             Tcand     = Tmat(:,cind(1,:)) + eps*(Tmat(:,cind(2,:)) - Tmat(:,cind(3,:)));
             Tcand     = mod(Tcand,1);
-            [~,Jcand] = getMinEigMulti(Tcand,fmin,fmax,Nfreq,useGPUglob);
+            [~,Jcr] = getMinEigMulti(Tcand,fmin,fmax,Nfreq,useGPUglob);
             
             % evolve population
-            Tmat(:,Jcand>Jnow) = Tcand(:,Jcand>Jnow);
+            Tmat(:,Jcr>Jnow) = Tcand(:,Jcr>Jnow);
 
             ii=ii+1;
         end
