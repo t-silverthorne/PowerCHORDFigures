@@ -18,7 +18,7 @@ plt_height = 3
 plt_width  = 6
 
 # only look at differential evolution results
-am = readRDS('solutions/matlab_solutions.RDS')
+am = readRDS('figures/sec3p2_data/powerCHORD_even_sols.RDS')
 am = am[am@''$method=='diffEV',]
 df = am@''
 
@@ -58,7 +58,7 @@ plt
 ###########################
 # Plot of raw solutions 
 ###########################
-fmax=23
+fmax=24
 fmin=1
 Nmeas_vals = c(24,48)
 
@@ -166,7 +166,7 @@ plt=plt+theme(text=element_text(size=9))
 phmap = plt
 phmap
 
-
+plt_gainWC/psol/phmap
 
 
 # aesthetics
