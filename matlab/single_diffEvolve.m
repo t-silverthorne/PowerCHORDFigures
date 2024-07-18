@@ -5,7 +5,7 @@ Nmeas   = 48;
 Nfreq   = 1e3;
 
 % differential evolution settings
-settings.method     = 'diffEvolve';
+settings.method     = 'diffEvolveCR';
 settings.Npop       = 1e3;
 settings.Niter      = 50;
 settings.eps        = .01;
