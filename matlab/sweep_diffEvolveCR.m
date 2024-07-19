@@ -1,5 +1,13 @@
+testing=true;
 
-dirname = 'sweep_diffevolveCR_1hr_even/';
+switch testing
+    case true
+        dirname = 'deCR_test/';
+    otherwise
+        dirname = 'sweep_diffevolveCR_1hr_even/';
+end
+
+
 mkdir(dirname); 
 
 % differential evolution settings
@@ -7,9 +15,15 @@ settings.method     = 'diffEvolveCR';
 settings.CR         = .01;
 settings.Npop       = 1e3;
 settings.Niter      = Inf;
-settings.time_max   = 60*60;
 settings.eps        = .01;
 settings.useGPUglob = true;
+switch testing
+    case true
+        settings.time_max   = 10;
+    otherwise
+        settings.time_max   = 60*60;
+end
+
 
 % define range to sweep over
 fmin = [1 2:2:12];
@@ -20,9 +34,12 @@ n    = 144;
 pars=[fmin(:) fmax(:) Nmeas(:)];
 pars=pars(pars(:,1)<=pars(:,2),:); % want fmin<=fmax
 
-
-ii = str2double(getenv('SLURM_ARRAY_TASK_ID'));
-
+switch testing
+    case true
+        ii = 200;
+    otherwise
+        str2double(getenv('SLURM_ARRAY_TASK_ID'));
+end
 ii
 
 fmin    = pars(ii,1);
@@ -36,15 +53,10 @@ fname = strcat(dirname,...
                 '_Niter_',num2str(settings.Niter),...
                 '_tmax_',num2str(settings.time_max),...
                 '.mat');
-
-'fname defined'
 [Tmat,eigfinal,scores] = pCHORDcts(Nmeas,fmin,fmax,Nfreq,settings);
-'opt finished'
 res=struct('Tmat',Tmat,...
             'eigfinal',eigfinal,...
             'scores',scores,...
             'settings',settings);
-
-'defined res '
 save(fname,"-fromstruct",res)
-'complete'
+
