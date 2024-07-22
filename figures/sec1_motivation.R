@@ -4,11 +4,13 @@ require(matrixTests)
 require(ggplot2)
 require(ggplotify)
 require(patchwork)
+require(parallel)
+require(devtools)
+load_all()
 theme_set(theme_classic()) 
 
-motivation_fig=function(freq,equispaced_FN,Amp=2,Nm=24,Nmc=1e4){
+motivation_fig=function(freq,equispaced_FN,Amp=2,Nm=24,Nm1=5,Nmc=1e4){
   tunif   = c(1:Nm)/Nm-1/Nm
-  Nm1     = 2*Nm/3
   Nm2     = Nm-Nm1
   mt1     = c(1:Nm1)/Nm1-1/Nm1
   mt2     = c(1:Nm2)/Nm2-1/Nm2
@@ -81,7 +83,7 @@ motivation_fig=function(freq,equispaced_FN,Amp=2,Nm=24,Nmc=1e4){
     geom_point(data=tdf %>% filter(meas!='true'))+facet_wrap(~meas)+
     scale_color_manual(values=cmap_cust)+ theme(legend.position='none')
   plt = plt + labs(x=element_text('time'),
-                   y=element_text('simulated expression'))
+                   y=element_text('simulated signal'))
   plt = plt + scale_x_continuous(breaks=c(0,1))
   plt = plt + theme(
     strip.background=element_blank(),
@@ -96,8 +98,6 @@ motivation_fig=function(freq,equispaced_FN,Amp=2,Nm=24,Nmc=1e4){
   Fig = ptop/pbot
   return(Fig) 
 }
-Fig = as.ggplot(motivation_fig(1,F))/as.ggplot(motivation_fig(12,T)) + plot_annotation(tag_levels='A')
-
 show_temp_plt=function(plt,plt_width,plt_height){
   plt_path <- tempfile(fileext = ".png")
   ggsave(plt_path, plt, width =plt_width, height = plt_height, units = "in",
@@ -106,5 +106,70 @@ show_temp_plt=function(plt,plt_width,plt_height){
   viewer <- getOption("viewer")
   viewer(plt_path)
 }
+set.seed(28)
 
-show_temp_plt(Fig,6,6)
+###########################
+# Phase dependent power motivation 
+###########################
+p1=as.ggplot(motivation_fig(1,F,Nm = 8,Nm1=5))
+p2=as.ggplot(motivation_fig(4,T,Nm=8,Nm1=5)) 
+
+
+
+###########################
+# Heatmap
+###########################
+
+Amps = c(1,2)
+Nmvec  = c(10,20,30)
+Nacro=2^6+1
+acros=seq(0,2*pi,length.out=Nacro)
+acros=acros[1:(length(acros)-1)]
+Nfreq  = 2^8
+freqs  = seq(1,24,length.out=Nfreq)
+pars   = expand.grid(Amp=Amps,Nmeas=Nmvec,freq=freqs,acro=acros)
+
+pars$power = c(1:dim(pars)[1]) %>% mclapply(mc.cores=8,function(ii){
+  x=pars[ii,]
+  Amp   = x$Amp
+  Nmeas = x$Nmeas
+  acro  = x$acro
+  freq  = x$freq
+  mt = c(1:Nmeas)/Nmeas-1/Nmeas
+  return(evalExactPower(mt,param=list(Amp=Amp,acro=acro,freq=freq)))
+})
+
+pars$power = as.numeric(pars$power)
+
+pars =pars %>% mutate(A=Amp,N=Nmeas)
+
+rad_brk = c(0,pi/2,pi,3*pi/2,2*pi)
+rad_lab = c(expression(0),expression(pi/2),
+            expression(pi),expression(3*pi/2),
+            expression(2*pi))
+
+p3 = pars %>% ggplot(aes(x=freq,y=acro,fill=power))+
+  geom_raster()+
+  facet_grid(A~N,labeller = purrr::partial(label_both, sep = " = "))+
+  scale_y_continuous(limits=c(0,2*pi),breaks =rad_brk[c(1,3,5)],labels = rad_lab[c(1,3,5)])+
+  scale_fill_viridis_c(limits=c(0,1))+
+  labs(y='acrophase (rad)',x='frequency (cycles/day)')
+
+plt_width=6
+#p3=p3+guides(fill=guide_colorbar(title.position='top'))
+p3=p3+theme(legend.position='bottom',
+              legend.key.width = unit(plt_width*.15, "in"),
+              legend.title.align = 0.5,
+              legend.direction = "horizontal")
+p3 = p3 + theme(
+  strip.background=element_blank(),
+  plot.margin = margin(0,0,0,0),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  axis.text.x = element_text(vjust = 0.25)
+)
+p3=p3+theme(text=element_text(size=fsize))
+
+Fig = p1/p2/p3 + plot_annotation(tag_levels='A')+plot_layout(heights=c(1.5,1.5,1))
+show_temp_plt(Fig,6,7.8)
+

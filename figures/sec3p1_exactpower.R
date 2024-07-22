@@ -8,6 +8,9 @@ require(devtools)
 load_all()
 theme_set(theme_classic()) 
 
+###########################
+# bad scaling
+###########################
 Nm   = 8
 Nmc  = 1e4
 nrep = 5
@@ -55,25 +58,42 @@ p1=pdf %>% ggplot(aes(x=scale,y=Power,group=method,color=method))+geom_line()+ge
   geom_errorbar(aes(ymin=lower,ymax=upper))
 
 
-
+###########################
+# Bias in wrong formula
+###########################
 freq  = 1
 Nm    = 24 
-Nmc   = 1e3
+Nmc   = 1e4
 nrep  = 1e3
 param = list(Amp=1,freq=1,acro=0)
-d1    = replicate(nrep,{runif(Nm) %>% {evalExactPower(.,param)}})
-d2    = replicate(nrep,{runif(Nm) %>% {evalExactPower(.,param,method='old')}})
-d3    = replicate(nrep,{runif(Nm) %>% {evalMonteCarloPower(.,param,Nmc=Nmc)}})
 
-d1  = data.frame(method='exact',power=d1)
-d2  = data.frame(method='approximate',power=d2)
-d3  = data.frame(method='MC',power=d3)
-pdf = rbind(d1,d2,d3)
+set.seed(1)
+df = c(1:nrep) %>% mclapply(mc.cores=8,function(ii){
+  tvec = runif(Nm)
+  pwr_mc      = evalMonteCarloPower(tvec,param,Nmc)
+  pwr_exact   = evalExactPower(tvec,param)
+  pwr_approx  = evalExactPower(tvec,param,method='old')
+  return(data.frame(pwr_mc=pwr_mc,pwr_exact=pwr_exact,pwr_approx=pwr_approx))
+}) %>% rbindlist() %>% data.frame()
 
-pdf$method = factor(pdf$method,levels=c('MC','exact','approximate'))
-pdf %>% ggplot(aes(x=power,group=method,fill=method)) + geom_histogram( position="identity")+
-  facet_wrap(~method,ncol=1)
+df$bias_exact  = df$pwr_exact-df$pwr_mc
+df$bias_approx = df$pwr_approx -df$pwr_mc
+
+pdf = data.frame(bias=c(df$bias_exact,df$bias_approx),method=c(rep('exact',nrep),rep('approx',nrep)))
+
+p2=pdf %>% ggplot(aes(x=bias,fill=method,group=method))+geom_histogram(position='identity',bins=100)+facet_wrap(~method,nrow=1)
+p2
+p2/p1+plot_annotation(tag_levels='A')
 
 
-
-
+#df1 = df[,c('pwr_mc','pwr_approx')]
+#names(df1)=c("pwr_mc",'pwr')
+#df2 = df[,c('pwr_mc','pwr_exact')]
+#names(df2)=c("pwr_mc",'pwr')
+#
+#df1$method = 'approx'
+#df2$method = 'exact'
+#
+#df=rbind(df1,df2)
+#
+#p2=df %>% ggplot(aes(x=pwr_mc,y=pwr,group=method,color=method))+geom_point(size=.5)+geom_abline(slope=1,intercept=0)
