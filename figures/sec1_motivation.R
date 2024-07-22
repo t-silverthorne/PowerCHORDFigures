@@ -1,10 +1,10 @@
 fsize=9
-theme_set(theme_classic()) 
 require(dplyr)
 require(matrixTests)
 require(ggplot2)
 require(ggplotify)
 require(patchwork)
+theme_set(theme_classic()) 
 
 motivation_fig=function(freq,equispaced_FN,Amp=2,Nm=24,Nmc=1e4){
   tunif   = c(1:Nm)/Nm-1/Nm
