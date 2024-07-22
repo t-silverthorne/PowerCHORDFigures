@@ -1,10 +1,10 @@
-testing=true;
+testing=false;
 
 switch testing
     case true
         dirname = 'deCR_test/';
     otherwise
-        dirname = 'sweep_diffevolveCR_1hr_even/';
+        dirname = 'sweep_diffevolveCR_1hr_h05/';
 end
 
 
@@ -12,10 +12,10 @@ mkdir(dirname);
 
 % differential evolution settings
 settings.method     = 'diffEvolveCR';
-settings.CR         = .01;
+settings.CR         = .05;
 settings.Npop       = 1e3;
 settings.Niter      = Inf;
-settings.eps        = .01;
+settings.eps        = .05;
 settings.useGPUglob = true;
 switch testing
     case true
@@ -30,7 +30,7 @@ fmin = [1 2:2:12];
 fmax = [1 2:2:24];
 Nfreq = 2^10;
 n    = 144;
-[fmin,fmax,Nmeas]=ndgrid(fmin,fmax,[16,24,32,48]);
+[fmin,fmax,Nmeas]=ndgrid(fmin,fmax,[16,24,32,40,48]);
 pars=[fmin(:) fmax(:) Nmeas(:)];
 pars=pars(pars(:,1)<=pars(:,2),:); % want fmin<=fmax
 
