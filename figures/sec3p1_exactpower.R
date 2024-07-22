@@ -54,9 +54,30 @@ df_wrong$method= 'approximate'
 pdf=rbind(df_grp,df_exact,df_wrong)
 
 pdf$method = factor(pdf$method,levels=c('MC','exact','approximate'))
-p1=pdf %>% ggplot(aes(x=scale,y=Power,group=method,color=method))+geom_line()+geom_point()+
-  geom_errorbar(aes(ymin=lower,ymax=upper))
+cmap_cust = c('MC'=rgb(0,.55,.55),
+              'exact'='blue',
+              'approximate'='orange')
+plt=pdf %>% ggplot(aes(x=scale,y=Power,group=method,color=method))+geom_line()+geom_point()+
+  geom_errorbar(aes(ymin=lower,ymax=upper))+
+  scale_color_manual(values=cmap_cust)
 
+plt = plt + theme(
+  strip.background=element_blank(),
+  plot.margin = margin(0,0,0,0),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  axis.text.x = element_text(vjust = 0.25)
+)
+
+# might need
+plt = plt + labs(x=element_text('scale'),
+                 y=element_text('power'))
+
+
+# always need
+plt=plt+theme(text=element_text(size=fsize))
+
+p1=plt
 
 ###########################
 # Bias in wrong formula
@@ -81,8 +102,26 @@ df$bias_approx = df$pwr_approx -df$pwr_mc
 
 pdf = data.frame(bias=c(df$bias_exact,df$bias_approx),method=c(rep('exact',nrep),rep('approx',nrep)))
 
-p2=pdf %>% ggplot(aes(x=bias,fill=method,group=method))+geom_histogram(position='identity',bins=100)+facet_wrap(~method,nrow=1)
-p2
+pdf$method = factor(pdf$method,levels=c('exact','approx'),labels=c('exact','approximate'))
+cmap_cust=c('exact'='blue',
+            'approximate'='orange')
+plt=pdf %>% ggplot(aes(x=bias,fill=method,group=method))+
+  geom_histogram(position='identity',bins=100)+facet_wrap(~method,nrow=1)+
+  scale_fill_manual(values=cmap_cust)
+plt
+
+plt = plt + theme(
+  strip.background=element_blank(),
+  plot.margin = margin(0,0,0,0),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  axis.text.x = element_text(vjust = 0.25)
+)
+
+plt = plt + labs(x=element_text('MC power difference'))
+plt=plt+theme(text=element_text(size=fsize))
+
+p2=plt
 p2/p1+plot_annotation(tag_levels='A')
 
 
