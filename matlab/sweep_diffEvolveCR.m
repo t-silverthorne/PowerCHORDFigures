@@ -38,7 +38,7 @@ switch testing
     case true
         ii = 200;
     otherwise
-        str2double(getenv('SLURM_ARRAY_TASK_ID'));
+        ii=str2double(getenv('SLURM_ARRAY_TASK_ID'));
 end
 ii
 
