@@ -60,7 +60,7 @@ getNonConvexQC = function(Nfine,A11,A12,A22,con_mode='exact'){
     if (con_mode=='exact'){
       QC[[5]] = list(Qc=Qp3sp,q=toSparseVector(qp3sp),rhs=0,sense='=')
     }else if(con_mode=='relax'){
-      QC[[5]] = list(Qc=Qp3sp,q=toSparseVector(qp3sp),rhs=0,sense='<')
+      QC[[5]] = list(Qc=Qp3sp,q=toSparseVector(qp3sp),rhs=0,sense='=')
     }
 
     Qp4     = sparseMatrix(ib,ib,x=1,dims=c(np,np))
