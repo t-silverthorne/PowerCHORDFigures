@@ -27,8 +27,8 @@ runPcNCQ=function(freq=1,Nfine=288,Nmeas=48,con_mode='exact',check_start=F,...){
     model$lb         = model$start 
     model$ub         = model$start 
   }else{
-    model$lb         = rep(-Nmeas,Nfine+npar)
-    model$ub         = rep(Nmeas,Nfine+npar) 
+    model$lb         = rep(-Nmeas/2,Nfine+npar)
+    model$ub         = rep(Nmeas/2,Nfine+npar) 
     #U=Nmeas
     #L=0.5
     #model$lb         = c(rep(0,Nfine),c(-U,-U,-U,L,-U,-U,L,L,L,L))
