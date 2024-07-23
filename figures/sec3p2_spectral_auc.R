@@ -1,11 +1,15 @@
-require(pROC)
-require(lomb)
-freq_vals = seq(20,30,.1)
-Nmc       = 1e3
-mc_cores  = 8
+source('figures/fig_settings.R')
+if (pub_qual){
+  Nmc       = 1e4
+  freq_vals = seq(10,30,.1)
+}else{
+  Nmc       = 1e3
+  freq_vals = seq(10,30,.2)
+}
+mc_cores  = 12 
 pars       = expand.grid(freq=freq_vals,
-                         Nmeas=c(48),
-                         Amp = c(1),
+                         Nmeas=c(40,48),
+                         Amp = c(1,2),
                          p_osc = c(0.5),
                          stat_method=c('lomb'),
                          type=c('equispaced','WCP'))
@@ -19,9 +23,6 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){#parallel insi
   stat_method = pars[ind,]$stat_method
   type        = pars[ind,]$type
   
-  mt_unif    = c(1:Nmeas)/Nmeas-1/Nmeas
-  
-  fdr_method=toString(pars[ind,]$fdr_method)
   if (type=='equispaced'){
     mt = c(1:Nmeas)/Nmeas -1/Nmeas 
   }else{
@@ -74,4 +75,4 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){#parallel insi
 
 
 
-df %>% ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+facet_wrap(~Nmeas)
+df %>% ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+facet_grid(Amp~Nmeas)

@@ -1,6 +1,6 @@
 %% Extract results of differential evolution
 
-directory = 'sweep_diffevolveCR_1hr_even';
+directory = 'sweep_diffevolveCR_1hr_h05';
 matFiles = dir(fullfile(directory, '*.mat'));
 
 T=table();
@@ -29,7 +29,6 @@ for ii = 1:length(matFiles)
 end
 prob_inds
 %% Extract results of differential evolution
-
 directory = 'sweep_diffevolve_1hr_even';
 matFiles = dir(fullfile(directory, '*.mat'));
 

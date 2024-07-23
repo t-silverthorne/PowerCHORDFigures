@@ -1,15 +1,10 @@
-fsize=9
-require(dplyr)
-require(matrixTests)
-require(ggplot2)
-require(ggplotify)
-require(patchwork)
-require(parallel)
-require(devtools)
-load_all()
-theme_set(theme_classic()) 
-
-motivation_fig=function(freq,equispaced_FN,Amp=2,Nm=24,Nm1=5,Nmc=1e4){
+source('figures/fig_settings.R')
+if (pub_qual){
+  Nmc_glob=1e4
+}else{
+  Nmc_glob=1e3
+}
+motivation_fig=function(freq,equispaced_FN,Amp=2,Nm=24,Nm1=5,Nmc=Nmc_glob){
   tunif   = c(1:Nm)/Nm-1/Nm
   Nm2     = Nm-Nm1
   mt1     = c(1:Nm1)/Nm1-1/Nm1
@@ -98,14 +93,7 @@ motivation_fig=function(freq,equispaced_FN,Amp=2,Nm=24,Nm1=5,Nmc=1e4){
   Fig = ptop/pbot
   return(Fig) 
 }
-show_temp_plt=function(plt,plt_width,plt_height){
-  plt_path <- tempfile(fileext = ".png")
-  ggsave(plt_path, plt, width =plt_width, height = plt_height, units = "in",
-         dpi = 96)
-  
-  viewer <- getOption("viewer")
-  viewer(plt_path)
-}
+
 set.seed(28)
 
 ###########################
@@ -115,17 +103,20 @@ p1=as.ggplot(motivation_fig(1,F,Nm = 8,Nm1=5))
 p2=as.ggplot(motivation_fig(4,T,Nm=8,Nm1=5)) 
 
 
-
 ###########################
 # Heatmap
 ###########################
-
+if (pub_qual){
+  Nfreq = 2^10
+  Nacro = 2^7+1
+}else{
+  Nfreq = 2^9
+  Nacro = 2^6+1
+}
 Amps = c(1,2)
 Nmvec  = c(10,20,30)
-Nacro=2^6+1
 acros=seq(0,2*pi,length.out=Nacro)
 acros=acros[1:(length(acros)-1)]
-Nfreq  = 2^8
 freqs  = seq(1,24,length.out=Nfreq)
 pars   = expand.grid(Amp=Amps,Nmeas=Nmvec,freq=freqs,acro=acros)
 
@@ -152,11 +143,13 @@ p3 = pars %>% ggplot(aes(x=freq,y=acro,fill=power))+
   geom_raster()+
   facet_grid(A~N,labeller = purrr::partial(label_both, sep = " = "))+
   scale_y_continuous(limits=c(0,2*pi),breaks =rad_brk[c(1,3,5)],labels = rad_lab[c(1,3,5)])+
+  scale_x_continuous(limits=c(0,24),
+                                 breaks =seq(0,24,4),
+                                 labels =seq(0,24,4))+
   scale_fill_viridis_c(limits=c(0,1))+
   labs(y='acrophase (rad)',x='frequency (cycles/day)')
 
 plt_width=6
-#p3=p3+guides(fill=guide_colorbar(title.position='top'))
 p3=p3+theme(legend.position='bottom',
               legend.key.width = unit(plt_width*.15, "in"),
               legend.title.align = 0.5,
@@ -170,6 +163,12 @@ p3 = p3 + theme(
 )
 p3=p3+theme(text=element_text(size=fsize))
 
-Fig = p1/p2/p3 + plot_annotation(tag_levels='A')+plot_layout(heights=c(1.5,1.5,1))
-show_temp_plt(Fig,6,7.8)
+Fig = p1/p2/p3 + plot_annotation(tag_levels='A')+plot_layout(heights=c(1.5,1.5,.75))
+show_temp_plt(Fig,6,7)
 
+ggsave(paste0('~/research/ms_powerCHORD/figures/',
+              'fig1.png'),
+       Fig,
+       width=6,height=7,
+       device='png',
+       dpi=600)

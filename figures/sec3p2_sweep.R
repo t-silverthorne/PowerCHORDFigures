@@ -1,25 +1,15 @@
-require(annmatrix)
-require(ggplot2)
-require(patchwork)
-require(devtools)
-require(dplyr)
-require(data.table)
-require(parallel)
-load_all()
-
-Nfreq = 2^10
-Amp   = 1
-mc_cores =12
+source('figures/fig_settings.R')
+Nfreq    = 2^10
+Amp      = 1
+mc_cores = 12
 # aesthetics
-run_aesthetics =F
-theme_set(theme_classic()) 
-fs_glob = 9
+run_aesthetics =T
 plt_height = 3
 plt_width  = 6
 
 # only look at differential evolution results
 am = readRDS('figures/sec3p2_data/powerCHORD_even_sols.RDS')
-am = am[am@''$method=='diffEV',]
+am = am[am@''$method=='diffEVCR',]
 df = am@''
 
 
@@ -52,6 +42,20 @@ fdf = fdf %>% mutate(N=Nmeas)
 plt = fdf %>% ggplot(aes(x=fmin,y=fmax,color=d_power))+geom_point(size=3)+
   facet_wrap(~N,labeller = purrr::partial(label_both, sep = " = "),nrow=1)+
   scale_color_viridis_c(limits=c(.01,1)) 
+plt = plt + theme(
+  strip.background=element_blank(),
+  plot.margin = margin(0,0,0,0),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  axis.text.x = element_text(vjust = 0.25)
+)
+plt = plt + labs(x=element_text('minimum frequency'),
+                 y=element_text('maximum frequency'),
+                 color='power difference')
+plt=plt+guides(color=guide_colorbar(title.position='right'))
+plt=plt+theme(text=element_text(size=fsize),legend.direction='vertical',
+                legend.title = element_text(angle = 90)
+              )
 plt_gainWC = plt
 plt
 
@@ -85,6 +89,7 @@ plt = plt + theme(
   panel.grid.minor = element_blank(),
   axis.text.x = element_text(vjust = 0.25)
 )
+plt=plt+theme(text=element_text(size=fsize))
 psol=plt
 
 ###########################
@@ -146,11 +151,6 @@ plt = pars%>%
   scale_fill_viridis_c(limits=c(0,1))+
   labs(y='acrophase (rad)',x='frequency (cycles/day)')
 
-plt=plt+theme(legend.position='bottom',
-              legend.key.width = unit(plt_width*.05, "in"),
-              legend.title.align = 0.5,
-              legend.direction = "horizontal")
-
 plt=plt+guides(fill=guide_colorbar(title.position='left'))
 plt=plt+theme(legend.position='bottom',
               legend.key.width = unit(plt_width*.15, "in"),
@@ -162,46 +162,17 @@ plt = plt + theme(
   panel.grid.minor = element_blank(),
   axis.text.x = element_text(vjust = 0.25)
 )
-plt=plt+theme(text=element_text(size=9))
+plt=plt+theme(text=element_text(size=fsize))
 phmap = plt
 phmap
 
-plt_gainWC/psol/phmap
+Fig=plt_gainWC/psol/phmap + plot_annotation(tag_levels='A')
 
-
+show_temp_plt(Fig,6,6)
+ggsave(paste0('~/research/ms_powerCHORD/figures/',
+              'fig3.png'),
+       Fig,
+       width=6,height=6,
+       device='png',
+       dpi=600)
 # aesthetics
-
-if(run_aesthetics){
-  xmin=0
-  xmax=13
-  ymax=25
-
-  plt = plt + labs(x=element_text('min frequency (cycles/day)'),
-                   y=element_text('max frequency (cycles/day)'),
-                   color='gain of power')
-  
-  plt = plt + scale_x_continuous(limits =c(xmin,xmax),
-                                 breaks=seq(xmin,12,4),
-                                 labels=seq(xmin,12,4)) 
-  
-  plt = plt + scale_y_continuous(limits =c(xmin,ymax),
-                                 breaks=seq(xmin,24,8),
-                                 labels=seq(xmin,24,8)) 
-  
-  
-  plt=plt+guides(fill=guide_colorbar(title.position='top'))
-  plt=plt+theme(legend.position='bottom',
-                legend.key.width = unit(plt_width*.15, "in"),
-                legend.title.align = 0.5,
-                legend.direction = "horizontal")
-  
-  plt=plt+theme(text=element_text(size=fsize))
-  plt = plt + theme(
-    strip.background=element_blank(),
-    plot.margin = margin(0,0,0,0),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.text.x = element_text(vjust = 0.25)
-  )
-  
-}

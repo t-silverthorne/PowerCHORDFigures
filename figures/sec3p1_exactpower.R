@@ -1,18 +1,15 @@
-fsize=9
-require(dplyr)
-require(data.table)
-require(ggplot2)
-require(ggplotify)
-require(patchwork)
-require(devtools)
-load_all()
-theme_set(theme_classic()) 
-
+source('figures/fig_settings.R')
 ###########################
 # bad scaling
 ###########################
 Nm   = 8
-Nmc  = 1e4
+if (pub_qual){
+  Nmc  = 1e4
+  nrep = 5 
+}else{
+  Nmc  = 1e3
+  nrep = 3 
+}
 nrep = 5
 mt = c(1:Nm)/Nm -1/Nm
 param = list(Amp=2,freq=1,acro=pi)
@@ -84,8 +81,14 @@ p1=plt
 ###########################
 freq  = 1
 Nm    = 24 
-Nmc   = 1e4
-nrep  = 1e3
+if (pub_qual){
+  Nmc   = 1e4
+  nrep  = 1e4
+}else{
+  Nmc   = 1e3
+  nrep  = 1e3
+}
+
 param = list(Amp=1,freq=1,acro=0)
 
 set.seed(1)
@@ -122,8 +125,15 @@ plt = plt + labs(x=element_text('MC power difference'))
 plt=plt+theme(text=element_text(size=fsize))
 
 p2=plt
-p2/p1+plot_annotation(tag_levels='A')
+Fig = p2/p1+plot_annotation(tag_levels='A')
 
+show_temp_plt(Fig,6,4)
+ggsave(paste0('~/research/ms_powerCHORD/figures/',
+              'fig2.png'),
+       Fig,
+       width=6,height=4,
+       device='png',
+       dpi=600)
 
 #df1 = df[,c('pwr_mc','pwr_approx')]
 #names(df1)=c("pwr_mc",'pwr')
