@@ -152,7 +152,7 @@ p3 = pars %>% ggplot(aes(x=freq,y=acro,fill=power))+
 plt_width=6
 p3=p3+theme(legend.position='bottom',
               legend.key.width = unit(plt_width*.15, "in"),
-              legend.title.align = 0.5,
+              legend.title= element_text(hjust = 0.5),
               legend.direction = "horizontal")
 p3 = p3 + theme(
   strip.background=element_blank(),
