@@ -1,4 +1,4 @@
-function [prob,mu,eta] = pCHORD(n,Nm,fvec,options,do_warmstart,relax,method)
+function [prob,mu,eta,F] = pCHORD(n,Nm,fvec,options,do_warmstart,relax,method)
 arguments % can leave options blank and yet YALMIP decide on everything
     n;Nm;fvec;
     options = sdpsettings();

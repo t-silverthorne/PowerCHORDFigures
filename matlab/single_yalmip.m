@@ -1,13 +1,11 @@
-run('~/startup.m')
-mkdir '~/research/powerCHORD2/matlab/yalmip_single'
-addpath('~/research/powerCHORD2/matlab/')
+%run('~/startup.m')
 fmin    = 1;
 fmax    = 24;
-Nmeas   = 48;
-n       = 144;
-fvec    = (fmin:.5:fmax);
+Nmeas   = 5;
+n       = 6;
+fvec    = (fmin:1:fmax);
 
-maxT=60*60*24;
+maxT=10;
 options = sdpsettings('solver','bmibnb', ...
                     'bmibnb.uppersolver','fmincon', ...   % can't be mosek
                     'bmibnb.lowersolver','mosek', ...   % has to be mosek
@@ -16,6 +14,11 @@ options = sdpsettings('solver','bmibnb', ...
                     'bmibnb.maxiter',Inf,...
                     'savesolveroutput',1,...
                     'warmstart',1);
+
+
+[prob,mu,eta,F] = pCHORD(n,Nmeas,fvec,options);
+check(F)
+%%
 
 fname = strcat('~/research/powerCHORD2/matlab/yalmip_single/', ...
                'Nmeas_',num2str(Nmeas),...
@@ -26,7 +29,6 @@ fname = strcat('~/research/powerCHORD2/matlab/yalmip_single/', ...
                '.mat');
 'fname defined'
 
-[prob,mu,eta] = pCHORD(n,Nmeas,fvec,options);
 'YALMIP completed'
 eta_v = value(eta)
 mu_v  = value(mu)
