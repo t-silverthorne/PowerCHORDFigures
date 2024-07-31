@@ -79,3 +79,4 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){#parallel insi
 # font size
 
 df %>% ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+facet_grid(Amp~Nmeas)
+

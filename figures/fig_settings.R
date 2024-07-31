@@ -23,4 +23,4 @@ show_temp_plt=function(plt,plt_width,plt_height){
   } 
 }
 
-pub_qual=T
+pub_qual=F
