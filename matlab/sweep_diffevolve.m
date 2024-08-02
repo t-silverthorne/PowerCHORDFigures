@@ -1,4 +1,4 @@
-
+addpath('utils/')
 dirname = 'sweep_diffevolve_1hr_even/';
 mkdir(dirname); 
 

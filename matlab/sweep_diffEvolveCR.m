@@ -7,7 +7,7 @@ switch testing
         dirname = 'sweep_diffevolveCR_1hr_h05/';
 end
 
-
+addpath('utils/')
 mkdir(dirname); 
 
 % differential evolution settings

@@ -2,6 +2,7 @@ run('~/startup.m')
 
 mkdir '~/research/powerCHORD2/matlab/sweep_yalmip_even'
 addpath('~/research/powerCHORD2/matlab/')
+addpath('~/research/powerCHORD2/matlab/utils/')
 fmin = [1 2:2:12];
 fmax = [1 2:2:24];
 df   = .5;

@@ -1,4 +1,4 @@
-function [outputArg1,outputArg2] = gen(t,p,n,a)
+function gen(t,p,n,a)
 global Nmat
 if t>n
     Nmat(end+1,:)=a(2:n+1);
