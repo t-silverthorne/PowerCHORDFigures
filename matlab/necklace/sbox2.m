@@ -1,0 +1,5 @@
+load('NeckMat_n_144_d_3.mat')
+size(Nmat)
+filterNecklaces()
+size(Nmat)
+size(Bmat)

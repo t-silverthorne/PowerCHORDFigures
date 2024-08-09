@@ -1,7 +1,35 @@
 'starting'
 clear all
+global Nmat
+Nmat=[];
 a(1)=0;
+
 tic
-gen(1,1,20,a)
+gen(1,1,4,a);
 toc
 
+Nmat
+
+%%
+clear all
+Nmat=[];
+a=[0 0];
+
+d = 3;
+n = 12;
+
+d=d+1;n=n+1;
+jvals = (n-d+1):-1:((n-1)/d+1);
+
+tic
+for j=jvals
+    b=[];a=[0 0];
+    a(2) = j;
+    b(2) = 1;
+    Nmatloc = [];
+    Nmatloc=genfix(1,1,n,d,a,b,Nmatloc)
+
+    Nmat=[Nmat; Nmatloc]
+end
+toc
+Nmat
