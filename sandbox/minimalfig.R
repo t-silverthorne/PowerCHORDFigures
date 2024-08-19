@@ -7,11 +7,12 @@ plt = plt + theme(
   axis.text.x = element_text(vjust = 0.25)
 )
 
+# always need
+plt=plt+theme(text=element_text(size=fsize))
+
 # might need
 plt = plt + labs(x=element_text('x variable'),
                  y=element_text('y variable'),
                  color='z variable')
 
 
-# always need
-plt=plt+theme(text=element_text(size=fsize))
