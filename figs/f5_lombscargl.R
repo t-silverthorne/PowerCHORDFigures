@@ -1,19 +1,23 @@
 source('figs/fig_settings.R')
 if (pub_qual){
+  Nacro     = 2^6
   Nmc       = 1e4
-  freq_vals = seq(8,32,.1)
+  freq_vals = seq(1,30,.05)
 }else{
-  Nmc       = 1e3
-  freq_vals = seq(8,32,.2)
+  Nacro     = 2^5
+  Nmc       = 5e3
+  freq_vals = seq(1,30,.2)
 }
 mc_cores  = 12 
-pars       = expand.grid(freq=freq_vals,
-                         Nmeas=c(40,48),
-                         Amp = c(1,2),
+pars      = expand.grid(freq=freq_vals,
+                         Nmeas=c(32,40,48),
+                         Amp = c(1.5,2),
                          p_osc = c(0.5),
                          stat_method=c('lomb'),
-                         type=c('equispaced','WCP'))
+                         acro_dist = c('worst'),
+                         type=c('WCP','equispaced'))
 
+sols   = readRDS('figures/sec3p2_data/powerCHORD_even_sols.RDS')
 dim(pars)
 df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){#parallel inside
   freq        = pars[ind,]$freq
@@ -21,12 +25,13 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){#parallel insi
   p_osc       = pars[ind,]$p_osc
   Nmeas       = pars[ind,]$Nmeas
   stat_method = pars[ind,]$stat_method
+  acro_dist   = pars[ind,]$acro_dist
   type        = pars[ind,]$type
   
   if (type=='equispaced'){
     mt = c(1:Nmeas)/Nmeas -1/Nmeas 
   }else{
-    filt = sols@Nmeas==Nmeas & sols@fmin == 1 & sols@fmax==24 & sols@method=='diffEVCR'
+    filt = sols@Nmeas==Nmeas & sols@fmin == 1 & sols@fmax==Nmeas/2 & sols@method=='diffEVCR'
     mt = sols[filt,]
     mt = as.numeric(mt)
     mt = mt[!is.nan(mt)]
@@ -40,7 +45,24 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){#parallel insi
   Ydat                = matrix(rnorm(Nmc*Nmeas),nrow=Nmc)
   state               = sample(c('osc','non_osc'),Nmc,replace = T,c(p_osc,1-p_osc))
   N_osc               = sum(state=='osc')
-  Ydat[state=='osc',] = Ydat[state=='osc',]+Amp*cos(outer(2*pi*runif(N_osc),2*pi*freq*mt,'-'))
+  if (acro_dist =='average'){
+    Ydat[state=='osc',] = Ydat[state=='osc',]+Amp*cos(outer(2*pi*runif(N_osc),2*pi*freq*mt,'-'))
+  }else if (acro_dist =='worst'){
+    acros     = seq(0,2*pi,length.out=Nacro)
+    acros     = acros[1:(length(acros)-1)]
+    powers    = acros %>% sapply(function(acro){
+      param=list(freq=freq,acro=acro,Amp=Amp)
+      evalExactPower(mt,param)
+    }) 
+    worst_ind = which.min(powers)
+    acro = acros[worst_ind]
+    
+    signal = Amp*cos(2*pi*freq*mt-acro)
+    smat   = t(matrix(rep(signal,N_osc),ncol=N_osc))
+    Ydat[state=='osc',] = Ydat[state=='osc',]+smat
+  }else{
+    stop('unknown acro distribution')
+  }
   
   # simualte p-values
   if (stat_method=='cosinor'){
@@ -70,7 +92,7 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){#parallel insi
   TPR     = num_TP/num_P
   FPR     = num_FP/num_N
   
-  return(cbind(pars[ind,],data.frame(AUC=roc$auc,TPR=TPR,FPR=FPR)))
+  return(data.frame(cbind(pars[ind,],data.frame(AUC=roc$auc,TPR=TPR,FPR=FPR))))
 }) %>% rbindlist() %>% data.frame()
 
 # ticks
@@ -78,4 +100,44 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){#parallel insi
 # borders
 # font size
 
-df %>% ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+facet_grid(Amp~Nmeas)
+plt=df %>% filter(acro_dist=='worst' & Amp==1) %>% 
+  ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+
+  geom_vline(aes(xintercept = Nmeas / 2), linetype = "dashed", color = "black")+
+  facet_wrap(~Nmeas,nrow=3)+theme(legend.position='bottom')+labs(x='frequency (cycles/day)')
+plt = plt + theme(
+  strip.background=element_blank(),
+  plot.margin = margin(0,0,0,0),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  axis.text.x = element_text(vjust = 0.25)
+)
+plt=plt+theme(text=element_text(size=9))
+p1=plt
+p1
+
+
+plt=df %>% filter(acro_dist=='worst' & Amp==2) %>% 
+  ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+
+  geom_vline(aes(xintercept = Nmeas / 2), linetype = "dashed", color = "black")+
+  facet_wrap(~Nmeas,nrow=3)+theme(legend.position='bottom')+labs(x='frequency (cycles/day)')
+plt = plt + theme(
+  strip.background=element_blank(),
+  plot.margin = margin(0,0,0,0),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  axis.text.x = element_text(vjust = 0.25)
+)
+plt=plt+theme(text=element_text(size=9))
+p2=plt
+
+Fig = p1/p2+ plot_layout(guides='collect')  & theme(legend.position='bottom')+
+  plot_annotation(tag_levels='A')
+show_temp_plt(Fig,6,6)
+ggsave(paste0('~/research/ms_powerCHORD/figures/',
+              'f5_lombscargl.png'),
+       Fig,
+       width=6,height=6,
+       device='png',
+       dpi=600)
+
+saveRDS(df,'temp_wide.RDS')
