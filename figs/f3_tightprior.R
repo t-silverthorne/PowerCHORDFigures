@@ -8,6 +8,9 @@ require(ggplot2)
 require(data.table)
 devtools::load_all()
 
+opt_col =rgb(0,.66,.47)
+std_col =rgb(.33,.41,.47)
+
 # load in matlab results
 ff='matlab/necklace/analyze_sols/optimal_nt_48_.csv'
 df = read.csv2(ff,sep=',',header = F)
@@ -28,8 +31,8 @@ am72 = annmatrix(bmat,rann=rdf)
 ###############################
 # Plot optimal/alt solutions
 ###############################
-nt = 72 
-N  = 6
+nt = 48 
+N  = 10 
 m  = 2 
 if (nt==48){
   am = am48
@@ -41,44 +44,35 @@ tau = c(1:nt)/nt - 1/nt
 filt = am@''$Nmeas==N & am@''$Nnight==m & am@''$spacing==nt 
 x    = as.numeric(am[filt,])
 topt = tau[x>0]
+topt = (topt-topt[2])%%1
 
 t1   = (1:N)/N - 1/N
 t2   = (1:m)/m-1/m
 t1   = 0.5*t1
 t2   = 0.5+0.5*t2
 talt = c(t1,t2)
-data.frame(t=talt) %>% ggplot(aes(x=t,y=1))+geom_point()+xlim(c(0,1))+
-  geom_vline(xintercept = .5)
-  x
-
-plt = data.frame(t=talt*2*pi) %>% ggplot(aes(x=t,y=1))+geom_point()+
+tdf = rbind(data.frame(t=talt,type='standard'),
+          data.frame(t=topt,type='optimal'))
+tdf$t = 2*pi*tdf$t
+tdf$type = factor(tdf$type,levels=c('standard','optimal'))
+plt = tdf %>%  ggplot(aes(x=t,y=1,color=type))+geom_point()+
   coord_polar(theta='x')+theme_minimal()+
   scale_x_continuous(breaks=c(0,pi/2,pi,3*pi/2),
                      labels = c('0','6hr','12hr','18hr'),
                      limits = c(0,2*pi))+
-  scale_y_continuous(labels=c())
+  scale_y_continuous(labels=c())+facet_wrap(~type,nrow=2)+
+  scale_color_manual(values=c('standard'=std_col,'optimal'=opt_col))
+plt
 plt = plt + theme(
   strip.background=element_blank(),
   plot.margin = margin(0,0,0,0),
-  axis.text.x = element_text(vjust = 0.25)
+  axis.text.x = element_text(vjust = 0.25),
+  axis.title.x = element_blank(),
+  axis.title.y = element_blank()
 )
-plt=plt+theme(text=element_text(size=fsize))
+plt=plt+theme(text=element_text(size=fsize),legend.position = 'none')
 p1=plt
-
-plt = data.frame(t=((topt-topt[2])%%1)*2*pi) %>% ggplot(aes(x=t,y=1))+geom_point()+
-  coord_polar(theta='x')+theme_minimal()+
-  scale_x_continuous(breaks=c(0,pi/2,pi,3*pi/2),
-                     labels = c('0','6hr','12hr','18hr'),
-                     limits = c(0,2*pi))+
-  scale_y_continuous(labels=c())
-plt = plt + theme(
-  strip.background=element_blank(),
-  plot.margin = margin(0,0,0,0),
-  axis.text.x = element_text(vjust = 0.25)
-)
-plt=plt+theme(text=element_text(size=fsize))
-p2=plt
-
+p1
 ###########################
 # power heatmap 
 ###########################
@@ -121,7 +115,12 @@ pwr_vec = c(1:dim(pars)[1]) %>% lapply(function(ii){
   return(power)
 })
 pars$power = as.numeric(pwr_vec)
-plt=pars %>% ggplot(aes(x=acro,y=power,group=type,color=type))+geom_line()+ylim(c(0,1))
+pars$type = factor(pars$type,levels=c('alt design','opt design'),
+                   labels=c('standard','optimal'))
+plt=pars %>% ggplot(aes(x=acro,y=power,group=type,color=type))+
+  geom_line()+
+  ylim(c(0,1))+
+  scale_color_manual(values=c('standard'=std_col,'optimal'=opt_col))
 plt = plt + theme(
   strip.background=element_blank(),
   plot.margin = margin(0,0,0,0),
@@ -159,8 +158,10 @@ df = rbind(gen_df(am48),gen_df(am72))
 
 df$dncp = 100*(df$ncp_opt - df$ncp_alt)/df$ncp_alt
 
-plt=df %>% ggplot(aes(x=Nmeas+2,y=dncp,group=spacing,shape=as.factor(spacing)))+geom_point()+
-  geom_line()+labs(x='total measurement budget',y='ncp improvement (%)',color='grid')
+plt=df %>% ggplot(aes(x=Nmeas+2,y=dncp,
+                      group=spacing,
+                      shape=as.factor(spacing)))+geom_point()+
+  geom_line()+labs(x='total measurement budget',y='ncp gain (%)',shape='grid spacing')
 plt = plt + theme(
   strip.background=element_blank(),
   plot.margin = margin(0,0,0,0),
@@ -173,5 +174,15 @@ plt = plt + theme(
 plt=plt+theme(text=element_text(size=fsize))
 
 p4 = plt
+p1t = p1 & theme(legend.position='none')
+p3t = p3 & theme(legend.position='bottom')
+p4t = p4 & theme(legend.position='bottom')
+Fig = (p1t | (p3t/p4t)) + plot_annotation(tag_levels='A') #+ plot_layout(guides='collect') 
+show_temp_plt(Fig,6,4)
 
-((p1|p2)/p3/p4) + plot_annotation(tag_levels='A')
+ggsave(paste0('~/research/ms_powerCHORD/figures/',
+              'f3_tightprior.png'),
+       Fig,
+       width=6,height=4,
+       device='png',
+       dpi=600)

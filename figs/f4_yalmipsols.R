@@ -53,12 +53,12 @@ plt
 p2=plt
 
 Fig = p1/p2 + plot_layout(guides='collect') + plot_annotation(tag_levels='A')
-show_temp_plt(Fig,6,5)
+show_temp_plt(Fig,6,3.5)
 
 
 ggsave(paste0('~/research/ms_powerCHORD/figures/',
               'f4_yalmipsols.png'),
        Fig,
-       width=6,height=5,
+       width=6,height=3.5,
        device='png',
        dpi=600)

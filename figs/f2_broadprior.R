@@ -230,14 +230,30 @@ plt = plt+theme(text=element_text(size=fsize))
 plt = plt + theme(legend.position='bottom')
 prob = plt
 
-Fig=plt_gainWC/psol/phmap/prob + plot_annotation(tag_levels='A')+
-  plot_layout(heights=c(1.5,.8,1,1))
+plt_gainWC = plt_gainWC + theme(
+  legend.key.height= unit(dev.size()[2]/25, "inches"))
 
-show_temp_plt(Fig,6,7)
+phmap =  phmap + theme(
+  legend.key.height= unit(dev.size()[2]/25, "inches"))
+
+Fig1=plt_gainWC/phmap+ plot_annotation(tag_levels='A')+
+  plot_layout(heights=c(1.5,1))
+
+Fig2=psol/prob + plot_annotation(tag_levels='A')+
+  plot_layout(heights=c(1,1))
+
+show_temp_plt(Fig2,6,3.5)
 
 ggsave(paste0('~/research/ms_powerCHORD/figures/',
-              'f2_broadprior.png'),
-       Fig,
-       width=6,height=7,
+              'f2_broadprior1.png'),
+       Fig1,
+       width=6,height=3.5,
+       device='png',
+       dpi=600)
+
+ggsave(paste0('~/research/ms_powerCHORD/figures/',
+              'f2_broadprior2.png'),
+       Fig2,
+       width=6,height=3.5,
        device='png',
        dpi=600)

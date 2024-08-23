@@ -100,10 +100,10 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){#parallel insi
 # borders
 # font size
 
-plt=df %>% filter(acro_dist=='worst' & Amp==1) %>% 
+plt=df %>% filter(acro_dist=='worst' ) %>% 
   ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+
   geom_vline(aes(xintercept = Nmeas / 2), linetype = "dashed", color = "black")+
-  facet_wrap(~Nmeas,nrow=3)+theme(legend.position='bottom')+labs(x='frequency (cycles/day)')
+  facet_grid(Nmeas~Amp)+theme(legend.position='bottom')+labs(x='frequency (cycles/day)')
 plt = plt + theme(
   strip.background=element_blank(),
   plot.margin = margin(0,0,0,0),
@@ -114,29 +114,11 @@ plt = plt + theme(
 plt=plt+theme(text=element_text(size=9))
 p1=plt
 p1
-
-
-plt=df %>% filter(acro_dist=='worst' & Amp==2) %>% 
-  ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+
-  geom_vline(aes(xintercept = Nmeas / 2), linetype = "dashed", color = "black")+
-  facet_wrap(~Nmeas,nrow=3)+theme(legend.position='bottom')+labs(x='frequency (cycles/day)')
-plt = plt + theme(
-  strip.background=element_blank(),
-  plot.margin = margin(0,0,0,0),
-  panel.grid.major = element_blank(),
-  panel.grid.minor = element_blank(),
-  axis.text.x = element_text(vjust = 0.25)
-)
-plt=plt+theme(text=element_text(size=9))
-p2=plt
-
-Fig = p1/p2+ plot_layout(guides='collect')  & theme(legend.position='bottom')+
-  plot_annotation(tag_levels='A')
-show_temp_plt(Fig,6,6)
+show_temp_plt(p1,6,3)
 ggsave(paste0('~/research/ms_powerCHORD/figures/',
               'f5_lombscargl.png'),
-       Fig,
-       width=6,height=6,
+       p1,
+       width=6,height=3,
        device='png',
        dpi=600)
 

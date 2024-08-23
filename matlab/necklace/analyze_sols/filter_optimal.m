@@ -1,5 +1,9 @@
 function bopt = filter_optimal(N,m,nt,solsdir)
+% filter for measurement schedules containing a specific substring
+%  calculate power for that family of measurement schedules
+%  return optimal 
 
+    % construct filename
     file_in  = strcat('cNecks_',string(nt),'_',string(N+m),'.txt');
     file_in  = strcat(solsdir,file_in);
     file_out = strjoin(['temp',string(N),string(m),string(nt),'.txt'],'_');
