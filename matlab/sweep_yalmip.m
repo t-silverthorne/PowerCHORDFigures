@@ -1,12 +1,12 @@
 run('~/startup.m')
 
-mkdir '~/research/powerCHORD2/matlab/sweep_yalmip_even'
+mkdir '~/research/powerCHORD2/matlab/sweep_yalmip_etabd'
 addpath('~/research/powerCHORD2/matlab/')
 fmin = [1 2:2:12];
 fmax = [1 2:2:24];
 df   = .5;
 n    = 144;
-[fmin,fmax,Nmeas]=ndgrid(fmin,fmax,[16,24,32,48]);
+[fmin,fmax,Nmeas]=ndgrid(fmin,fmax,[40]);
 
 pars=[fmin(:) fmax(:) Nmeas(:)];
 pars=pars(pars(:,1)<=pars(:,2),:); % want fmin<=fmax
@@ -29,7 +29,7 @@ fmax    = pars(ii,2);
 Nmeas   = pars(ii,3);
 fvec    = (fmin:df:fmax);
 
-fname = strcat('~/research/powerCHORD2/matlab/yalmip_sweep/', ...
+fname = strcat('~/research/powerCHORD2/matlab/sweep_yalmip_etabd/', ...
                'Nmeas_',num2str(Nmeas),...
                '_fmin_',num2str(fmin),...
                '_fmax_',num2str(fmax),...
