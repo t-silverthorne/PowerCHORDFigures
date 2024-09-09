@@ -10,7 +10,7 @@ require(devtools)
 require(annmatrix)
 require(pROC)
 require(lomb)
-load_all()
+devtools::load_all()
 theme_set(theme_classic()) 
 
 show_temp_plt=function(plt,plt_width,plt_height){

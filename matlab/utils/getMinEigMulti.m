@@ -1,4 +1,4 @@
-function [fv,em_fv] = getMinEigMulti(t,fmin,fmax,Nfreq,useGPU,returnType)
+function [fv,em_fv] = getMinEigMulti(t,fmin,fmax,Nfreq,useGPU,returnType,method)
 arguments % defaults
     t;
     fmin=1;
@@ -6,6 +6,7 @@ arguments % defaults
     Nfreq=1000;
     useGPU=true;
     returnType='min';
+    method='fast';
 end
 
 % unpack
@@ -32,14 +33,23 @@ C1 = [pagemtimes(pagetranspose(c),c) pagemtimes(pagetranspose(c),s);
 C2 = [sum(c,1).^2 sum(c,1).*sum(s,1); sum(c,1).*sum(s,1) sum(s,1).^2];
 Cmat =C1-C2/Nm;
 
-if useGPU
-    em_fv=min(pageeig(gather(Cmat)),[],1);
-else
-    em_fv=min(pageeig(Cmat),[],1);
+switch method
+    case 'fast'
+        a = Cmat(1,1,:,:);
+        b = Cmat(1,2,:,:);
+        c = Cmat(2,1,:,:);
+        d = Cmat(2,2,:,:);
+        em_fv = a/2 + d/2 - (a.^2 - 2*a.*d + d.^2 + 4*b.*c).^(1/2)/2;
+    otherwise
+        if useGPU
+            Cmat = gather(Cmat);
+        end
+        em_fv=min(pageeig(Cmat),[],1);
 end
 if strcmp(returnType,'min')
     em_fv = min(em_fv,[],3);
     em_fv = reshape(em_fv,1,[]);
 end
 end
+
 

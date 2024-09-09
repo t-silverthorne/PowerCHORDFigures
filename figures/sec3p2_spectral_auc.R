@@ -1,10 +1,10 @@
 source('figures/fig_settings.R')
 if (pub_qual){
   Nmc       = 1e4
-  freq_vals = seq(10,30,.1)
+  freq_vals = seq(8,32,.1)
 }else{
   Nmc       = 1e3
-  freq_vals = seq(10,30,.2)
+  freq_vals = seq(8,32,.2)
 }
 mc_cores  = 12 
 pars       = expand.grid(freq=freq_vals,
@@ -26,7 +26,7 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){#parallel insi
   if (type=='equispaced'){
     mt = c(1:Nmeas)/Nmeas -1/Nmeas 
   }else{
-    filt = sols@Nmeas==Nmeas & sols@fmin == 1 & sols@fmax==24 & sols@method=='YALMIP'
+    filt = sols@Nmeas==Nmeas & sols@fmin == 1 & sols@fmax==24 & sols@method=='diffEVCR'
     mt = sols[filt,]
     mt = as.numeric(mt)
     mt = mt[!is.nan(mt)]
@@ -73,6 +73,10 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){#parallel insi
   return(cbind(pars[ind,],data.frame(AUC=roc$auc,TPR=TPR,FPR=FPR)))
 }) %>% rbindlist() %>% data.frame()
 
-
+# ticks
+# y label
+# borders
+# font size
 
 df %>% ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+facet_grid(Amp~Nmeas)
+

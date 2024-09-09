@@ -1,4 +1,4 @@
-source('figures/fig_settings.R')
+source('figs/fig_settings.R')
 if (pub_qual){
   Nmc_glob=1e4
 }else{
@@ -50,7 +50,7 @@ motivation_fig=function(freq,equispaced_FN,Amp=2,Nm=24,Nm1=5,Nmc=Nmc_glob){
                                  breaks =rad_brk,
                                  labels = rad_lab)
   plt = plt + theme(legend.position='none')
-  plt = plt + labs(x=element_text('acrophase (rad)'),
+  plt = plt + labs(x=element_text('acrophase'),
                    y=element_text('density'))
   plt = plt + theme(
     strip.background=element_blank(),
@@ -78,10 +78,11 @@ motivation_fig=function(freq,equispaced_FN,Amp=2,Nm=24,Nm1=5,Nmc=Nmc_glob){
     geom_point(data=tdf %>% filter(meas!='true'))+facet_wrap(~meas)+
     scale_color_manual(values=cmap_cust)+ theme(legend.position='none')
   plt = plt + labs(x=element_text('time'),
-                   y=element_text('simulated signal'))
-  plt = plt + scale_x_continuous(breaks=c(0,1))
-  plt = plt + theme(
-    strip.background=element_blank(),
+                   y=element_text('signal'))
+  plt = plt + scale_x_continuous(breaks=c(0,1))+
+    scale_y_continuous(limits = c(-4,4),
+                       breaks=c(-2,0,2))
+  plt = plt + theme( strip.background=element_blank(),
     plot.margin = margin(0,0,0,0),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
@@ -99,9 +100,8 @@ set.seed(28)
 ###########################
 # Phase dependent power motivation 
 ###########################
-p1=as.ggplot(motivation_fig(1,F,Nm = 8,Nm1=5))
+p1=as.ggplot(motivation_fig(1,F,Nm=8,Nm1=5))
 p2=as.ggplot(motivation_fig(4,T,Nm=8,Nm1=5)) 
-
 
 ###########################
 # Heatmap
@@ -144,31 +144,34 @@ p3 = pars %>% ggplot(aes(x=freq,y=acro,fill=power))+
   facet_grid(A~N,labeller = purrr::partial(label_both, sep = " = "))+
   scale_y_continuous(limits=c(0,2*pi),breaks =rad_brk[c(1,3,5)],labels = rad_lab[c(1,3,5)])+
   scale_x_continuous(limits=c(0,24),
-                                 breaks =seq(0,24,4),
-                                 labels =seq(0,24,4))+
+                     breaks =seq(0,24,4),
+                     labels =seq(0,24,4))+
   scale_fill_viridis_c(limits=c(0,1))+
-  labs(y='acrophase (rad)',x='frequency (cycles/day)')
+  labs(y='acrophase',x='frequency (cycles/day)')
 
 plt_width=6
-p3=p3+theme(legend.position='bottom',
-              legend.key.width = unit(plt_width*.15, "in"),
-              legend.title= element_text(hjust = 0.5),
-              legend.direction = "horizontal")
+#p3=p3+theme(legend.position='bottom',
+#            legend.key.width = unit(plt_width*.15, "in"),
+#            legend.title= element_text(hjust = 0.5),
+#            legend.direction = "horizontal")
 p3 = p3 + theme(
+  legend.key.height= unit(dev.size()[2] / 50, "inches"),
   strip.background=element_blank(),
   plot.margin = margin(0,0,0,0),
   panel.grid.major = element_blank(),
   panel.grid.minor = element_blank(),
   axis.text.x = element_text(vjust = 0.25)
 )
+p1=p1+theme(text=element_text(size=fsize))
+p2=p2+theme(text=element_text(size=fsize))
 p3=p3+theme(text=element_text(size=fsize))
 
-Fig = p1/p2/p3 + plot_annotation(tag_levels='A')+plot_layout(heights=c(1.5,1.5,.75))
-show_temp_plt(Fig,6,7)
+Fig = (p1/p2/p3) + plot_annotation(tag_levels='A')+plot_layout(heights=c(2,2,.5))
+show_temp_plt(Fig,6,5)
 
 ggsave(paste0('~/research/ms_powerCHORD/figures/',
-              'fig1.png'),
+              'f1_motivation.png'),
        Fig,
-       width=6,height=7,
+       width=6,height=5,
        device='png',
        dpi=600)
