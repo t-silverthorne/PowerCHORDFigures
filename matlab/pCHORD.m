@@ -20,7 +20,7 @@ switch method
         mu0(randsample(1:n,Nm,false))=1;
 
         F  = sum(sum(mu))==Nm; % constraints
-
+	F  = [F,eta<=Nm/2,0<=eta];
         if relax
             F = [F,mu>=0,mu<=1]
         end
