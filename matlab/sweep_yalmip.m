@@ -1,5 +1,6 @@
 run('~/startup.m')
 
+
 mkdir '~/research/powerCHORD2/matlab/sweep_yalmip_etabd'
 addpath('~/research/powerCHORD2/matlab/')
 addpath('~/research/powerCHORD2/matlab/utils/')
@@ -7,11 +8,9 @@ fmin = [1 2:2:12];
 fmax = [1 2:2:24];
 df   = .5;
 n    = 144;
-[fmin,fmax,Nmeas]=ndgrid(fmin,fmax,[40]);
+[fmin,fmax,Nmeas]=ndgrid(fmin,fmax,[16,24,32,40,48]);
 
 pars=[fmin(:) fmax(:) Nmeas(:)];
-pars=pars(pars(:,1)<=pars(:,2),:); % want fmin<=fmax
-
 maxT=60*60;
 options = sdpsettings('solver','bmibnb', ...
                     'bmibnb.uppersolver','fmincon', ...   % can't be mosek

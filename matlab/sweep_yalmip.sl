@@ -1,6 +1,6 @@
 #!/bin/bash -l
 #SBATCH --job-name=matlab_sweep_test
-#SBATCH --array=1-280
+#SBATCH --array=1-455
 #SBATCH --account=def-stinch 
 #SBATCH --time=0-01:30
 #SBATCH --nodes=1      
