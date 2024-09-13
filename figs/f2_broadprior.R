@@ -165,7 +165,7 @@ plt = plt + theme(
 )
 plt=plt+guides(fill=guide_colorbar(title.position='right'))
 plt=plt+theme(text=element_text(size=fsize),legend.direction='vertical',
-                legend.title = element_text(angle = 90,hjust=0.5))
+              legend.title = element_text(angle = 90,hjust=0.5))
 plt=plt+theme(text=element_text(size=fsize))
 phmap = plt
 phmap
@@ -203,12 +203,12 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=12,function(ii){
   }
   cbind(pars[ii,],
         data.frame(power=replicate(nrep,{evalWorstPowerMultiFreq(mt+rnorm(Nm,0,sd=sc),param=param)})))
-  }
+}
 ) %>% rbindlist() %>% data.frame()
 
 df_grp = df %>% group_by(scale,type,Nm) %>% summarize(Power=mean(power),
-                                     lower=quantile(power)[2],
-                                     upper=quantile(power)[4])
+                                                      lower=quantile(power)[2],
+                                                      upper=quantile(power)[4])
 df_grp$time = df_grp$scale*24*60
 
 plt=df_grp %>% ggplot(aes(x=time,y=Power,group=type,color=type)) +geom_line() +

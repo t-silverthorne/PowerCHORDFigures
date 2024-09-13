@@ -137,7 +137,7 @@ gen_df = function(am){
     nt   = dim(am)[2]
     tau = c(1:nt)/nt - 1/nt
     x    = as.numeric(am[ii,])
-    topt = tau[x>0]
+    topt = tau[x>1e-12]
     
     N    = am@''[ii,]$Nmeas
     m    = am@''[ii,]$Nnight
@@ -146,12 +146,18 @@ gen_df = function(am){
     t1   = 0.5*t1
     t2   = 0.5+0.5*t2
     talt = c(t1,t2)
+
+    Ntot  = N+m  
+    tunif = c(1:Ntot)/Ntot-1/Ntot
     
-    min_eig_opt = evalMinEig(topt,1)
-    min_eig_alt = evalMinEig(talt,1)
+      
+    min_eig_opt  = evalMinEig(topt,1)
+    min_eig_alt  = evalMinEig(talt,1)
+    min_eig_unif = evalMinEig(tunif,1)
     
     cbind(am@''[ii,],data.frame(ncp_opt=min_eig_opt,
-                                ncp_alt=min_eig_alt))
+                                ncp_alt=min_eig_alt,
+                                ncp_unif=min_eig_unif))
   }) %>% rbindlist() %>% data.frame()
 }
 df = rbind(gen_df(am48),gen_df(am72))
@@ -178,11 +184,11 @@ p1t = p1 & theme(legend.position='none')
 p3t = p3 & theme(legend.position='bottom')
 p4t = p4 & theme(legend.position='bottom')
 Fig = (p1t | (p3t/p4t)) + plot_annotation(tag_levels='A') #+ plot_layout(guides='collect') 
-show_temp_plt(Fig,6,4)
+show_temp_plt(Fig,6,3.5)
 
 ggsave(paste0('~/research/ms_powerCHORD/figures/',
               'f3_tightprior.png'),
        Fig,
-       width=6,height=4,
+       width=6,height=3.5,
        device='png',
        dpi=600)
