@@ -61,11 +61,14 @@ df=c(1:length(freqs)) %>% lapply(function(ii){
 }) %>% rbindlist() %>% data.frame()
 
 dat_bands = data.frame(start=c(0:12)*2,end=(c(0:12)*2+1))
+df$fmax_lab = paste0('[1,',df$fmax,']')
+df$fmax_lab = factor(df$fmax_lab,levels=c('[1,2]','[1,4]','[1,6]',
+                                   '[1,8]','[1,10]','[1,12]'))
+head(df)
 plt = df %>% ggplot(aes(x=24*time,y=1))+geom_point()+
 geom_rect(data=dat_bands,aes(xmin=start,xmax=end,ymin=-Inf,ymax=Inf),alpha=.4,
           inherit.aes = F,fill=c('lightblue'))+
-  facet_wrap(~fmax,
-             labeller = purrr::partial(label_both, sep = " = "),
+  facet_wrap(~fmax_lab,
              ncol=1,strip.position='left')
 plt = plt + theme(axis.title.y=element_blank()) 
 plt = plt + theme(axis.text.y=element_blank()) 
@@ -113,19 +116,32 @@ plt = plt + labs(x='differential evolution score',
                  y='Nmeas/2',
                  color='maximum frequency',
                  shape='budget')
-plt=plt+guides(color=guide_colorbar(title.position='right'))
-plt=plt+guides(shape=guide_legend(title.position='right'))
-plt=plt+theme(text=element_text(size=fsize),legend.direction='vertical',
-                legend.title = element_text(angle = 90,hjust=0.5))
+plt=plt+guides(color=guide_colorbar(title.position='bottom',
+                                    position='bottom'))
+plt=plt+guides(shape=guide_legend(title.position='bottom',
+                                  position = 'bottom'))
+plt
+plt=plt+theme(text=element_text(size=fsize),
+              legend.title = element_text(hjust=0.5)
+)
+plt
 p1=plt
-p1
+Fig1 = p1
+show_temp_plt(Fig1,6,2)
+ggsave(paste0('~/research/ms_powerCHORD/figures/',
+              'f_cutsdp1.png'),
+       Fig1,
+       width=6,height=2,
+       device='png',
+       dpi=600)
 
-Fig = p1/p2 +plot_layout(guides='collect',heights=c(.75,2)) + plot_annotation(tag_levels='A')
-show_temp_plt(Fig,6,5.6)
+
+Fig2 = p2 
+show_temp_plt(Fig2,6,3)
 
 ggsave(paste0('~/research/ms_powerCHORD/figures/',
-              'f_cutsdp.png'),
-       Fig,
-       width=6,height=5.6,
+              'f_cutsdp2.png'),
+       Fig2,
+       width=6,height=3,
        device='png',
        dpi=600)
