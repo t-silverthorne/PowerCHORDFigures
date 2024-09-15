@@ -1,4 +1,4 @@
-function [prob,mu,eta] = pCHORD(n,Nm,fvec,options,do_warmstart,relax,method)
+function [prob,mu,eta] = pCHORD_AC(n,Nm,fvec,options,do_warmstart,relax,method)
 arguments % can leave options blank and yet YALMIP decide on everything
     n;Nm;fvec;
     options = sdpsettings();
@@ -20,9 +20,9 @@ switch method
         mu0(randsample(1:n,Nm,false))=1;
 
         F  = sum(sum(mu))==Nm; % constraints
-	F  = [F,eta<=Nm/2,0<=eta];
+	    F  = [F,eta<=Nm/2,0<=eta];
         if relax
-            F = [F,mu>=0,mu<=1]
+            F = [F,mu>=0,mu<=1];
         end
 
         eta0=[];

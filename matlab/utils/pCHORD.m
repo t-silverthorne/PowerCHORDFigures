@@ -41,6 +41,8 @@ switch method
         
         % constraints
         F  = [F,sum(sum(mu))==Nm];
+   	    F  = [F,eta<=Nm/2,0<=eta];
+
         for freq=fvec
             [Cm11,Cm12,Cm21,Cm22] = getFourQuadBlocks(n,Nm,freq);
             F = [F, eta <=lambda_min([mu'*Cm11*mu mu'*Cm12*mu; mu'*Cm21*mu mu'*Cm22*mu])];
