@@ -68,3 +68,4 @@ matlab/necklace/c_code/test.txt
 *.txt
 *.csv
 *.RDS
+*.asv
