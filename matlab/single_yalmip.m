@@ -1,10 +1,10 @@
 %run('~/startup.m')
-addpath('utils')
+addpath('utils/')
 fmin    = 1;
-fmax    = 1;
-Nmeas   = 6;
-n       = 18;
-fvec    = (fmin:1:fmax);
+fmax    = 12;
+Nmeas   = 18;
+n       = 48;
+fvec    = linspace(fmin,fmax,2);
 
 maxT=10;
 options = sdpsettings('solver','bmibnb', ...
@@ -13,11 +13,12 @@ options = sdpsettings('solver','bmibnb', ...
                     'bmibnb.lpsolver','mosek', ... % can be gurobi or mosek
                     'bmibnb.maxtime',maxT, ...
                     'bmibnb.maxiter',Inf,...
-                    'bmibnb.lpreduce',0,...
+                    'bmibnb.lpreduce',NaN,...
                     'savesolveroutput',1,...
                     'warmstart',1);
 
 [prob,mu,eta,F] = pCHORD(n,Nmeas,fvec,options);
+%%
 check(F)
 value(mu)
 %%
