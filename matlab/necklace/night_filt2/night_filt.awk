@@ -3,6 +3,7 @@ BEGIN { # read in args and then remove so they are not treated as files
   density = ARGV[2];
   delete ARGV[1];
   delete ARGV[2];
+  count=0;
 }
 
 # define custom filter
@@ -23,7 +24,10 @@ function contains_spec_window(line_in,width,density, csw_flag, ss , ss_init, lin
 
 # parse file 
 {
-  if(contains_spec_window($0,width,density)){
-    print $0
+  if(contains_spec_window($0,width,density) && length($0)==48){
+    #print $0
+    count++;
+    filename = "output_" int((count-1)/1000000) ".txt"
+    print $0 > filename
   }
 }
