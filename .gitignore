@@ -64,8 +64,9 @@ matlab/necklace/sbox.asv
 matlab/necklace/c_code/necklaces
 matlab/necklace/c_code/necklaces_cmd
 matlab/necklace/c_code/test.txt
-
 *.txt
 *.csv
 *.RDS
 *.asv
+temp
+temp_wide

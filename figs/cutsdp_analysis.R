@@ -13,7 +13,7 @@ if(sanity_check){
   # Verify optimality 
   ###########################
   df=c(1:length(freqs)) %>% lapply(function(ii){
-    mt = tau[as.numeric(Xraw[ii,])>0]
+    mt = tau[as.numeric(Xraw[ii,])>1e-12]
     if(length(mt)==12){
       eig1=evalMinEig(mt,freq=1)
       eig2=evalMinEig(mt,freq=freqs[ii])
@@ -50,41 +50,6 @@ if(sanity_check){
   }) %>% rbindlist() %>% data.frame()
     
 }
-
-###########################
-# Plot of raw solutions
-###########################
-df=c(1:length(freqs)) %>% lapply(function(ii){
-  mt = tau[as.numeric(Xraw[ii,])>0]
-  mt = mt-min(mt) 
-  data.frame(time=mt,fmax=freqs[ii])
-}) %>% rbindlist() %>% data.frame()
-
-dat_bands = data.frame(start=c(0:12)*2,end=(c(0:12)*2+1))
-df$fmax_lab = paste0('[1,',df$fmax,']')
-df$fmax_lab = factor(df$fmax_lab,levels=c('[1,2]','[1,4]','[1,6]',
-                                   '[1,8]','[1,10]','[1,12]'))
-head(df)
-plt = df %>% ggplot(aes(x=24*time,y=1))+geom_point()+
-geom_rect(data=dat_bands,aes(xmin=start,xmax=end,ymin=-Inf,ymax=Inf),alpha=.4,
-          inherit.aes = F,fill=c('lightblue'))+
-  facet_wrap(~fmax_lab,
-             ncol=1,strip.position='left')
-plt = plt + theme(axis.title.y=element_blank()) 
-plt = plt + theme(axis.text.y=element_blank()) 
-plt = plt + labs(x=element_text('time (hr)'))
-plt = plt+scale_x_continuous(limits=c(0,24),breaks=seq(0,24,2))
-plt = plt+theme(axis.line.y = element_blank())
-plt = plt+theme(axis.ticks.y = element_blank())
-plt = plt + theme(
-  strip.background=element_blank(),
-  plot.margin = margin(0,0,0,0),
-  panel.grid.major = element_blank(),
-  panel.grid.minor = element_blank(),
-  axis.text.x = element_text(vjust = 0.25)
-)
-plt=plt+theme(text=element_text(size=fsize))
-p2=plt
 
 
 
@@ -136,12 +101,3 @@ ggsave(paste0('~/research/ms_powerCHORD/figures/',
        dpi=600)
 
 
-Fig2 = p2 
-show_temp_plt(Fig2,6,3)
-
-ggsave(paste0('~/research/ms_powerCHORD/figures/',
-              'f_cutsdp2.png'),
-       Fig2,
-       width=6,height=3,
-       device='png',
-       dpi=600)
