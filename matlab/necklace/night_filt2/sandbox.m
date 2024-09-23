@@ -7,6 +7,7 @@ addpath('../../utils/')
     
 tic
 for window=windows
+    window
     system('rm output_*');
     s1=strjoin({'awk -f "night_filt.awk"',num2str(window),'1'});
     s2=strjoin({'../../../solutions/cNecks_48_',num2str(N),'.txt > sols_temp.txt'},'');
@@ -35,11 +36,10 @@ for window=windows
         
         % find optimal
         [~,eig]  = getMinEigMulti(Smat',1,1,1,false);
-        if eig>best_eig
-            best_eig = eig;
-            [~,mind] = max(eig);
-            topt     = Smat(mind,:);
-            bopt     = Bmat(mind,:);
+        if max(eig)>best_eig
+            [best_eig,mind] = max(eig);
+            topt            = Smat(mind,:);
+            bopt            = Bmat(mind,:);
         end
     end
     
@@ -54,4 +54,6 @@ for window=windows
 end
 toc
 Bmat_master
+%%
+writematrix(Bmat_master,'window_sols.csv')
 %example awk command: awk '{line=$0 $0; if (line ~ /000000000001000000000001/) print $0}' test_in.txt > test_out.txt

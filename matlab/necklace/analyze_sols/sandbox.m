@@ -1,6 +1,3 @@
-addpath('../../utils/')
-
-
 N        = 6; % number during day
 m        = 2; % number constrained at night
 nt       = 48;
