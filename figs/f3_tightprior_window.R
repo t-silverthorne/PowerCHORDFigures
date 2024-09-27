@@ -119,7 +119,7 @@ rad_lab = c(expression(0),
             expression(pi),
             expression(3*pi/2),
             expression(2*pi))
-cmap_manual = c('equispaced'='black','constrained1'='lightblue',constrained2='darkred')
+cmap_manual = c('equispaced'='black','constrained1'='lightblue','constrained2'='darkred')
 lmap_manual = c('equi'='dashed','constr'='solid') 
 pdf$is_constrained='equi'
 pdf[pdf$type%in%c('constrained1','constrained2'),]$is_constrained='constr'

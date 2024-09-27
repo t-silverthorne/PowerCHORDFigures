@@ -1,11 +1,13 @@
 require(matrixTests)
-require(matrixTests)
+require(parallel)
 require(ggplot2)
 require(data.table)
 require(tidyr)
 require(patchwork)
-require(ggplot2)
 require(dplyr)
+require(annmatrix)
+require(devtools)
+devtools::load_all()
 pub_qual=F
 mar=2
 clean_theme=function(){
@@ -34,3 +36,9 @@ show_temp_plt=function(plt,plt_width,plt_height){
     viewer(plt_path)
   } 
 }
+rad_brk = c(0,pi/2,pi,3*pi/2,2*pi)
+rad_lab = c(expression(0),
+            expression(pi/2),
+            expression(pi),
+            expression(3*pi/2),
+            expression(2*pi))

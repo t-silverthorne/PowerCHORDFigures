@@ -41,10 +41,9 @@ for (ii in c(1:dim(df)[1])){
 tdf = c(1:dim(df)[1]) %>% lapply(function(ii){
   data.frame(window=wvec[ii],time=tau[df[ii,]>1e-12],type='optimal')}) |> 
   rbindlist() |> data.frame()
-tdf = tdf |> filter(window %in% c(12,16,20,24))
-dim(tdf)
+
 # naive designs 
-ndf = c(12,16,20,24) |> lapply(function(ii){
+ndf = seq(12,24,2) |> lapply(function(ii){
   N     = 8  
   Nm1   = N-1
   ww    = ii/48
@@ -56,20 +55,11 @@ ndf = c(12,16,20,24) |> lapply(function(ii){
 
 tdf=rbind(tdf,ndf)
 
-
-#data.frame(time=2*pi*tvec) |> ggplot(aes(x=time,y=1))+
-#  geom_point()+coord_polar(theta='x')+
-#  scale_x_continuous(breaks=c(0,pi/2,pi,3*pi/2),
-#                     labels = c('0','6hr','12hr','18hr'),
-#                     limits = c(0,2*pi))
-
-
-
 tdf$wlen = 2*pi*tdf$window/48
 tdf_full =tdf
 tdf = tdf %>%filter(window %in% seq(12,24,4)) 
 
-color1     = "lightblue" 
+color1     = rgb(0.36,0.54,.66)
 color2     = "darkred"  
 color_func = colorRamp(c(color1, color2))
 num_colors = 6 # Number of colors to generate
@@ -101,10 +91,92 @@ plt = plt + theme(
 plt=plt+theme(legend.position = 'none')
 p1=plt
 p1
+
+
+###########################
+# power as function of acro
+###########################
+tdf=tdf_full
+N=8
+tunif = c(1:N)/N - 1/N
+tcstr1 = tdf %>% filter(window==12) %>% select(time) %>% as.matrix() %>% as.numeric() 
+tcstr2 = tdf %>% filter(window==24) %>% select(time) %>% as.matrix() %>% as.numeric() 
+
+Nacro     = 2^6+1
+acros     = seq(0,2*pi,length.out=Nacro)
+acros     = acros[1:(length(acros)-1)]
+
+pars=expand.grid(acro=acros,window=c(12,24),
+                 type=c('optimal','naive'))
+
+pdf = c(1:dim(pars)[1]) %>% lapply(function(ii){
+  x=pars[ii,]
+  acro = as.numeric(x[['acro']]) 
+  freq = 1
+  Amp  = 2.5 
+  param=list(Amp=Amp,freq=freq,acro=acro)
+  mt = tdf %>% filter(window==x[['window']] & type == x[['type']]) %>% 
+    select(time) %>% unlist %>% as.numeric()
+  return(data.frame(cbind(x,power=evalExactPower(mt,param))))
+}) %>% rbindlist() %>%  data.frame()
+head(pdf)
+
+cmap_manual = c('12'=rgb(0.36,0.54,.66),'24'='darkred')
+lmap_manual = c('naive'='dashed','optimal'='solid') 
+pdf$gvar = paste0(pdf$type,pdf$window)
+pdf$type = factor(pdf$type,levels=c('optimal','naive'))
+plt= pdf %>% ggplot(aes(x=acro,y=power,group=gvar,color=as.factor(window),linetype=type))+
+  geom_line()+scale_linetype_manual(values=lmap_manual)+
+  scale_color_manual(values=cmap_manual)+
+  scale_x_continuous(limits=c(0,2*pi),breaks =rad_brk[c(1,3,5)],labels = rad_lab[c(1,3,5)])+
+  guides(color='none',linetype=guide_legend(title=NULL))
+plt=plt+clean_theme()
+plt=plt+theme(legend.position='bottom',
+              legend.direction = "horizontal")
+plt=plt+labs(x=element_text('acrophase (rad)'),
+                 y=element_text('power'))
+p2=plt
+p2
+
+p1 / p2
+
+
+###########################
+# relative ncp across windows
+###########################
+tdf=tdf_full
+wvec 
+
+pars = expand.grid(window=wvec,type=c('naive','optimal'))
+
+pdf = c(1:dim(pars)[1]) %>% lapply(function(ii){
+  x  = pars[ii,]
+  mt = tdf %>% filter(window==x[['window']] & type == x[['type']]) %>% 
+    select(time) %>% unlist %>% as.numeric()
+  rel_ncp = evalMinEig(t=mt,freq=1)/4
+  return(cbind(pars[ii,],data.frame(rel_ncp=rel_ncp)))
+}) %>% rbindlist() %>% data.frame()
+
+pdf$type = factor(pdf$type,levels=c('optimal','naive'))
+plt=pdf %>% ggplot(aes(x=window/2,y=rel_ncp,group=type,linetype=type))+geom_line()+geom_point()+
+  labs(x='rest duration (hr)',y='relative noncentrality\n parameter')+scale_linetype_manual(values=lmap_manual)+
+  scale_x_continuous(breaks=seq(12,24,4)/2)+
+  guides(linetype=guide_legend(title=NULL))
+plt=plt+clean_theme()
+plt=plt+theme(legend.position='bottom',
+              legend.direction = "horizontal")
+p3=plt
+p3
+
+Fig = (p1 | (p2/p3)  )  + plot_layout(guides='collect',widths=c(2,1)) +
+  plot_annotation(tag_levels='A')& theme(legend.position='bottom') & guides(color='none',fill='none')
+show_temp_plt(Fig,6,3)
+
+
 ggsave(paste0('~/research/ms_powerCHORD/figures/',
               'f3_tightprior1.png'),
-       p1,
-       width=6,height=2,
+       Fig,
+       width=6,height=3,
        device='png',
        dpi=600)
 

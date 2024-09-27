@@ -39,7 +39,7 @@ pdf = c(1,6) |> lapply(function(freq){
 }) |> rbindlist() |> data.frame()
 
 pdf$cmap_var = paste0(pdf$meas,pdf$freq)
-pdf = pdf |> mutate(per_label = ifelse(freq==1,'period = 24 hr','period = 4 hr'))
+pdf = pdf |> mutate(per_label = ifelse(freq==1,'T = 24 hr','T = 4 hr'))
 cmap_cust = c('true1'=rgb(.05,0.5,.06),
           'optimal1'=rgb(.05,0.5,.06),
           'equispaced1'=rgb(.05,0.5,.06),

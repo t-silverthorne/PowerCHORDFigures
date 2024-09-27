@@ -14,7 +14,7 @@ df = am@''
 ###########################
 # Plot of power gain 
 ###########################
-fdf=c(1:dim(am)[1]) %>% mclapply(mc.cores=8,function(ii){
+fdf=c(1:dim(am)[1]) %>% lapply(function(ii){
   mt = as.numeric(am[ii,])
   mt = mt[!is.nan(mt)] 
   Nm = am@''[ii,]$Nmeas
@@ -55,16 +55,12 @@ plt
 ###########################
 # power heatmap 
 ###########################
-rad_brk = c(0,pi/2,pi,3*pi/2,2*pi)
-rad_lab = c(expression(0),
-            expression(pi/2),
-            expression(pi),
-            expression(3*pi/2),
-            expression(2*pi))
 Nfreq_plt = 2^8
 Nacro     = 2^6+1
 acros     = seq(0,2*pi,length.out=Nacro)
 acros     = acros[1:(length(acros)-1)]
+fmin      = 1
+fmax      = 24
 freqs_plt = seq(1,24,length.out=Nfreq_plt)
 pars=expand.grid(Amp=c(1),
                  Nmeas=c(24,48),
@@ -72,8 +68,9 @@ pars=expand.grid(Amp=c(1),
                  freq=freqs_plt,
                  type=c('equispaced design','irregular design'))
 
-pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ii){
+#pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=8,function(ii){
   # unpack
+for (ii in c(1:dim(pars)[1])){
   x      = pars[ii,]
   Nmeas  = as.numeric(x[['Nmeas']])
   acro   = as.numeric(x[['acro']])
@@ -94,8 +91,8 @@ pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ii){
   }else{
     stop('wrong length for measurement vector')
   }
-  return(power)
-})
+  #return(power)
+}
 pars$power = pwr_vec
 
 pars$freq =as.numeric(pars$freq)
