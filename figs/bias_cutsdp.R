@@ -3,6 +3,7 @@ require(ggplot2)
 require(data.table)
 require(tidyr)
 require(patchwork)
+
 # load in cutsdp solutions
 n=48
 tau = c(1:n)/n -1/n

@@ -5,7 +5,8 @@ mc_cores = 12
 
 
 # only look at differential evolution results
-am = readRDS('figures/sec3p2_data/powerCHORD_even_sols.RDS')
+#am = readRDS('figures/sec3p2_data/powerCHORD_even_sols.RDS')
+am = readRDS('clean_figs/data/powerCHORD_even_sols.RDS')
 am = am[am@''$method=='diffEVCR',]
 df = am@''
 

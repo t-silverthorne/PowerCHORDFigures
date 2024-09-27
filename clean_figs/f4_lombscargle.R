@@ -1,31 +1,30 @@
-source("figs/fig_settings.R")
-devtools::load_all()
+source("clean_figs/clean_theme.R")
 
 if (pub_qual){
+  Nmc       = 5e2
+  freq_vals = seq(1,30,.5)
+}else{
   Nmc       = 1e4
   freq_vals = seq(1,30,.05)
-}else{
-  Nmc       = 1e3
-  freq_vals = seq(1,30,.2)
 }
+
 mc_cores  = 12 
 pars      = expand.grid(freq=freq_vals,
                          Nmeas=c(32,40,48),
                          Amp = c(1),
                          p_osc = c(0.5),
-                         type=c('WCP','equispaced'))
+                         type=c('irregular','equispaced'))
 
-sols   = readRDS('figures/sec3p2_data/powerCHORD_even_sols.RDS')
+#sols   = readRDS('figures/sec3p2_data/powerCHORD_even_sols.RDS')
+sols   = readRDS('clean_figs/data/powerCHORD_even_sols.RDS')
 dim(pars)
 
 
-df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){#parallel inside
+df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){
   freq        = pars[ind,]$freq
   Amp         = pars[ind,]$Amp
   p_osc       = pars[ind,]$p_osc
   Nmeas       = pars[ind,]$Nmeas
-  stat_method = pars[ind,]$stat_method
-  acro_dist   = pars[ind,]$acro_dist
   type        = pars[ind,]$type
   
   if (type=='equispaced'){
@@ -75,12 +74,6 @@ plt=df %>%
   ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+
   geom_vline(aes(xintercept = Nmeas / 2), linetype = "dashed", color = "black")+
   facet_grid(Nmeas~Amp)+theme(legend.position='bottom')+labs(x='frequency (cycles/day)')
-plt = plt + theme(
-  strip.background=element_blank(),
-  plot.margin = margin(0,0,0,0),
-  panel.grid.major = element_blank(),
-  panel.grid.minor = element_blank(),
-  axis.text.x = element_text(vjust = 0.25)
-)
+plt = plt+clean_theme()
 plt=plt+theme(text=element_text(size=9))
 plt  

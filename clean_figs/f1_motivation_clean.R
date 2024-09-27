@@ -4,7 +4,8 @@ source('clean_figs/clean_theme.R')
 # load in cutsdp solutions
 n    = 48
 tau  = c(1:n)/n -1/n
-Xraw = read.csv2('matlab/LMI_formulation/cutsdp_sols.csv',header = F,sep=',')
+#Xraw = read.csv2('matlab/LMI_formulation/cutsdp_sols.csv',header = F,sep=',')
+Xraw = read.csv2('clean_figs/data/cutsdp_sols.csv',header = F,sep=',')
 head(Xraw)
 
 Nmc=1e4

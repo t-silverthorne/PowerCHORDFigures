@@ -1,0 +1,3 @@
+cutsdp_sols.csv filter=lfs diff=lfs merge=lfs -text
+powerCHORD_even_sols.RDS filter=lfs diff=lfs merge=lfs -text
+window_sols.csv filter=lfs diff=lfs merge=lfs -text

@@ -1,10 +1,20 @@
+require(matrixTests)
+require(matrixTests)
+require(ggplot2)
+require(data.table)
+require(tidyr)
+require(patchwork)
+require(ggplot2)
+require(dplyr)
+pub_qual=F
+mar=2
 clean_theme=function(){
   list(
     theme_classic(),
-    theme(strip.background = element_blank()),
+#    theme(strip.background = element_blank()),
     theme(strip.text = element_text(
       size = 7, color = "black",
-      margin = margin(b = 1, t = 1)
+      margin = margin(b = mar,r =mar,t=mar,l=mar)
     )),
     theme(
     plot.margin = margin(0,0,0,0),
@@ -24,15 +34,3 @@ show_temp_plt=function(plt,plt_width,plt_height){
     viewer(plt_path)
   } 
 }
-
-require(ggplot2)
-require(dplyr)
-require(matrixTests)
-require(ggplot2)
-require(data.table)
-require(tidyr)
-require(patchwork)
-require(parallel)
-require(devtools)
-require(annmatrix)
-devtools::load_all()
