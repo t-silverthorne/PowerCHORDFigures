@@ -85,6 +85,7 @@ check_bias=function(mt,Npar,Amin,Amax,freq_true,fvec,type,fmax_design){ # freq i
 Npar=5e2
 N=min(rowSums(Xraw)) # should be 12
 mt_unif=c(1:N)/N - 1/N
+mt_bad = runif(N,0,1/12) 
 Amin=0
 Amax=2
 df=c(1:length(freqs)) %>% lapply(function(ii){
@@ -94,8 +95,12 @@ df=c(1:length(freqs)) %>% lapply(function(ii){
                    fvec,type='optimal',fmax_design=freqs[ii]),
         check_bias(mt_unif,Npar,Amin,Amax,1,
                    fvec,type='equispaced',fmax_design=freqs[ii]),
+        check_bias(mt_bad,Npar,Amin,Amax,1,
+                   fvec,type='fast random',fmax_design=freqs[ii]),
         check_bias(mt,Npar,Amin,Amax,freqs[ii],
                    fvec,type='optimal',fmax_design=freqs[ii]),
+        check_bias(mt_bad,Npar,Amin,Amax,freqs[ii],
+                   fvec,type='fast random',fmax_design=freqs[ii]),
         check_bias(mt_unif,Npar,Amin,Amax,freqs[ii],
                    fvec,type='equispaced',fmax_design=freqs[ii]))
 }) %>% rbindlist() %>% data.frame()

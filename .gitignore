@@ -70,3 +70,15 @@ matlab/necklace/c_code/test.txt
 *.asv
 temp
 temp_wide
+matlab/necklace/NeckMat_storage/NeckMat_n_5_d_3.mat
+matlab/necklace/NeckMat_storage/NeckMat_n_6_d_3.mat
+matlab/necklace/NeckMat_storage/NeckMat_n_8_d_5.mat
+matlab/necklace/NeckMat_storage/NeckMat_n_10_d_2.mat
+matlab/necklace/NeckMat_storage/NeckMat_n_10_d_3.mat
+matlab/necklace/NeckMat_storage/NeckMat_n_10_d_5.mat
+matlab/necklace/NeckMat_storage/NeckMat_n_10_d_8.mat
+matlab/necklace/NeckMat_storage/NeckMat_n_11_d_5.mat
+matlab/necklace/NeckMat_storage/NeckMat_n_12_d_3.mat
+matlab/necklace/NeckMat_storage/NeckMat_n_12_d_5.mat
+matlab/necklace/NeckMat_storage/NeckMat_n_48_d_5.mat
+matlab/necklace/NeckMat_storage/NeckMat_n_144_d_3.mat
