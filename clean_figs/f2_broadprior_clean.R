@@ -14,7 +14,7 @@ df = am@''
 ###########################
 # Plot of power gain 
 ###########################
-fdf=c(1:dim(am)[1]) %>% lapply(function(ii){
+fdf=c(1:dim(am)[1]) %>% mclapply(mc.cores=8,function(ii){
   mt = as.numeric(am[ii,])
   mt = mt[!is.nan(mt)] 
   Nm = am@''[ii,]$Nmeas
@@ -68,9 +68,7 @@ pars=expand.grid(Amp=c(1),
                  freq=freqs_plt,
                  type=c('equispaced design','irregular design'))
 
-#pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=8,function(ii){
-  # unpack
-for (ii in c(1:dim(pars)[1])){
+pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=8,function(ii){
   x      = pars[ii,]
   Nmeas  = as.numeric(x[['Nmeas']])
   acro   = as.numeric(x[['acro']])
@@ -91,8 +89,8 @@ for (ii in c(1:dim(pars)[1])){
   }else{
     stop('wrong length for measurement vector')
   }
-  #return(power)
-}
+  return(power)
+})
 pars$power = pwr_vec
 
 pars$freq =as.numeric(pars$freq)
@@ -122,6 +120,8 @@ phmap =  phmap + theme(
 
 Fig1=plt_gainWC/phmap+ plot_annotation(tag_levels='A')+
   plot_layout(heights=c(1.5,1))
+
+show_temp_plt(Fig1,6,3)
 
 ggsave(paste0('~/research/ms_powerCHORD/figures/',
               'f2_broadprior1.png'),
