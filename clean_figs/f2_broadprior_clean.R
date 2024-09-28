@@ -14,7 +14,7 @@ df = am@''
 ###########################
 # Plot of power gain 
 ###########################
-fdf=c(1:dim(am)[1]) %>% mclapply(mc.cores=8,function(ii){
+fdf=c(1:dim(am)[1]) %>% mclapply(mc.cores=12,function(ii){
   mt = as.numeric(am[ii,])
   mt = mt[!is.nan(mt)] 
   Nm = am@''[ii,]$Nmeas
@@ -68,7 +68,7 @@ pars=expand.grid(Amp=c(1),
                  freq=freqs_plt,
                  type=c('equispaced design','irregular design'))
 
-pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=8,function(ii){
+pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=12,function(ii){
   x      = pars[ii,]
   Nmeas  = as.numeric(x[['Nmeas']])
   acro   = as.numeric(x[['acro']])
