@@ -43,16 +43,16 @@ psol
 # Robustness to measurement timing 
 ###########################
 Nmvec  = c(24,32,48)
-nrep   = 100 
+nrep   = 100
 scales = seq(1,30,2)/60/24
 pars   = expand.grid(scale=scales,type=c('irregular','equispaced'),Nm=Nmvec)
 sols   = readRDS('figures/sec3p2_data/powerCHORD_even_sols.RDS')
-df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=12,function(ii){
+df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=8,function(ii){
   sc   = pars[ii,]$scale
   type = pars[ii,]$type
   Nm   = pars[ii,]$Nm
   fmax_loc = Nm/2
-  param  = list(Amp=1,fmin=1,fmax=fmax_loc,Nfreq=2^10)
+  param  = list(Amp=1,fmin=1,fmax=fmax_loc,Nfreq=Nfreq)
   if (type=='equispaced'){
     mt = c(1:Nm)/Nm -1/Nm 
   }else{
@@ -85,10 +85,10 @@ plt = plt + theme(legend.position='bottom')
 prob = plt
 
 Fig=psol+prob + plot_layout(widths=c(2,3))+plot_annotation(tag_levels='A')
-
-ggsave(paste0('~/research/ms_powerCHORD/figures/',
-              'f2_broadprior2.png'),
-       Fig,
-       width=6,height=2,
-       device='png',
-       dpi=600)
+Fig
+#ggsave(paste0('~/research/ms_powerCHORD/figures/',
+#              'f2_broadprior2.png'),
+#       Fig,
+#       width=6,height=2,
+#       device='png',
+#       dpi=600)

@@ -1,14 +1,14 @@
 source("clean_figs/clean_theme.R")
-
+pub_qual=T
 if (pub_qual){
-  Nmc       = 5e2
-  freq_vals = seq(1,30,.5)
-}else{
-  Nmc       = 1e4
+  Nmc       = 1e3 
   freq_vals = seq(1,30,.05)
+}else{
+  Nmc       = 10 
+  freq_vals = seq(1,30,10)
 }
 
-mc_cores  = 12 
+mc_cores  = 8 
 pars      = expand.grid(freq=freq_vals,
                          Nmeas=c(32,40,48),
                          Amp = c(1),
@@ -69,11 +69,12 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){
   
   return(data.frame(cbind(pars[ind,],data.frame(AUC=roc$auc,TPR=TPR,FPR=FPR))))
 }) %>% rbindlist() %>% data.frame()
-
-plt=df %>% 
-  ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+
-  geom_vline(aes(xintercept = Nmeas / 2), linetype = "dashed", color = "black")+
-  facet_grid(Nmeas~Amp)+theme(legend.position='bottom')+labs(x='frequency (cycles/day)')
-plt = plt+clean_theme()
-plt=plt+theme(text=element_text(size=9))
-plt  
+saveRDS(df,'clean_figs/data/lomb_out.RDS')
+#plt=df %>% 
+#  ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+
+#  geom_vline(aes(xintercept = Nmeas / 2), linetype = "dashed", color = "black")+
+#  facet_grid(Nmeas~Amp)+theme(legend.position='bottom')+labs(x='frequency (cycles/day)')
+#plt = plt+clean_theme()
+#plt=plt+theme(legend.position='bottom',
+#              legend.direction = "horizontal")
+#plt  

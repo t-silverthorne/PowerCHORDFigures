@@ -70,7 +70,7 @@ setNames(f_colors, unique(tdf$wlen))
 tdf$window = factor(tdf$window,unique(tdf$window),paste0(unique(tdf$window/2),'hr rest'))
 plt = tdf %>% filter(window!=18) %>% 
   ggplot(aes(x=2*pi*time,y=1))+
-  geom_point()+facet_grid(type~window)+
+  geom_point()+facet_grid(type~window,switch='y')+
   geom_col(data=tdf,aes(y = 0.1, x = pi,fill=as.factor(wlen)),just = 0,width=tdf$wlen) +  
   coord_polar(theta='x',clip='off')+theme_minimal()+
   scale_x_continuous(breaks=c(0,pi/2,pi,3*pi/2),

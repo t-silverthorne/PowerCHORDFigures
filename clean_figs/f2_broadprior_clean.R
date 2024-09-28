@@ -40,14 +40,15 @@ plt = fdf %>% ggplot(aes(x=fmin,y=fmax,color=dpower_plt))+geom_point(size=3)+
   facet_wrap(~N,labeller = purrr::partial(label_both, sep = " = "),nrow=1)+
   scale_color_viridis_c(limits=c(.01,1)) +
   scale_x_continuous(breaks=c(2,4,6,8,10,12))+
-  scale_y_continuous(breaks=c(4,8,12,16,20,24))
+  scale_y_continuous(breaks=c(4,8,12,16,20,24))+
+  guides(fill = guide_colorbar(barheight = unit(0.4, "inches"))) 
 plt=plt+clean_theme()
 plt = plt + labs(x=element_text('minimum frequency'),
                  y=element_text('maximum frequency'),
                  color='power difference')
 plt=plt+guides(color=guide_colorbar(title.position='right'))
 plt=plt+theme(legend.direction='vertical',
-                legend.title = element_text(angle = 90))
+                legend.title = element_text(angle = 90,hjust=0.5))
 plt_gainWC = plt
 plt
 
@@ -104,7 +105,8 @@ plt = pars |>
   facet_grid(N~type)+
   scale_y_continuous(limits=c(0,2*pi),breaks =rad_brk[c(1,3,5)],labels = rad_lab[c(1,3,5)])+
   scale_fill_viridis_c(limits=c(0,1))+
-  labs(y='acrophase (rad)',x='frequency (cycles/day)')
+  labs(y='acrophase (rad)',x='frequency (cycles/day)')+
+  guides(fill = guide_colorbar(barheight = unit(0.3, "inches"))) 
 plt=plt+clean_theme()
 plt=plt+guides(fill=guide_colorbar(title.position='right'))
 plt=plt+theme(legend.direction='vertical',
@@ -112,20 +114,14 @@ plt=plt+theme(legend.direction='vertical',
 phmap = plt
 phmap
 
-plt_gainWC = plt_gainWC + theme(
-  legend.key.height= unit(dev.size()[2]/25, "inches"))
-
-phmap =  phmap + theme(
-  legend.key.height= unit(dev.size()[2]/25, "inches"))
-
 Fig1=plt_gainWC/phmap+ plot_annotation(tag_levels='A')+
-  plot_layout(heights=c(1.5,1))
+  plot_layout(heights=c(1,1))
 
 show_temp_plt(Fig1,6,3)
 
 ggsave(paste0('~/research/ms_powerCHORD/figures/',
               'f2_broadprior1.png'),
        Fig1,
-       width=6,height=3,
+       width=6,height=3.5,
        device='png',
        dpi=600)

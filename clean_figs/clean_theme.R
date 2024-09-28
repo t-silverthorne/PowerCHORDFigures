@@ -7,6 +7,8 @@ require(patchwork)
 require(dplyr)
 require(annmatrix)
 require(devtools)
+require(pROC)
+require(lomb)
 devtools::load_all()
 pub_qual=F
 mar=2
