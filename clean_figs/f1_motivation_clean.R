@@ -39,6 +39,8 @@ pdf = c(1,6) |> lapply(function(freq){
 }) |> rbindlist() |> data.frame()
 
 pdf$cmap_var = paste0(pdf$meas,pdf$freq)
+
+
 pdf = pdf |> mutate(per_label = ifelse(freq==1,'T = 24 hr','T = 4 hr'))
 cmap_cust = c('true1'=rgb(.05,0.5,.06),
           'irregular1'=rgb(.05,0.5,.06),
@@ -51,7 +53,9 @@ rad_brk = c(0,pi,2*pi)
 rad_lab = c(expression(0),
             expression(pi),
             expression(2*pi))
-plt= pdf %>% ggplot(aes(x=acro,fill=cmap_var))+geom_histogram(aes(y=after_stat(density)))+
+plt= pdf %>% filter(meas!='true') %>% 
+ggplot(aes(x=acro,fill=cmap_var))+
+  geom_histogram(aes(y=after_stat(density)))+
   facet_grid(per_label~meas)+
   scale_fill_manual(values=cmap_cust)
 plt = plt + scale_x_continuous(limits=c(0,2*pi),
