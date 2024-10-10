@@ -2,7 +2,7 @@ source("clean_figs/clean_theme.R")
 
 # load matlab solutions
 #ff='matlab/necklace/night_filt2/window_sols.csv'
-ff='clean_figs/data/window_sols.csv'
+ff='clean_figs/data/window_sols_fp2.csv'
 df = read.csv2(ff,sep=',',header = F)
 df = na.omit(df)
 
@@ -17,7 +17,7 @@ wstart = rep(NaN,dim(df)[1])
 
 for (ind in c(1:dim(df)[1])){
   bvec = df[ind,] %>% as.matrix() %>% as.numeric()
-  lenw = wvec[ind]
+  lenw = wvec[ind]-1
   pv   = rep(1,lenw)
   found_window = F
   for (ii in c(0:(n-1))){
@@ -45,9 +45,10 @@ tdf = c(1:dim(df)[1]) %>% lapply(function(ii){
 # naive designs 
 ndf = seq(12,24,2) |> lapply(function(ii){
   N     = 8  
-  Nm1   = N-1
+  Nm1   = N-2
   ww    = ii/48
-  unm   = c(1:Nm1)/Nm1 - 1/Nm1 
+  unm   = c(0:Nm1)/Nm1  
+  #unm   = unm[1:(Nm1-1)]
   tvec  = c(ww/2,ww + (1-ww)*unm)
   tvec  = (tvec+0.5) %% 1
   return(data.frame(window=ii,time=tvec,type='naive'))
@@ -102,12 +103,14 @@ tunif = c(1:N)/N - 1/N
 tcstr1 = tdf %>% filter(window==12) %>% select(time) %>% as.matrix() %>% as.numeric() 
 tcstr2 = tdf %>% filter(window==24) %>% select(time) %>% as.matrix() %>% as.numeric() 
 
-Nacro     = 2^6+1
+Nacro     = 2^8+1
 acros     = seq(0,2*pi,length.out=Nacro)
 acros     = acros[1:(length(acros)-1)]
 
-pars=expand.grid(acro=acros,window=c(12,24),
+pars=expand.grid(acro=acros,window=seq(12,24,4),
                  type=c('optimal','naive'))
+#pars=expand.grid(acro=acros,window=c(12,24),
+#                 type=c('optimal','naive'))
 
 pdf = c(1:dim(pars)[1]) %>% lapply(function(ii){
   x=pars[ii,]
@@ -127,7 +130,7 @@ pdf$gvar = paste0(pdf$type,pdf$window)
 pdf$type = factor(pdf$type,levels=c('optimal','naive'))
 plt= pdf %>% ggplot(aes(x=acro,y=power,group=gvar,color=as.factor(window),linetype=type))+
   geom_line()+scale_linetype_manual(values=lmap_manual)+
-  scale_color_manual(values=cmap_manual)+
+  scale_color_manual(values=f_colors)+
   scale_x_continuous(limits=c(0,2*pi),breaks =rad_brk[c(1,3,5)],labels = rad_lab[c(1,3,5)])+
   guides(color='none',linetype=guide_legend(title=NULL))
 plt=plt+clean_theme()
@@ -137,8 +140,6 @@ plt=plt+labs(x=element_text('acrophase (rad)'),
                  y=element_text('power'))
 p2=plt
 p2
-
-p1 / p2
 
 
 ###########################

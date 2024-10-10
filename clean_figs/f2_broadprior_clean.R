@@ -117,7 +117,7 @@ phmap
 Fig1=plt_gainWC/phmap+ plot_annotation(tag_levels='A')+
   plot_layout(heights=c(1,1))
 
-show_temp_plt(Fig1,6,3)
+show_temp_plt(Fig1,6,4)
 
 ggsave(paste0('~/research/ms_powerCHORD/figures/',
               'f2_broadprior1.png'),

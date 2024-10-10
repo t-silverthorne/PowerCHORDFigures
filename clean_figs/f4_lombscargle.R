@@ -8,10 +8,10 @@ if (pub_qual){
   freq_vals = seq(1,30,10)
 }
 
-mc_cores  = 12 
+mc_cores  = 4 
 pars      = expand.grid(freq=freq_vals,
                          Nmeas=c(32,40,48),
-                         Amp = c(1),
+                         Amp = c(1,2),
                          p_osc = c(0.5),
                          type=c('irregular','equispaced'))
 
@@ -19,6 +19,7 @@ pars      = expand.grid(freq=freq_vals,
 sols   = readRDS('clean_figs/data/powerCHORD_even_sols.RDS')
 dim(pars)
 
+acro_dist   = 'average' 
 
 df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){
   freq        = pars[ind,]$freq
@@ -44,7 +45,27 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){
   Ydat                = matrix(rnorm(Nmc*Nmeas),nrow=Nmc)
   state               = sample(c('osc','non_osc'),Nmc,replace = T,c(p_osc,1-p_osc))
   N_osc               = sum(state=='osc')
-  Ydat[state=='osc',] = Ydat[state=='osc',]+Amp*cos(outer(2*pi*runif(N_osc),2*pi*freq*mt,'-'))
+  
+  
+  if (acro_dist =='average'){
+    Ydat[state=='osc',] = Ydat[state=='osc',]+
+      Amp*cos(outer(2*pi*runif(N_osc),2*pi*freq*mt,'-'))
+  }else if (acro_dist =='worst'){
+    acros     = seq(0,2*pi,length.out=2^8+1)
+    acros     = acros[1:(length(acros)-1)]
+    powers    = acros %>% sapply(function(acro){
+      param=list(freq=freq,acro=acro,Amp=Amp)
+      evalExactPower(mt,param)
+    }) 
+    worst_ind = which.min(powers)
+    acro = acros[worst_ind]
+    
+    signal = Amp*cos(2*pi*freq*mt-acro)
+    smat   = t(matrix(rep(signal,N_osc),ncol=N_osc))
+    Ydat[state=='osc',] = Ydat[state=='osc',]+smat
+  }else{
+    stop('unknown acro distribution')
+  }
   
   # simualte p-values
   pvdf = c(1:dim(Ydat)[1]) %>% lapply(function(ii){

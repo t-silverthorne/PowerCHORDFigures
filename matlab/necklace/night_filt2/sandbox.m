@@ -1,6 +1,8 @@
+tic
 Bmat_master=[];
 
 windows = 12:2:24;
+windows = windows-1;
 nt      = 48;
 N       = 8;
 addpath('../../utils/')
@@ -10,7 +12,7 @@ for window=windows
     window
     system('rm output_*');
     s1=strjoin({'awk -f "night_filt.awk"',num2str(window),'1'});
-    s2=strjoin({'../../../solutions/cNecks_48_',num2str(N),'.txt > sols_temp.txt'},'');
+    s2=strjoin({'cNecks_48_',num2str(N),'.txt > sols_temp.txt'},'');
     system(strjoin({s1,s2}));    
     
     best_eig = -Inf;
@@ -54,6 +56,7 @@ for window=windows
 end
 toc
 Bmat_master
-%%
-writematrix(Bmat_master,'window_sols.csv')
+
+writematrix(Bmat_master,'../../../clean_figs/data/window_sols_fp2.csv')
+toc
 %example awk command: awk '{line=$0 $0; if (line ~ /000000000001000000000001/) print $0}' test_in.txt > test_out.txt

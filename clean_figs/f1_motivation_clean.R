@@ -55,7 +55,7 @@ rad_lab = c(expression(0),
             expression(2*pi))
 plt= pdf %>% filter(meas!='true') %>% 
 ggplot(aes(x=acro,fill=cmap_var))+
-  geom_histogram(aes(y=after_stat(density)))+
+  geom_histogram()+
   facet_grid(per_label~meas)+
   scale_fill_manual(values=cmap_cust)
 plt = plt + scale_x_continuous(limits=c(0,2*pi),
@@ -64,7 +64,7 @@ plt = plt + scale_x_continuous(limits=c(0,2*pi),
 plt = plt+clean_theme()
 plt = plt + theme(legend.position='none')
 plt = plt + labs(x=element_text('acrophase'),
-                  y=element_text('density'))
+                  y=element_text('count'))
 pbot = plt
 p1=plt
 
@@ -134,19 +134,20 @@ rad_brk = c(0,pi/2,pi,3*pi/2,2*pi)
 rad_lab = c(expression(0),expression(pi/2),
             expression(pi),expression(3*pi/2),
             expression(2*pi))
-
+require(ggtext)
 p3 = pars  %>% ggplot(aes(y=freq,x=acro,fill=power))+
   geom_raster()+
   facet_wrap(~type,ncol=1)+
   scale_x_continuous(limits=c(0,2*pi),breaks =rad_brk[c(1,3,5)],labels = rad_lab[c(1,3,5)])+
   scale_y_continuous(limits=c(0,max(freqs)),
-                     breaks =seq(0,max(freqs),4),
-                     labels =seq(0,max(freqs),4))+
+                     breaks =c(0,1,6,8),
+                     labels =c('0','*1','*6','8'))+
   scale_fill_viridis_c(limits=c(0,1))+
  # annotate("text", x = 0, y = 6, label = "x", color = "red", size = 8,data=pars[pars$type=='equispaced',]) +
 #  geom_abline(slope=0,intercept=6,color='white',linewidth=1.5)+
 #  geom_abline(slope=0,intercept=1,color='white',linewidth=1.5)+
-  labs(x='acrophase',y='frequency (cycles/day)')
+  labs(x='acrophase',y='frequency (cycles/day)')+
+  theme(axis.text.y = element_markdown())
 p3
 
 tight_plt=F
@@ -158,8 +159,8 @@ p3 = p3 + theme(
 )
 
 require(patchwork)
-Fig = ((p0 / p1) + plot_layout(heights=c(1,6)) | p3)  + 
-  plot_layout(widths=c(5,1)) + plot_annotation(tag_levels='A')
+Fig = ((p0 / p1) + plot_layout(heights=c(1,7)) | p3)  + 
+  plot_layout(widths=c(3,1)) + plot_annotation(tag_levels='A')
 Fig
 ggsave(paste0('~/research/ms_powerCHORD/figures/',
               'f1_motivation.png'),
