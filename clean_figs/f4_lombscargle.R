@@ -1,7 +1,7 @@
 source("clean_figs/clean_theme.R")
 pub_qual=T
 if (pub_qual){
-  Nmc       = 1e3 
+  Nmc       = 1e4 
   freq_vals = seq(1,30,.05)
 }else{
   Nmc       = 10 
