@@ -14,7 +14,7 @@ df = am@''
 ###########################
 fmax=24
 fmin=1
-Nmeas_vals = c(24,48)
+Nmeas_vals = c(24,32,48)
 
 sloc     = am[am@''$Nmeas %in% Nmeas_vals & am@''$fmin==fmin & am@''$fmax==fmax,]
 sloc[1,] = sloc[1,]-min(sloc[1,],na.rm=T)
@@ -24,8 +24,7 @@ splt     = splt[!is.nan(splt$value),]
 splt     = splt %>% mutate(N=Nmeas)
 
 plt=splt[splt$Nmeas %in% Nmeas_vals, ] %>% ggplot(aes(x=value,y=0))+geom_point(size=.5)+
-  facet_grid(N~.,
-             labeller = purrr::partial(label_both, sep = " = "))
+  facet_wrap(~N,nrow=3,strip.position='right')
 plt = plt + clean_theme()
 plt = plt + theme(axis.title.y=element_blank()) 
 plt = plt + theme(axis.text.y=element_blank()) 
@@ -46,7 +45,10 @@ Nmvec  = c(24,32,48)
 nrep   = 100
 scales = seq(1,30,2)/60/24
 pars   = expand.grid(scale=scales,type=c('irregular','equispaced'),Nm=Nmvec)
-sols   = readRDS('figures/sec3p2_data/powerCHORD_even_sols.RDS')
+#sols   = readRDS('figures/sec3p2_data/powerCHORD_even_sols.RDS')
+sols   = readRDS('clean_figs/data/powerCHORD_even_sols.RDS')
+
+
 df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=8,function(ii){
   sc   = pars[ii,]$scale
   type = pars[ii,]$type
@@ -86,9 +88,9 @@ prob = plt
 
 Fig=psol+prob + plot_layout(widths=c(2,3))+plot_annotation(tag_levels='A')
 Fig
-#ggsave(paste0('~/research/ms_powerCHORD/figures/',
-#              'f2_broadprior2.png'),
-#       Fig,
-#       width=6,height=2,
-#       device='png',
-#       dpi=600)
+ggsave(paste0('~/research/ms_powerCHORD/figures/',
+              'f2_broadprior2.png'),
+       Fig,
+       width=6,height=2,
+       device='png',
+       dpi=600)
