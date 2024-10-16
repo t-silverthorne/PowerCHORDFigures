@@ -128,11 +128,13 @@ cmap_manual = c('12'=rgb(0.36,0.54,.66),'24'='darkred')
 lmap_manual = c('naive'='dashed','optimal'='solid') 
 pdf$gvar = paste0(pdf$type,pdf$window)
 pdf$type = factor(pdf$type,levels=c('optimal','naive'))
+pdf$window = factor(pdf$window,unique(pdf$window),paste0(unique(pdf$window/2),'hr rest'))
 plt= pdf %>% ggplot(aes(x=acro,y=power,group=gvar,color=as.factor(window),linetype=type))+
   geom_line()+scale_linetype_manual(values=lmap_manual)+
   scale_color_manual(values=f_colors)+
   scale_x_continuous(limits=c(0,2*pi),breaks =rad_brk[c(1,3,5)],labels = rad_lab[c(1,3,5)])+
-  guides(color='none',linetype=guide_legend(title=NULL))
+  guides(color='none',linetype=guide_legend(title=NULL))+
+  facet_wrap(~window,nrow=1)
 plt=plt+clean_theme()
 plt=plt+theme(legend.position='bottom',
               legend.direction = "horizontal")
@@ -169,15 +171,15 @@ plt=plt+theme(legend.position='bottom',
 p3=plt
 p3
 
-Fig = (p1 | (p2/p3)  )  + plot_layout(guides='collect',widths=c(2,1)) +
+Fig = ((p1/p2 + plot_layout(heights=c(3,1)))|p3)  + plot_layout(guides='collect',widths=c(2,1)) +
   plot_annotation(tag_levels='A')& theme(legend.position='bottom') & guides(color='none',fill='none')
-show_temp_plt(Fig,6,3)
-
+show_temp_plt(Fig,6,4)
+Fig
 
 ggsave(paste0('~/research/ms_powerCHORD/figures/',
               'f3_tightprior1.png'),
        Fig,
-       width=6,height=3,
+       width=6,height=4,
        device='png',
        dpi=600)
 

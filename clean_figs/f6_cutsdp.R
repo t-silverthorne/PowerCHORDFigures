@@ -52,14 +52,15 @@ edf = c(1:dim(pars)[1]) %>% lapply(function(ii){
   return(cbind(pars[ii,],data.frame(emin =evalMinEig(mt,freq))))
 }) %>% rbindlist() %>% data.frame()
 
-color_scale= c('optimal'=rgb(0.13, 0.67, 0.8),
-               'equispaced'=rgb(.43,.21,.1))
+color_scale= c('optimal'='#F8766D',
+               'equispaced'='#00BFC4')
 plt=edf %>% ggplot(aes(x=freq,y=emin,group=type,color=type))+geom_line()+
   geom_vline(xintercept = 12,linetype='dashed')+
   geom_vline(xintercept = 1,linetype='dashed')+
   scale_x_continuous(limits=c(0,16),breaks=seq(0,16,4))+
   scale_color_manual(values=color_scale)+
-  labs(x='frequency (cycles/day)',y='noncentrality parameter')
+  labs(x='frequency (cycles/day)',y='noncentrality parameter')+
+  guides(color=guide_legend(title=NULL))
 plt = plt+clean_theme()
 plt = plt+theme(legend.position='bottom')
 p2=plt
@@ -103,8 +104,8 @@ data.frame(type='optimal',eig1=evalMinEig(topt,1),eig12=evalMinEig(topt,12)))
 alpha_scale = c('optimal'=1,'equispaced'=1,'random'=.1)
 size_scale  = c('optimal'=2.5,'equispaced'=2.5,'random'=.7)
 type_scale = c('optimal'=18,'equispaced'=18,'random'=19)
-color_scale= c('optimal'=rgb(0.13, 0.67, 0.8),
-               'equispaced'=rgb(.43,.21,.1),
+color_scale= c('optimal'='#F8766D',
+               'equispaced'='#00BFC4',
                'random'='black')
 plt=rdf %>% ggplot(aes(x=eig1,y=eig12,color=type,size=type,
                        alpha=type,shape=type))+
@@ -113,7 +114,12 @@ plt=rdf %>% ggplot(aes(x=eig1,y=eig12,color=type,size=type,
   scale_alpha_manual(values = alpha_scale)+
   scale_color_manual(values=color_scale)+
   scale_shape_manual(values=type_scale)+
-  labs(x='noncentrality (f=1)',y='noncentrality (f=12)')
+  labs(x='noncentrality (f=1)',y='noncentrality (f=12)')+
+  guides(color=guide_legend(title=NULL),
+         size=guide_legend(title=NULL),
+         alpha=guide_legend(title=NULL),
+         shape=guide_legend(title=NULL)
+         )
 plt=plt+clean_theme()
 plt = plt+theme(legend.position='bottom')
 p3=plt
