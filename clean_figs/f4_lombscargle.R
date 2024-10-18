@@ -8,7 +8,7 @@ if (pub_qual){
   freq_vals = seq(1,30,10)
 }
 
-mc_cores  = 4 
+mc_cores  = 8 
 pars      = expand.grid(freq=freq_vals,
                          Nmeas=c(32,40,48),
                          Amp = c(1,2),
@@ -93,18 +93,31 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){
 saveRDS(df,'clean_figs/data/lomb_out.RDS')
 
 df=readRDS('clean_figs/data/lomb_out.RDS')
-plt=df %>% 
+plt=df %>% filter(Amp==2 & freq <= Nmeas/2 & Nmeas==40) %>% 
   ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+
   geom_vline(aes(xintercept = Nmeas / 2), linetype = "dashed", color = "black")+
-  facet_wrap(~Nmeas,ncol=1)+theme(legend.position='bottom')+labs(x='frequency (cycles/day)')
+  theme(legend.position='bottom')+labs(x='frequency (cycles/day)')+
+  guides(color=guide_legend(title=NULL))
 plt = plt+clean_theme()
 plt=plt+theme(legend.position='bottom',
               legend.direction = "horizontal")
-plt  
+p1=plt  
 
-ggsave(paste0('~/research/ms_powerCHORD/figures/',
-              'f5_lombscargl.png'),
-       plt,
-       width=6,height=2.5,
-       device='png',
-       dpi=600)
+plt=df %>% filter(Amp==2 & freq > Nmeas/2 & Nmeas==40) %>% 
+  ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+
+  geom_vline(aes(xintercept = Nmeas / 2), linetype = "dashed", color = "black")+
+  theme(legend.position='bottom')+labs(x='frequency (cycles/day)')+
+  guides(color=guide_legend(title=NULL))
+plt = plt+clean_theme()
+plt=plt+theme(legend.position='bottom',
+              legend.direction = "horizontal")
+p2=plt  
+
+Fig=(p1/p2)  + plot_annotation(tag_levels='A')+plot_layout(guides='collect')& theme(legend.position='bottom')
+Fig
+  ggsave(paste0('~/research/ms_powerCHORD/figures/',
+                'f5_lombscargl.png'),
+         Fig,
+         width=6,height=3,
+         device='png',
+         dpi=600)
