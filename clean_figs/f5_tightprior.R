@@ -124,6 +124,19 @@ pdf = c(1:dim(pars)[1]) %>% lapply(function(ii){
 }) %>% rbindlist() %>%  data.frame()
 head(pdf)
 
+# summary statistic
+ww=20
+omax = pdf %>% filter(window==ww & type == 'optimal') %>%
+  select(power) %>% max()
+omin = pdf %>% filter(window==ww & type == 'optimal') %>%
+  select(power) %>% min()
+nmax = pdf %>% filter(window==ww & type == 'naive') %>%
+  select(power) %>% max()
+nmin = pdf %>% filter(window==ww & type == 'naive') %>%
+  select(power) %>% min()
+(omax-omin)*100
+(nmax-nmin)*100
+
 cmap_manual = c('12'=rgb(0.36,0.54,.66),'24'='darkred')
 lmap_manual = c('naive'='dashed','optimal'='solid') 
 pdf$gvar = paste0(pdf$type,pdf$window)

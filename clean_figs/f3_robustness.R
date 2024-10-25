@@ -39,10 +39,46 @@ psol
 
 
 ###########################
+# Alt plot of raw solutions 
+###########################
+set.seed(2)
+mtopt = am[am@''$Nmeas ==24 & am@''$fmin==fmin & am@''$fmax==fmax,]
+mtopt = mtopt %>% as.numeric()
+mtopt = mtopt[!is.nan(mtopt)]
+mtopt = mtopt-min(mtopt)
+sc = 15/60/24
+
+mtunif   = c(1:24)/24 -1/24
+mtopt_j  = mtopt + rnorm(24,0,sc)
+mtunif_j = mtunif + rnorm(24,0,sc)
+
+tdf = rbind(data.frame(time=mtunif,type='equispaced',jitter='raw'),
+  data.frame(time=mtunif_j,type='equispaced',jitter='jittered'),
+  data.frame(time=mtopt,type='irregular',jitter='raw'),
+  data.frame(time=mtopt_j,type='irregular',jitter='jittered')
+  )
+tdf$jitter=factor(tdf$jitter,c('raw','jittered'))
+head(tdf)
+
+plt = tdf %>%  ggplot(aes(x=time,y=0))+geom_point(size=.5)+
+  facet_grid(jitter~type)
+plt = plt + clean_theme()
+plt = plt + theme(axis.title.y=element_blank()) 
+plt = plt + theme(axis.text.y=element_blank()) 
+plt = plt + labs(x=element_text('time (hr)'))
+plt = plt+scale_x_continuous(labels=seq(0,24,4),
+  breaks=seq(0,1,4/24),
+  limits=c(0,1))
+plt = plt+theme(axis.line.y = element_blank())
+plt = plt+theme(axis.ticks.y = element_blank())
+psol=plt
+psol
+
+###########################
 # Robustness to measurement timing 
 ###########################
 Nmvec  = c(24,32,48)
-nrep   = 100
+nrep   = 10
 scales = seq(1,30,2)/60/24
 pars   = expand.grid(scale=scales,type=c('irregular','equispaced'),Nm=Nmvec)
 #sols   = readRDS('figures/sec3p2_data/powerCHORD_even_sols.RDS')
@@ -78,19 +114,19 @@ df_grp$time = df_grp$scale*24*60
 
 plt=df_grp %>% ggplot(aes(x=time,y=Power,group=type,color=type)) +geom_line() +
   geom_errorbar(aes(ymin=lower,ymax=upper))+
-  facet_wrap(~Nm)
+  facet_wrap(~Nm,nrow=1)
 plt = plt+clean_theme()
 plt = plt + labs(x=element_text('collection time standard deviation (minutes)'),
                  y=element_text('power'),
                  color='design')
-plt = plt + theme(legend.position='bottom')
+plt = plt + theme(legend.position='right')
 prob = plt
 
-Fig=psol+prob + plot_layout(widths=c(2,3))+plot_annotation(tag_levels='A')
-Fig
+Fig=psol/prob + plot_layout(heights=c(2,1.5))+plot_annotation(tag_levels='A')
+show_temp_plt(Fig,6,2.75)
 ggsave(paste0('~/research/ms_powerCHORD/figures/',
               'f2_broadprior2.png'),
        Fig,
-       width=6,height=2,
+       width=6,height=2.75,
        device='png',
        dpi=600)

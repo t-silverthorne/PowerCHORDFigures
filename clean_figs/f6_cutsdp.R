@@ -1,4 +1,5 @@
 source('clean_figs/clean_theme.R')
+require(ggrepel)
 # load in cutsdp solutions
 N     = 12
 n     = 48
@@ -114,6 +115,7 @@ plt=rdf %>% ggplot(aes(x=eig1,y=eig12,color=type,size=type,
   scale_alpha_manual(values = alpha_scale)+
   scale_color_manual(values=color_scale)+
   scale_shape_manual(values=type_scale)+
+  geom_text_repel(aes(label=type))+
   labs(x='noncentrality (f=1)',y='noncentrality (f=12)')+
   guides(color=guide_legend(title=NULL),
          size=guide_legend(title=NULL),
