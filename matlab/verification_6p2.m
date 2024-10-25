@@ -1,6 +1,6 @@
 %% 
 nrep = 1e3;
-
+%fprintf('Lemma 6.11: Tested %0.5g cases\n\n',1e9)
 %% Lemma 6.9
 
 tvec = NaN(1,nrep);
