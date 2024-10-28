@@ -11,7 +11,7 @@ tic
 for window=windows
     window
     system('rm output_*');
-    s1=strjoin({'awk -f "necklace_filt.awk"',num2str(window),'1',num2str(nt)});
+    s1=strjoin({'awk -f "necklace_filt.awk"',num2str(window),'0',num2str(nt)});
     s2=strjoin({'cNecks_48_',num2str(N),'.txt > sols_temp.txt'},'');
     system(strjoin({s1,s2}));    
     
@@ -57,6 +57,6 @@ end
 toc
 Bmat_master
 
-writematrix(Bmat_master,'../../../clean_figs/data/window_sols_fp2.csv')
+writematrix(Bmat_master,'../../../clean_figs/data/window_sols_fp2_strict.csv')
 toc
 %example awk command: awk '{line=$0 $0; if (line ~ /000000000001000000000001/) print $0}' test_in.txt > test_out.txt

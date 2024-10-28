@@ -2,7 +2,12 @@ source("clean_figs/clean_theme.R")
 
 # load matlab solutions
 #ff='matlab/necklace/night_filt2/window_sols.csv'
-ff='clean_figs/data/window_sols_fp2.csv'
+strict=F
+if (strict){
+  ff='clean_figs/data/window_sols_fp2_strict.csv'
+}else{
+  ff='clean_figs/data/window_sols_fp2.csv'
+}
 df = read.csv2(ff,sep=',',header = F)
 df = na.omit(df)
 
@@ -20,11 +25,23 @@ for (ind in c(1:dim(df)[1])){
   lenw = wvec[ind]-1
   pv   = rep(1,lenw)
   found_window = F
-  for (ii in c(0:(n-1))){
-    if (t(bvec[1+(0:(lenw-1) + ii)%%n])%*%pv == 1){
-      if (!found_window){
-        found_window=T
-        wstart[ind]= ii
+  if (strict){
+    for (ii in c(0:(n-1))){
+      if (t(bvec[1+(0:(lenw-1) + ii)%%n])%*%pv == 0){
+        if (!found_window){
+          found_window=T
+          wstart[ind]= ii
+        }
+      }
+    }
+  }else{
+    
+    for (ii in c(0:(n-1))){
+      if (t(bvec[1+(0:(lenw-1) + ii)%%n])%*%pv == 1){
+        if (!found_window){
+          found_window=T
+          wstart[ind]= ii
+        }
       }
     }
   }
@@ -44,13 +61,21 @@ tdf = c(1:dim(df)[1]) %>% lapply(function(ii){
 
 # naive designs 
 ndf = seq(12,24,2) |> lapply(function(ii){
-  N     = 8  
-  Nm1   = N-2
-  ww    = ii/48
-  unm   = c(0:Nm1)/Nm1  
-  #unm   = unm[1:(Nm1-1)]
-  tvec  = c(ww/2,ww + (1-ww)*unm)
-  tvec  = (tvec+0.5) %% 1
+  if (strict){
+    ww    = ii/48
+    N     = 8  
+    Nm1   = N-1
+    unm   = c(0:Nm1)/Nm1
+    tvec  = ww+(1-ww)*unm
+    tvec  = (tvec+0.5) %% 1
+  }else{
+    N     = 8  
+    Nm1   = N-2
+    ww    = ii/48
+    unm   = c(0:Nm1)/Nm1  
+    tvec  = c(ww/2,ww + (1-ww)*unm)
+    tvec  = (tvec+0.5) %% 1
+  }
   return(data.frame(window=ii,time=tvec,type='naive'))
 }) |> rbindlist() |> data.frame()
 
@@ -189,10 +214,10 @@ Fig = ((p1/p2 + plot_layout(heights=c(3,1)))|p3)  + plot_layout(guides='collect'
 show_temp_plt(Fig,6,4)
 Fig
 
-ggsave(paste0('~/research/ms_powerCHORD/figures/',
-              'f3_tightprior1.png'),
-       Fig,
-       width=6,height=4,
-       device='png',
-       dpi=600)
+#ggsave(paste0('~/research/ms_powerCHORD/figures/',
+#              'f3_tightprior1.png'),
+#       Fig,
+#       width=6,height=4,
+#       device='png',
+#       dpi=600)
 

@@ -115,7 +115,8 @@ plt=rdf %>% ggplot(aes(x=eig1,y=eig12,color=type,size=type,
   scale_alpha_manual(values = alpha_scale)+
   scale_color_manual(values=color_scale)+
   scale_shape_manual(values=type_scale)+
-  geom_text_repel(aes(label=type))+
+  geom_label_repel(data = subset(rdf, type %in% c("equispaced", "optimal")),
+                  aes(label = type),show.legend=F)+
   labs(x='noncentrality (f=1)',y='noncentrality (f=12)')+
   guides(color=guide_legend(title=NULL),
          size=guide_legend(title=NULL),
