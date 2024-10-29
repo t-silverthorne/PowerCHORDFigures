@@ -5,7 +5,7 @@ mc_cores = 12
 
 
 # only look at differential evolution results
-#am = readRDS('figures/sec3p2_data/powerCHORD_even_sols.RDS')
+#TODO: move to new dir
 am = readRDS('clean_figs/data/powerCHORD_even_sols.RDS')
 am = am[am@''$method=='diffEVCR',]
 df = am@''
@@ -21,7 +21,7 @@ fdf=c(1:dim(am)[1]) %>% mclapply(mc.cores=12,function(ii){
   if (Nm == length(mt)){
      fmin=am@''[ii,]$fmin
      fmax=am@''[ii,]$fmax
-     param=list(fmin=fmin,fmax=fmax,Nfreq=Nfreq,Amp=Amp)
+     param=list(fmin=fmin,fmax=fmax*.9999,Nfreq=Nfreq,Amp=Amp)
      pwr = evalWorstPowerMultiFreq(mt,param)
      mt_unif = c(1:Nm)/Nm - 1/Nm 
      pwr_unif = evalWorstPowerMultiFreq(mt_unif,param)

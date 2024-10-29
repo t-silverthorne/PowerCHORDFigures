@@ -144,9 +144,6 @@ p3 = pars  %>% ggplot(aes(y=freq,x=acro,fill=power))+
                      breaks =c(0,1,6,8),
                      labels =c('0','*1','*6','8'))+
   scale_fill_viridis_c(limits=c(0,1))+
- # annotate("text", x = 0, y = 6, label = "x", color = "red", size = 8,data=pars[pars$type=='equispaced',]) +
-#  geom_abline(slope=0,intercept=6,color='white',linewidth=1.5)+
-#  geom_abline(slope=0,intercept=1,color='white',linewidth=1.5)+
   labs(x='acrophase',y='frequency (cycles/day)')+
   theme(axis.text.y = element_markdown())
 p3
