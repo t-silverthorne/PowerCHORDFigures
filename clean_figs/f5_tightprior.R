@@ -1,7 +1,6 @@
 source("clean_figs/clean_theme.R")
 
 # load matlab solutions
-#ff='matlab/necklace/night_filt2/window_sols.csv'
 strict=F
 if (strict){
   ff='clean_figs/data/window_sols_fp2_strict.csv'
