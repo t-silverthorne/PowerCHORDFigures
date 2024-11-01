@@ -1,4 +1,4 @@
-source('figures/fig_settings.R')
+source('clean_figs/clean_theme.R')
 ###########################
 # bad scaling
 ###########################

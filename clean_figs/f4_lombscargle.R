@@ -4,8 +4,8 @@ if (pub_qual){
   Nmc       = 1e4 
   freq_vals = seq(1,30,.05)
 }else{
-  Nmc       = 10 
-  freq_vals = seq(1,30,10)
+  Nmc       = 1e2 
+  freq_vals = seq(1,30,1)
 }
 
 mc_cores  = 8 

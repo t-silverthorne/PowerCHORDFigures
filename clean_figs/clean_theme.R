@@ -1,3 +1,4 @@
+require(PowerCHORD)
 require(matrixTests)
 require(parallel)
 require(ggplot2)
