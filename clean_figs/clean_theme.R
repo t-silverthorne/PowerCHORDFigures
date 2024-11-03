@@ -1,4 +1,3 @@
-require(PowerCHORD)
 require(matrixTests)
 require(parallel)
 require(ggplot2)
@@ -10,7 +9,7 @@ require(annmatrix)
 require(devtools)
 require(pROC)
 require(lomb)
-devtools::load_all()
+devtools::load_all('PowerCHORD')
 pub_qual=F
 mar=2
 clean_theme=function(){

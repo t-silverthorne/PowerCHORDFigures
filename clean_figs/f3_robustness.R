@@ -90,11 +90,14 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=8,function(ii){
   type = pars[ii,]$type
   Nm   = pars[ii,]$Nm
   fmax_loc = Nm/2
-  param  = list(Amp=1,fmin=1,fmax=fmax_loc,Nfreq=Nfreq)
+  fmin = 1
+  Amp = 1
+  fmax=fmax_loc
+  Nfreq=Nfreq
   if (type=='equispaced'){
     mt = c(1:Nm)/Nm -1/Nm 
   }else{
-    filt = sols@Nmeas==Nm & sols@fmin == param$fmin & sols@fmax==fmax_loc & sols@method=='diffEVCR'
+    filt = sols@Nmeas==Nm & sols@fmin == fmin & sols@fmax==fmax_loc & sols@method=='diffEVCR'
     mt = sols[filt,]
     mt = as.numeric(mt)
     mt = mt[!is.nan(mt)]
@@ -103,7 +106,12 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=8,function(ii){
     }
   }
   cbind(pars[ii,],
-        data.frame(power=replicate(nrep,{evalWorstPowerMultiFreq(mt+rnorm(Nm,0,sd=sc),param=param)})))
+        data.frame(power=replicate(nrep,{
+          evalWorstPowerMultiFreq(mt+rnorm(Nm,0,sd=sc),
+                                  fmin=fmin,
+                                  fmax=fmax,
+                                  Nfreq=Nfreq,
+                                  Amp=Amp)})))
 }
 ) %>% rbindlist() %>% data.frame()
 

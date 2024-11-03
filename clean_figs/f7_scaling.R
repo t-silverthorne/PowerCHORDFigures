@@ -12,13 +12,16 @@ if (pub_qual){
 }
 nrep = 5
 mt = c(1:Nm)/Nm -1/Nm
-param = list(Amp=2,freq=1,acro=pi)
+Amp=2
+freq=1
+acro=pi
 
 sc= seq(.1,1,.05)
 scales = rep(sc,nrep)
 df=c(1:length(scales)) %>% lapply(function(ii){
   return(data.frame(scale=scales[ii],
-                    power=evalMonteCarloPower(mt*scales[ii],param,Nmc=Nmc)))
+                    power=evalMonteCarloPower(mt*scales[ii],
+                                              Amp=Amp,freq=freq,acro=acro,Nmc=Nmc)))
 }) %>% rbindlist() %>% data.frame()
 
 
@@ -32,7 +35,7 @@ df_grp$method = 'MC'
 
 df_exact = c(1:length(sc)) %>% lapply(function(ii){
   return(data.frame(scale=scales[ii],
-                    Power=evalExactPower(mt*scales[ii],param)))
+                    Power=evalExactPower(mt*scales[ii],Amp=Amp,freq=freq,acro=acro)))
 }) %>% rbindlist() %>% data.frame()
 
 df_exact$lower = NaN
@@ -41,7 +44,7 @@ df_exact$method='exact'
 
 df_wrong = c(1:length(sc)) %>% lapply(function(ii){
   return(data.frame(scale=scales[ii],
-                    Power=evalExactPower(mt*scales[ii],param,method='old')))
+                    Power=evalExactPower(mt*scales[ii],Amp=Amp,freq=freq,acro=acro,method='equispaced')))
 }) %>% rbindlist() %>% data.frame()
 
 df_wrong$lower = NaN
@@ -76,14 +79,18 @@ if (pub_qual){
   nrep  = 1e3
 }
 
-param = list(Amp=1,freq=1,acro=0)
+Amp=1
+freq=1
+acro=0
 
 set.seed(1)
 df = c(1:nrep) %>% mclapply(mc.cores=8,function(ii){
   tvec = runif(Nm)
-  pwr_mc      = evalMonteCarloPower(tvec,param,Nmc)
-  pwr_exact   = evalExactPower(tvec,param)
-  pwr_approx  = evalExactPower(tvec,param,method='old')
+  pwr_mc      = evalMonteCarloPower(tvec,Amp=Amp,freq=freq,acro=acro,Nmc)
+  pwr_exact   = evalExactPower(tvec,Amp=Amp,freq=freq,acro=acro)
+  pwr_approx  = evalExactPower(tvec,
+                               Amp=Amp,freq=freq,acro=acro,
+                               method='equispaced')
   return(data.frame(pwr_mc=pwr_mc,pwr_exact=pwr_exact,pwr_approx=pwr_approx))
 }) %>% rbindlist() %>% data.frame()
 

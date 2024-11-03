@@ -141,10 +141,9 @@ pdf = c(1:dim(pars)[1]) %>% lapply(function(ii){
   acro = as.numeric(x[['acro']]) 
   freq = 1
   Amp  = 2.5 
-  param=list(Amp=Amp,freq=freq,acro=acro)
   mt = tdf %>% filter(window==x[['window']] & type == x[['type']]) %>% 
     select(time) %>% unlist %>% as.numeric()
-  return(data.frame(cbind(x,power=evalExactPower(mt,param))))
+  return(data.frame(cbind(x,power=evalExactPower(mt,Amp=Amp,freq=freq,acro=acro))))
 }) %>% rbindlist() %>%  data.frame()
 head(pdf)
 

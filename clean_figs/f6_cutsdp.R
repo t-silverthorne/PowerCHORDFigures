@@ -66,22 +66,6 @@ plt = plt+clean_theme()
 plt = plt+theme(legend.position='bottom')
 p2=plt
 
-###########################
-# power across acro 
-###########################
-#Nacro = 2^6+1
-#acros = seq(0,2*pi,length.out=Nacro)
-#acros = acros[1:(length(acros)-1)]
-#pars = expand.grid(acro=acros,freq=c(1,12))
-#pdf = c(1:dim(pars)[1]) %>% lapply(function(ii){
-#  x=pars[ii,]
-#  freq=as.numeric(x[['freq']])
-#  acro=as.numeric(x[['acro']])
-#  param=list(Amp=2,acro=acro,freq=freq)
-#  return(cbind(pars[ii,],data.frame(power=evalExactPower(topt,param))))
-#}) %>% rbindlist() %>% data.frame()
-#pdf %>% ggplot(aes(x=acro,y=power))+geom_line()+facet_wrap(~freq)
-
 data.frame(time = (topt %% (1/12))) %>% ggplot(aes(x=time,y=1))+geom_point()
 
 

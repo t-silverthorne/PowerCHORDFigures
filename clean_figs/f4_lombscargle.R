@@ -54,8 +54,7 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){
     acros     = seq(0,2*pi,length.out=2^8+1)
     acros     = acros[1:(length(acros)-1)]
     powers    = acros %>% sapply(function(acro){
-      param=list(freq=freq,acro=acro,Amp=Amp)
-      evalExactPower(mt,param)
+      evalExactPower(mt,freq=freq,acro=acro,Amp=Amp)
     }) 
     worst_ind = which.min(powers)
     acro = acros[worst_ind]

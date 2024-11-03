@@ -21,10 +21,9 @@ fdf=c(1:dim(am)[1]) %>% mclapply(mc.cores=12,function(ii){
   if (Nm == length(mt)){
      fmin=am@''[ii,]$fmin
      fmax=am@''[ii,]$fmax
-     param=list(fmin=fmin,fmax=fmax*.9999,Nfreq=Nfreq,Amp=Amp)
-     pwr = evalWorstPowerMultiFreq(mt,param)
+     pwr = evalWorstPowerMultiFreq(mt,fmin=fmin,fmax=fmax*.9999,Nfreq=Nfreq,Amp=Amp)
      mt_unif = c(1:Nm)/Nm - 1/Nm 
-     pwr_unif = evalWorstPowerMultiFreq(mt_unif,param)
+     pwr_unif = evalWorstPowerMultiFreq(mt_unif,fmin=fmin,fmax=fmax*.9999,Nfreq=Nfreq,Amp=Amp)
      return(cbind(am@''[ii,],
                   data.frame(pwr=pwr,pwr_unif=pwr_unif)))
   }else{
@@ -75,7 +74,6 @@ pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=12,function(ii){
   acro   = as.numeric(x[['acro']])
   freq   = as.numeric(x[['freq']])
   Amp    = as.numeric(x[['Amp']]) 
-  param =list(Amp=Amp,freq=freq,acro=acro) 
   
   if(x$type == 'equispaced design'){
     mt = c(1:Nmeas)/Nmeas-1/Nmeas 
@@ -86,7 +84,7 @@ pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=12,function(ii){
     stop('unknown type')
   }
   if (length(mt)==Nmeas){
-    power=evalExactPower(mt,param)
+    power=evalExactPower(mt,Amp=Amp,freq=freq,acro=acro)
   }else{
     stop('wrong length for measurement vector')
   }
