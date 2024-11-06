@@ -1,7 +1,7 @@
 source("clean_figs/clean_theme.R")
 
 # load matlab solutions
-strict=F
+strict=T
 if (strict){
   ff='clean_figs/data/window_sols_fp2_strict.csv'
 }else{
@@ -212,10 +212,10 @@ Fig = ((p1/p2 + plot_layout(heights=c(3,1)))|p3)  + plot_layout(guides='collect'
 show_temp_plt(Fig,6,4)
 Fig
 
-#ggsave(paste0('~/research/ms_powerCHORD/figures/',
-#              'f3_tightprior1.png'),
-#       Fig,
-#       width=6,height=4,
-#       device='png',
-#       dpi=600)
+ggsave(paste0('~/research/ms_powerCHORD/figures/',
+              'f3_tightprior1.png'),
+       Fig,
+       width=6,height=4,
+       device='png',
+       dpi=600)
 
