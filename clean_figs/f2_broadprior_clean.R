@@ -61,7 +61,7 @@ acros     = seq(0,2*pi,length.out=Nacro)
 acros     = acros[1:(length(acros)-1)]
 fmin      = 1
 fmax      = 24
-freqs_plt = seq(1,24,length.out=Nfreq_plt)
+freqs_plt = seq(fmin,fmax,length.out=Nfreq_plt)
 pars=expand.grid(Amp=c(1),
                  Nmeas=c(24,48),
                  acro=acros,
