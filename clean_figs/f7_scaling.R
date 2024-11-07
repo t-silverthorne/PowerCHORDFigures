@@ -35,28 +35,28 @@ df_grp$method = 'MC'
 
 df_exact = c(1:length(sc)) %>% lapply(function(ii){
   return(data.frame(scale=scales[ii],
-                    Power=evalExactPower(mt*scales[ii],Amp=Amp,freq=freq,acro=acro)))
+                    Power=evalPower(mt*scales[ii],Amp=Amp,freq=freq,acro=acro)))
 }) %>% rbindlist() %>% data.frame()
 
 df_exact$lower = NaN
 df_exact$upper = NaN
-df_exact$method='exact'
+df_exact$method='general'
 
 df_wrong = c(1:length(sc)) %>% lapply(function(ii){
   return(data.frame(scale=scales[ii],
-                    Power=evalExactPower(mt*scales[ii],Amp=Amp,freq=freq,acro=acro,method='equispaced')))
+                    Power=evalPower(mt*scales[ii],Amp=Amp,freq=freq,acro=acro,method='equispaced')))
 }) %>% rbindlist() %>% data.frame()
 
 df_wrong$lower = NaN
 df_wrong$upper = NaN
-df_wrong$method= 'approximate'
+df_wrong$method= 'equispaced'
 
 pdf=rbind(df_grp,df_exact,df_wrong)
 
-pdf$method = factor(pdf$method,levels=c('MC','exact','approximate'))
+pdf$method = factor(pdf$method,levels=c('MC','general','equispaced'))
 cmap_cust = c('MC'=rgb(0,.55,.55),
-              'exact'='blue',
-              'approximate'='orange')
+              'general'='blue',
+              'equispaced'='orange')
 plt=pdf %>% ggplot(aes(x=scale,y=Power,group=method,color=method))+geom_line()+geom_point()+
   geom_errorbar(aes(ymin=lower,ymax=upper))+
   scale_color_manual(values=cmap_cust)
@@ -87,8 +87,8 @@ set.seed(1)
 df = c(1:nrep) %>% mclapply(mc.cores=8,function(ii){
   tvec = runif(Nm)
   pwr_mc      = evalMonteCarloPower(tvec,Amp=Amp,freq=freq,acro=acro,Nmc)
-  pwr_exact   = evalExactPower(tvec,Amp=Amp,freq=freq,acro=acro)
-  pwr_approx  = evalExactPower(tvec,
+  pwr_exact   = evalPower(tvec,Amp=Amp,freq=freq,acro=acro)
+  pwr_approx  = evalPower(tvec,
                                Amp=Amp,freq=freq,acro=acro,
                                method='equispaced')
   return(data.frame(pwr_mc=pwr_mc,pwr_exact=pwr_exact,pwr_approx=pwr_approx))
@@ -97,11 +97,11 @@ df = c(1:nrep) %>% mclapply(mc.cores=8,function(ii){
 df$bias_exact  = df$pwr_exact-df$pwr_mc
 df$bias_approx = df$pwr_approx -df$pwr_mc
 
-pdf = data.frame(bias=c(df$bias_exact,df$bias_approx),method=c(rep('exact',nrep),rep('approx',nrep)))
+pdf = data.frame(bias=c(df$bias_exact,df$bias_approx),method=c(rep('general',nrep),rep('equispaced',nrep)))
 
-pdf$method = factor(pdf$method,levels=c('exact','approx'),labels=c('exact','approximate'))
-cmap_cust=c('exact'='blue',
-            'approximate'='orange')
+pdf$method = factor(pdf$method,levels=c('general','equispaced'),labels=c('general','equispaced'))
+cmap_cust=c('general'='blue',
+            'equispaced'='orange')
 plt=pdf %>% ggplot(aes(x=bias,fill=method,group=method))+
   geom_histogram(position='identity',bins=100)+facet_wrap(~method,nrow=2)+
   scale_fill_manual(values=cmap_cust)

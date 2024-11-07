@@ -42,7 +42,7 @@ pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=12,function(ii){
     stop('unknown type')
   }
   if (length(mt)==Nmeas){
-    power=evalExactPower(mt,Amp=Amp,freq=freq,acro=acro)
+    power=evalPower(mt,Amp=Amp,freq=freq,acro=acro,design='equispaced')
   }else{
     stop('wrong length for measurement vector')
   }

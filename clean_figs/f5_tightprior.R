@@ -117,7 +117,6 @@ plt=plt+theme(legend.position = 'none')
 p1=plt
 p1
 
-
 ###########################
 # power as function of acro
 ###########################
@@ -143,12 +142,12 @@ pdf = c(1:dim(pars)[1]) %>% lapply(function(ii){
   Amp  = 2.5 
   mt = tdf %>% filter(window==x[['window']] & type == x[['type']]) %>% 
     select(time) %>% unlist %>% as.numeric()
-  return(data.frame(cbind(x,power=evalExactPower(mt,Amp=Amp,freq=freq,acro=acro))))
+  return(data.frame(cbind(x,power=evalPower(mt,Amp=Amp,freq=freq,acro=acro))))
 }) %>% rbindlist() %>%  data.frame()
 head(pdf)
 
 # summary statistic
-ww=20
+ww=8*2
 omax = pdf %>% filter(window==ww & type == 'optimal') %>%
   select(power) %>% max()
 omin = pdf %>% filter(window==ww & type == 'optimal') %>%
@@ -206,8 +205,9 @@ plt=plt+theme(legend.position='bottom',
               legend.direction = "horizontal")
 p3=plt
 p3
-
-Fig = ((p1/p2 + plot_layout(heights=c(3,1)))|p3)  + plot_layout(guides='collect',widths=c(2,1)) +
+p1t = p1 +theme(axis.text.x = element_text(size=6))
+Fig = ((p1t/p2 + plot_layout(heights=c(3,1)))|p3)  + 
+  plot_layout(guides='collect',widths=c(3,1)) +
   plot_annotation(tag_levels='A')& theme(legend.position='bottom') & guides(color='none',fill='none')
 show_temp_plt(Fig,6,4)
 Fig

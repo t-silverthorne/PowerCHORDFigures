@@ -21,9 +21,13 @@ fdf=c(1:dim(am)[1]) %>% mclapply(mc.cores=12,function(ii){
   if (Nm == length(mt)){
      fmin=am@''[ii,]$fmin
      fmax=am@''[ii,]$fmax
-     pwr = evalWorstPowerMultiFreq(mt,fmin=fmin,fmax=fmax*.9999,Nfreq=Nfreq,Amp=Amp)
+     pwr = evalWorstPowerMultiFreq(mt,
+                                   fmin=fmin,fmax=fmax,Nfreq=Nfreq,Amp=Amp,
+                                   design='general')
      mt_unif = c(1:Nm)/Nm - 1/Nm 
-     pwr_unif = evalWorstPowerMultiFreq(mt_unif,fmin=fmin,fmax=fmax*.9999,Nfreq=Nfreq,Amp=Amp)
+     pwr_unif = evalWorstPowerMultiFreq(mt_unif,
+                                        fmin=fmin,fmax=fmax,Nfreq=Nfreq,Amp=Amp,
+                                        design='equispaced')
      return(cbind(am@''[ii,],
                   data.frame(pwr=pwr,pwr_unif=pwr_unif)))
   }else{
@@ -33,17 +37,21 @@ fdf=c(1:dim(am)[1]) %>% mclapply(mc.cores=12,function(ii){
 
 fdf$d_power = fdf$pwr-fdf$pwr_unif
 
+# summary statistic
+fdf$rel_gain = 100*(fdf$d_power/fdf$pwr_unif) |> abs()
+fdf |> filter(d_power<0) |> select(rel_gain) |> max()
+
 fdf = fdf |> mutate(dpower_plt = ifelse(abs(d_power)>.01,d_power,NA))
 fdf = fdf %>% mutate(N=Nmeas)
 plt = fdf %>% ggplot(aes(x=fmin,y=fmax,color=dpower_plt))+geom_point(size=3)+
   facet_wrap(~N,labeller = purrr::partial(label_both, sep = " = "),nrow=1)+
-  scale_color_viridis_c(limits=c(.01,1)) +
+  scale_color_viridis_c(limits=c(0,1)) +
   scale_x_continuous(breaks=c(2,4,6,8,10,12))+
   scale_y_continuous(breaks=c(4,8,12,16,20,24))+
   guides(fill = guide_colorbar(barheight = unit(0.4, "inches"))) 
 plt=plt+clean_theme()
-plt = plt + labs(x=element_text('minimum frequency'),
-                 y=element_text('maximum frequency'),
+plt = plt + labs(x=element_text('minimum frequency (cycles/day)'),
+                 y=element_text('maximum frequency\n(cycles/day)'),
                  color='power difference')
 plt=plt+guides(color=guide_colorbar(title.position='right'))
 plt=plt+theme(legend.direction='vertical',
@@ -84,7 +92,11 @@ pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=12,function(ii){
     stop('unknown type')
   }
   if (length(mt)==Nmeas){
-    power=evalExactPower(mt,Amp=Amp,freq=freq,acro=acro)
+    if (x$type=='equispaced'){
+      power=evalPower(mt,Amp=Amp,freq=freq,acro=acro)
+    } else{
+      power=evalPower(mt,Amp=Amp,freq=freq,acro=acro)
+    }
   }else{
     stop('wrong length for measurement vector')
   }

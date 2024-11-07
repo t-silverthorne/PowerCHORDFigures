@@ -78,8 +78,8 @@ psol
 # Robustness to measurement timing 
 ###########################
 Nmvec  = c(24,32,48)
-nrep   = 10
-scales = seq(1,30,2)/60/24
+nrep   = 100
+scales = c(0,seq(1,30,2))/60/24
 pars   = expand.grid(scale=scales,type=c('irregular','equispaced'),Nm=Nmvec)
 #sols   = readRDS('figures/sec3p2_data/powerCHORD_even_sols.RDS')
 sols   = readRDS('clean_figs/data/powerCHORD_even_sols.RDS')
@@ -120,7 +120,31 @@ df_grp = df %>% group_by(scale,type,Nm) %>% summarize(Power=mean(power),
                                                       upper=quantile(power)[4])
 df_grp$time = df_grp$scale*24*60
 
-plt=df_grp %>% ggplot(aes(x=time,y=Power,group=type,color=type)) +geom_line() +
+df_grp
+
+# summary statistic: first scale where you cross halfway point
+thresh_df = df_grp  |>
+  group_by(Nm,scale) |> 
+  summarise(dpower = Power[type=='irregular'] - 
+              Power[type=='equispaced' ],.groups='drop')
+tdf0=thresh_df |> filter(scale==0) |> select(Nm,dpower) |> rename(dpower0=dpower)
+
+thresh_df_summary = thresh_df |> left_join(tdf0,by="Nm") |> 
+  filter(dpower < dpower0/2) |> 
+  group_by(Nm) |> 
+  slice_min(scale) |> 
+  mutate(time=scale*24*60)
+saveRDS(thresh_df_summary,'temp_sum.RDS')
+
+
+# summary statistic: delta between noiseless and final
+tds_2 = df_grp |> filter(type=='irregular') |> 
+  group_by(Nm) |> 
+  summarise(dpower = Power[scale==0] - Power[scale==max(scale)],
+            max_scale = max(scale))
+saveRDS(tds_2,'temp_sum2.RDS')
+
+plt=df_grp  |>  filter(scale>0) |>  ggplot(aes(x=time,y=Power,group=type,color=type)) +geom_line() +
   geom_errorbar(aes(ymin=lower,ymax=upper))+
   facet_wrap(~Nm,nrow=1)
 plt = plt+clean_theme()
