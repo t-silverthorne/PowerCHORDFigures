@@ -6,7 +6,7 @@ N     = 12
 n     = 48
 tau   = c(1:n)/n -1/n
 freqs = c(2,4,6,8,10,12)
-Xraw  = read.csv2('clean_figs/data/cutsdp_sols.csv',header = F,sep=',')
+Xraw  = read.csv2('PLOSfigures/data/cutsdp_sols.csv',header = F,sep=',')
 
 ###########################
 # Plot of raw solutions

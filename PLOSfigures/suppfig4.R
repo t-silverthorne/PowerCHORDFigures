@@ -4,7 +4,7 @@ source('PLOSfigures/clean_theme.R')
 n     = 48
 tau   = c(1:n)/n -1/n
 freqs = c(2,4,6,8,10,12)
-Xraw  = read.csv2('clean_figs/data/cutsdp_sols.csv',header = F,sep=',')
+Xraw  = read.csv2('PLOSfigures/data/cutsdp_sols.csv',header = F,sep=',')
 
 ###########################
 # Plot of raw solutions
@@ -139,9 +139,13 @@ p2=plt
 
 Fig_tot = Fig2/(p1+p2)+plot_annotation(tag_levels='A')+plot_layout(heights=c(0.5,1))
 
-show_temp_plt(Fig_tot,6,5)
-ggsave(paste0('~/research/ms_powerCHORD/figures/',
-              'f_cutsdp2.png'),
+
+ggsave('PLOSfigures/suppfig4.tiff',
+       Fig_tot,
+       width=6,height=5,
+       device='tiff',
+       dpi=600)
+ggsave('PLOSfigures/suppfig4.png',
        Fig_tot,
        width=6,height=5,
        device='png',

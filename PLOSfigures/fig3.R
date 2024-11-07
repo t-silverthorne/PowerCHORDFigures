@@ -3,7 +3,7 @@ Nfreq    = 2^10
 Amp      = 1
 
 # load differential evolution results 
-am = readRDS('clean_figs/data/powerCHORD_even_sols.RDS')
+am = readRDS('PLOSfigures/data/powerCHORD_even_sols.RDS')
 am = am[am@''$method=='diffEVCR',]
 df = am@''
 
@@ -78,7 +78,7 @@ Nmvec  = c(24,32,48)
 nrep   = 100
 scales = c(0,seq(1,30,2))/60/24
 pars   = expand.grid(scale=scales,type=c('irregular','equispaced'),Nm=Nmvec)
-sols   = readRDS('clean_figs/data/powerCHORD_even_sols.RDS')
+sols   = readRDS('PLOSfigures/data/powerCHORD_even_sols.RDS')
 
 
 df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ii){

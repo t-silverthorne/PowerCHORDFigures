@@ -6,7 +6,7 @@ Amp      = 1
 
 
 # load differential evolution results 
-am = readRDS('clean_figs/data/powerCHORD_even_sols.RDS')
+am = readRDS('PLOSfigures/data/powerCHORD_even_sols.RDS')
 am = am[am@''$method=='diffEVCR',]
 df = am@''
 

@@ -4,7 +4,7 @@ source('PLOSfigures/clean_theme.R')
 #TDOO: check that this is present in git-lfs
 
 # load in enumeration of necklaces
-Cmat = read_csv('clean_figs/data/neck_counts.csv',col_names = F)
+Cmat = read_csv('PLOSfigures/data/neck_counts.csv',col_names = F)
 Cmat = Cmat %>% data.frame()
 Cmat = 10^Cmat
 Cmat = Cmat %>% t()

@@ -2,9 +2,9 @@ source("PLOSfigures/clean_theme.R")
 
 strict=T # strict => no measurements at night
 if (strict){
-  ff='clean_figs/data/window_sols_fp2_strict.csv'
+  ff='PLOSfigures/data/window_sols_fp2_strict.csv'
 }else{
-  ff='clean_figs/data/window_sols_fp2.csv'
+  ff='PLOSfigures/data/window_sols_fp2.csv'
 }
 df = read.csv2(ff,sep=',',header = F)
 df = na.omit(df)
