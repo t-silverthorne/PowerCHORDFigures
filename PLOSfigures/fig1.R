@@ -63,9 +63,9 @@ rad_brk = c(0,pi,2*pi)
 rad_lab = c(expression(0),
             expression(pi),
             expression(2*pi))
-plt= pdf %>% filter(meas!='true') %>% 
+plt= pdf %>% 
 ggplot(aes(x=acro,fill=cmap_var))+
-  geom_histogram()+
+  geom_histogram()+ 
   facet_grid(per_label~meas)+
   scale_fill_manual(values=cmap_cust)
 plt = plt + scale_x_continuous(limits=c(0,2*pi),
@@ -77,7 +77,7 @@ plt = plt + labs(x=element_text('acrophase'),
                   y=element_text('count'))
 pbot = plt
 p1=plt
-
+p1
 
 ###########################
 # Plot raw measurement times 
