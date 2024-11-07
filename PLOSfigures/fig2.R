@@ -1,10 +1,11 @@
-source('clean_figs/clean_theme.R')
+source('PLOSfigures/clean_theme.R')
+
+# define parameters
 Nfreq    = 2^10
 Amp      = 1
-mc_cores = 12
 
 
-# only look at differential evolution results
+# load differential evolution results 
 am = readRDS('clean_figs/data/powerCHORD_even_sols.RDS')
 am = am[am@''$method=='diffEVCR',]
 df = am@''
@@ -13,7 +14,7 @@ df = am@''
 ###########################
 # Plot of power gain 
 ###########################
-fdf=c(1:dim(am)[1]) %>% mclapply(mc.cores=12,function(ii){
+fdf=c(1:dim(am)[1]) %>% mclapply(mc.cores=mc_cores,function(ii){
   mt = as.numeric(am[ii,])
   mt = mt[!is.nan(mt)] 
   Nm = am@''[ii,]$Nmeas
@@ -40,6 +41,7 @@ fdf$d_power = fdf$pwr-fdf$pwr_unif
 fdf$rel_gain = 100*(fdf$d_power/fdf$pwr_unif) |> abs()
 fdf |> filter(d_power<0) |> select(rel_gain) |> max()
 
+# make plot
 fdf = fdf |> mutate(dpower_plt = ifelse(abs(d_power)>.01,d_power,NA))
 fdf = fdf %>% mutate(N=Nmeas)
 plt = fdf %>% ggplot(aes(x=fmin,y=fmax,color=dpower_plt))+geom_point(size=3)+
@@ -56,7 +58,6 @@ plt=plt+guides(color=guide_colorbar(title.position='right'))
 plt=plt+theme(legend.direction='vertical',
                 legend.title = element_text(angle = 90,hjust=0.5))
 plt_gainWC = plt
-plt
 
 
 ###########################
@@ -69,12 +70,15 @@ acros     = acros[1:(length(acros)-1)]
 fmin      = 1
 fmax      = 24
 freqs_plt = seq(fmin,fmax,length.out=Nfreq_plt)
+
+# acrophase/frequency values to sweep over
 pars=expand.grid(Amp=c(1),
                  Nmeas=c(24,48),
                  acro=acros,
                  freq=freqs_plt,
                  type=c('equispaced design','irregular design'))
 
+# sweep over pars and compute power
 pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=12,function(ii){
   x      = pars[ii,]
   Nmeas  = as.numeric(x[['Nmeas']])
@@ -101,13 +105,18 @@ pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=12,function(ii){
   }
   return(power)
 })
-pars$power = pwr_vec
 
+# unpack result
+pars$power = pwr_vec
 pars$freq =as.numeric(pars$freq)
 pars$acro =as.numeric(pars$acro)
 pars$power=as.numeric(pars$power)
 
+
+# nicer looking label
 pars$N = factor(pars$Nmeas,unique(pars$Nmeas),paste0('N = ',unique(pars$Nmeas)))
+
+# make plot
 plt = pars |> 
   ggplot(aes(x=freq,y=acro,fill=power))+
   geom_raster()+
@@ -123,14 +132,18 @@ plt=plt+theme(legend.direction='vertical',
 phmap = plt
 phmap
 
+# combine and export
 Fig1=plt_gainWC/phmap+ plot_annotation(tag_levels='A')+
   plot_layout(heights=c(1,1))
 
-show_temp_plt(Fig1,6,4)
-
-ggsave(paste0('~/research/ms_powerCHORD/figures/',
-              'f2_broadprior1.png'),
+ggsave('PLOSfigures/fig2.png',
        Fig1,
        width=6,height=3.5,
        device='png',
+       dpi=600)
+
+ggsave('PLOSfigures/fig2.tiff',
+       Fig1,
+       width=6,height=3.5,
+       device='tiff',
        dpi=600)

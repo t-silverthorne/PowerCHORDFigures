@@ -1,13 +1,12 @@
-source('clean_figs/clean_theme.R')
-
+source('PLOSfigures/clean_theme.R')
 
 # load in cutsdp solutions
 n    = 48
 tau  = c(1:n)/n -1/n
 Xraw = read.csv2('clean_figs/data/cutsdp_sols.csv',header = F,sep=',')
 
-Nmc=1e5
-
+# simulation parameters
+Nmc     = 1e5
 Amp     = sqrt(2) 
 Nm      = 12 
 tunif   = c(1:Nm)/Nm-1/Nm # equispaced
@@ -21,11 +20,10 @@ t1     = c(1:Nm1)/Nm1 -1/Nm1
 t2     = c(1:Nm2)/Nm2 -1/Nm2
 tirr_b = c(t1*lamb,lamb +t2*(1-lamb))
 
-
-
 ###########################
 # Acrophase histogram 
 ###########################
+# simulate cosinor analysis
 pdf = c(1,6) |> lapply(function(freq){
   acrovec = 2*pi*runif(Nmc)
   Yunif   = Amp*cos(outer(acrovec,2*pi*freq*tunif,'-'))+matrix(rnorm(length(tunif)*Nmc),nrow=Nmc)
@@ -52,7 +50,7 @@ pdf = c(1,6) |> lapply(function(freq){
 
 pdf$cmap_var = paste0(pdf$meas,pdf$freq)
 
-
+# make plot
 pdf = pdf |> mutate(per_label = ifelse(freq==1,'T = 24 hr','T = 4 hr'))
 cmap_cust = c('good alternative1'=rgb(.05,0.5,.06),
           'equispaced1'=rgb(.05,0.5,.06),
@@ -81,9 +79,8 @@ pbot = plt
 p1=plt
 
 
-
 ###########################
-# Raw meas times 
+# Plot raw measurement times 
 ###########################
 Nm=12
 tunif   = c(1:Nm)/Nm-1/Nm
@@ -106,15 +103,19 @@ plt = plt + labs(x=element_text('time (hr)'))
 plt = plt+scale_x_continuous(limits=c(0,24),breaks=seq(0,24,4))
 plt = plt+theme(axis.line.y = element_blank())
 plt = plt+theme(axis.ticks.y = element_blank())
-p0          =plt
+p0  = plt
 
-
-require(patchwork)
 Fig = ((p0 / p1) + plot_layout(heights=c(1,7)) )  + 
   plot_layout(widths=c(3,1)) + plot_annotation(tag_levels='A')
 show_temp_plt(Fig,6,2.5)
-ggsave(paste0('~/research/ms_powerCHORD/figures/',
-              'f1_motivation.png'),
+ggsave(paste0('PLOSfigures/',
+              'fig1.tiff'),
+       Fig,
+       width=6,height=2.5,
+       device='tiff',
+       dpi=600)
+ggsave(paste0('PLOSfigures/',
+              'fig1.png'),
        Fig,
        width=6,height=2.5,
        device='png',
