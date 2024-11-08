@@ -15,7 +15,7 @@ pars      = expand.grid(freq=freq_vals,
                         Amp = c(1,2),
                         p_osc = c(0.5),
                         type=c('irregular','equispaced'))
-sols      = readRDS('diffEV.RDS')
+sols      = readRDS('PLOSfigures/data/diffEV.RDS')
 
 acro_dist   = 'average' 
 
