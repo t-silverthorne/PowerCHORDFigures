@@ -4,11 +4,6 @@ Amp      = 1
 mc_cores = 12
 
 
-# only look at differential evolution results
-am = readRDS('PLOSfigures/data/powerCHORD_even_sols.RDS')
-am = am[am@''$method=='diffEVCR',]
-df = am@''
-
 ###########################
 # power heatmap 
 ###########################
@@ -68,13 +63,45 @@ plt=plt+theme(legend.direction='vertical',
 phmap = plt
 
 
+###########################
+# near-Nyquist power fluctuations 
+###########################
+
+Nmin  = 8  
+Nmax  = 24 
+Nvals = Nmin:Nmax
+Nfr   = 5e2
+
+df=Nvals |> lapply(function(N){
+  mt   = c(1:N)/N-1/N
+  data.frame(N=N,
+             freq=seq(N*0.9/2,N*1.1/2,length.out=Nfr)*2/N,
+             power=evalWorstPowerMultiFreq(mt,fmin=0.9*N/2,fmax=1.1*N/2,
+                                           Nfreq = Nfr,
+                                           Amp=1,
+                                           returnType='all')
+  )
+}) |> rbindlist() |> data.frame()
+
+
+lplt=df |> ggplot(aes(x=freq,y=power,color=N,group=N))+geom_line()+
+  scale_color_viridis_c(option='A')+clean_theme()+
+  labs(y='acrophase (rad)',x='relative frequency (f/Nyquist)',
+       color='sample size')
+lplt=lplt+guides(color=guide_colorbar(title.position='right'))
+lplt=lplt+theme(legend.direction='vertical',
+              legend.title = element_text(angle = 90,hjust=0.5))
+
+
+Fig = (phmap|lplt)+plot_annotation(tag_levels='A')
+
 ggsave('PLOSfigures/suppfig2.tiff',
-       phmap,
+       Fig,
        width=6,height=2,
        device='tiff',
        dpi=600)
 ggsave('PLOSfigures/suppfig2.png',
-       phmap,
+       Fig,
        width=6,height=2,
        device='png',
        dpi=600)

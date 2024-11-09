@@ -1,6 +1,6 @@
 %% Extract results of differential evolution
 
-directory = 'diffEvolveOutput';
+directory = '../../PowerCHORD/MATLAB/cluster_compute_gpu/diffEvolveOutput/';
 matFiles = dir(fullfile(directory, '*.mat'));
 %%
 T=table();
@@ -29,4 +29,4 @@ for ii = 1:length(matFiles)
 end
 prob_inds
 %%
-writetable(T,'diffEvolveOutput.csv')
+writetable(T,'../data/diffEvolveOutput.csv')
