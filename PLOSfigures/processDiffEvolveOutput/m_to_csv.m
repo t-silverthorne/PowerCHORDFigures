@@ -2,9 +2,10 @@
 
 directory = '../../PowerCHORD/MATLAB/cluster_compute_gpu/diffEvolveOutput/';
 matFiles = dir(fullfile(directory, '*.mat'));
+length(matFiles)
 %%
 T=table();
-prob_inds=[]
+prob_inds=[];
 for ii = 1:length(matFiles)
     % Load the .mat file
     filePath = fullfile(directory, matFiles(ii).name);
