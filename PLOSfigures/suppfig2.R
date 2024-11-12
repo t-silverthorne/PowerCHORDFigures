@@ -86,7 +86,7 @@ df=Nvals |> lapply(function(N){
 
 lplt=df |> ggplot(aes(x=freq,y=power,color=N,group=N))+geom_line()+
   scale_color_viridis_c(option='A')+clean_theme()+
-  labs(y='acrophase (rad)',x='relative frequency (f/Nyquist)',
+  labs(y='power',x='relative frequency (f/Nyquist)',
        color='sample size')
 lplt=lplt+guides(color=guide_colorbar(title.position='right'))
 lplt=lplt+theme(legend.direction='vertical',
