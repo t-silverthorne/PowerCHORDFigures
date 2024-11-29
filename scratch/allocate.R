@@ -1,3 +1,8 @@
+require(data.table)
+require(ggplot2)
+require(dplyr)
+require(devtools)
+devtools::load_all('PowerCHORD')
 data.frame(mt=(tirr %% (1/48))) |> ggplot(aes(x=mt,y=1))+geom_point()
 
 (24*tirr) %% 4
@@ -96,9 +101,30 @@ nf   = length(Tvec)
 nvec = c(4,4,3)
 kvec = rep(NaN,nf-1)
 for (ii in c(1:nf-1)){
+  kvec[ii] = Tvec[ii+1]/nvec[ii+1]/Tvec[ii]
+}
+mt = get_meas_times(1,Tvec,nvec,kvec,NULL)
+mt = mt/Tvec[nf]
+data.frame(time=mt) |> ggplot(aes(x=time ,y=1))+geom_point()
+check_meas_times(mt,Tvec)
+
+
+#Tvec = c(24,24*7*4,24*7*4*12)
+#nvec_best = c(10,5,9)
+Tvec = c(24,24*7*4,24*7*4*12)
+nvec = c(4,4,6)
+nf   = length(Tvec)
+kvec = rep(NaN,nf-1)
+for (ii in c(1:nf-1)){
   kvec[ii] = Tvec[ii+1]/nvec[ii+1]/Tvec[1]
 }
 mt = get_meas_times(1,Tvec,nvec,kvec,NULL)
 mt = mt/Tvec[nf]
-data.frame(time=mt) |> ggplot(aes(x=time,y=1))+geom_point()
-check_meas_times(mt,Tvec)
+mt = mt
+max(mt)
+data.frame(time=mt%%1) |> 
+  ggplot(aes(x=(time)*12 ,y=1))+geom_point(size=.1)
+check_meas_times(mt,Tvec) 
+check_meas_times(mt%%1,Tvec) 
+length(mt)
+length(unique(mt))

@@ -68,7 +68,7 @@ phmap = plt
 ###########################
 
 Nmin  = 8  
-Nmax  = 24 
+Nmax  = 40 
 Nvals = Nmin:Nmax
 Nfr   = 5e2
 
