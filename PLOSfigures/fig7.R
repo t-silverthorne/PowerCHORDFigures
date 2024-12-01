@@ -2,13 +2,13 @@
 require(matrixTests)
 require(matrixStats)
 require(ggplot2)
-require(patchwork)
 require(dplyr)
 require(data.table)
 require(GeneCycle)
 require(devtools)
 require(ggh4x)
 require(dplyr)
+require(patchwork)
 devtools::load_all("PowerCHORD")
 # load data 
 df = read.csv('data_analysis/GSE11923_series_matrix.txt',
@@ -73,7 +73,32 @@ sdf$per_wrap = factor(sdf$per, levels = c(8,12,24),
                       labels = c("T=8 hr", "T=12 hr", "T=24 hr"))
 
 sdf$acro[(sdf$per==8) & (sdf$sampling=='sub')]=NA
-sdf |> filter(p_osc<.05) |>  ggplot(aes(x=2*pi*acro/per))+
+p1 = sdf |> filter(p_osc<.05) |>  ggplot(aes(x=2*pi*acro/per))+
   geom_histogram()+facet_grid(per_wrap~samp_wrap,scales = 'free')+
   scale_y_continuous(trans='log2')+clean_theme()+
   labs(x='acrophase (rad)',y='log2(count)')
+
+tdf = rbind(data.frame(time = mt_full,sampling='full'),
+        data.frame(time = mt_sub,sampling='sub'),
+        data.frame(time = mt_opt,sampling='optimal'))
+
+tdf$sampfac = factor(tdf$sampling, levels = c("full", "optimal", "sub"),
+                       labels = c("full (N=48)", "optimal (N=12)", 
+                                  "sub-sampled (N=12)"))
+plt = tdf |> ggplot(aes(x=time,y=1))+
+  geom_point(size=.1)+facet_wrap(~sampfac)+labs(x='time (hr)',y=NULL)+
+  clean_theme()
+plt = plt + clean_theme()
+plt = plt + theme(axis.title.y=element_blank()) 
+plt = plt + theme(axis.text.y=element_blank()) 
+plt = plt + labs(x=element_text('time (hr)'))
+p2=plt
+
+Fig = (p2/p1) + plot_layout(heights = c(1,3))+plot_annotation(tag_levels='A')
+Fig
+ggsave(paste0('PLOSfigures/',
+              'fig7.png'),
+       Fig,
+       width=6,height=4,
+       device='png',
+       dpi=600)

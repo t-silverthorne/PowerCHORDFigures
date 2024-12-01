@@ -112,16 +112,132 @@ plt = plt+theme(legend.position='bottom')
 p3  = plt
 p3
 
-Fig= (p1/( p2+p3 )) + plot_layout(heights=c(1,3))+plot_annotation(tag_levels='A')
-show_temp_plt(Fig,6,3.5)
 
-ggsave('PLOSfigures/fig6.tiff',
-       Fig,
-       width=6,height=3.5,
-       device='tiff',
-       dpi=600)
+##############
+# Calendar
+##############
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+library(ggplotify)
+# Generate data for a generic 4x7 calendar grid
+calendar_data <- expand.grid(Week = 1:4, Day = 1:7) %>%
+  mutate(DayType = ifelse(Day == 6, "Saturday", "Other"))
+
+# Define positions for the dots on a circle
+saturday_dots <- calendar_data %>%
+  filter(DayType == "Saturday") %>%
+  tidyr::expand_grid(
+    Angle = seq(0, 2 * pi, length.out = 5)[-5]
+  ) %>%
+  mutate(
+    radius = 0.3, 
+    DotX = Day + radius * cos(Angle),
+    DotY = Week + radius * sin(Angle)
+  )
+
+# Define the circle outline
+circle_outline <- calendar_data %>%
+  filter(DayType == "Saturday") %>%
+  tidyr::expand_grid(
+    Angle = seq(0, 2 * pi, length.out = 100)
+  ) %>%
+  mutate(
+    radius = 0.3, 
+    CircleX = Day + radius * cos(Angle),
+    CircleY = Week + radius * sin(Angle),
+    Group = interaction(Day, Week)
+  )
+
+# Function to create a calendar plot
+create_calendar <- function(data_grid, dots_data = NULL, circles_data = NULL) {
+  p <- ggplot(data_grid, aes(x = Day, y = Week)) +
+    geom_tile(color = "black", fill = "white") +
+    coord_fixed() +
+    scale_y_reverse() + # Reverse y-axis
+    scale_x_continuous(breaks = 1:7) + # X-axis labels for each day (1 to 7)
+    labs(x = "Day", y = "Week") + # Add axis titles
+    theme_minimal() +
+    theme(
+      axis.title = element_text(), # Axis titles
+      plot.title = element_blank(), # Remove panel titles
+      axis.text.x = element_text(), # Size of x-axis labels
+      axis.text.y = element_text()  # Size of y-axis labels
+    )
+  
+  # Add dots if provided
+  if (!is.null(dots_data)) {
+    p <- p + 
+      geom_point(size=.2,data = dots_data, aes(x = DotX, y = DotY), color = "black", size = 2)
+  }
+  
+  # Add circles if provided
+  if (!is.null(circles_data)) {
+    p <- p +
+      geom_path(
+        linewidth=.2,
+        data = circles_data, 
+        aes(x = CircleX, y = CircleY, group = Group),
+        color = "black",
+      )
+  }
+  
+  p=p+clean_theme()
+  p
+}
+
+# First row of calendars
+calendar_with_dots <- create_calendar(
+  calendar_data,
+  dots_data = saturday_dots,
+  circles_data = circle_outline
+)
+
+empty_calendar <- create_calendar(calendar_data)
+
+first_row <- (calendar_with_dots / empty_calendar / empty_calendar)
+
+# Second row of calendars, dots separated by weeks
+dots_first_week <- create_calendar(
+  calendar_data,
+  dots_data = saturday_dots %>% filter(Week == 1),
+  circles_data = circle_outline %>% filter(Week == 1)
+)
+
+dots_second_week <- create_calendar(
+  calendar_data,
+  dots_data = saturday_dots %>% filter(Week == 2),
+  circles_data = circle_outline %>% filter(Week == 2)
+)
+
+dots_third_fourth_weeks <- create_calendar(
+  calendar_data,
+  dots_data = saturday_dots %>% filter(Week %in% c(3, 4)),
+  circles_data = circle_outline %>% filter(Week %in% c(3, 4))
+)
+
+second_row <- (dots_first_week / dots_second_week / dots_third_fourth_weeks) 
+frgp = as.ggplot(first_row)
+srgp = as.ggplot(second_row)
+
+
+# Combine the rows
+full_cal = ( frgp / srgp)
+####################################
+
+Fig= ((p1/p2/p3)+plot_layout(heights=c(1.5,2,2))|first_row|second_row) +
+  plot_layout(widths=c(1.5,1,1))+
+  plot_annotation(tag_levels=list(c('A','B','C','D','','','E')))
+Fig
+show_temp_plt(Fig,6,4.5)
+
+#ggsave('PLOSfigures/fig6.tiff',
+#       Fig,
+#       width=6,height=3.5,
+#       device='tiff',
+#       dpi=600)
 ggsave('PLOSfigures/fig6.png',
        Fig,
-       width=6,height=3.5,
+       width=6,height=4.5,
        device='png',
        dpi=600)
