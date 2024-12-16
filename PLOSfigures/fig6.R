@@ -307,52 +307,59 @@ mt0 = mt
 mt  = c(mt0,mt0+3*4*7*24,mt0+6*4*7*24,mt0+9*4*7*24)
 mt  = mt/year_hr
 
+
+freq1 = 1
+freq2 = year_hr/24/7/4 
+freq3 = year_hr/24
+
+Nacro     = 2^8+1
+acros     = seq(0,2*pi,length.out=Nacro)
+acros     = acros[1:(length(acros)-1)]
+
+
+pars = expand.grid(freq_type  = c('circadian','circalunar','circannual'),
+                   freq_delta = seq(0.95,1.05,length.out=1e3),
+                   acro       = acros)
+
+pwr_vec =c(1:dim(pars)[1]) |> mclapply(mc.cores=12,function(ii){
+  x          = pars[ii,]
+  acro       = x$acro
+  freq_type  = x$freq_type
+  freq_delta = x$freq_delta 
+  freq=NaN
+  if (freq_type=='circadian'){
+    freq=year_hr/24
+  }else if (freq_type=='circalunar'){
+    freq=year_hr/24/7/4
+  }else if (freq_type=='circannual'){
+    freq=1
+  }
+  freq=freq*freq_delta
+  return(evalPower(mt,acro=acro,freq=freq,Amp=1/sqrt(2)) )
+})
+pars$power = as.numeric(pwr_vec)
+
+plt = pars |> ggplot(aes(y=acro,x=freq_delta,fill=power))+geom_raster()+
+  scale_fill_viridis_c()+
+  facet_wrap(~freq_type,ncol=1)+
+  scale_y_continuous(limits=c(0,2*pi),breaks =rad_brk[c(1,3,5)],
+                     labels = rad_lab[c(1,3,5)])+
+  scale_x_continuous(limits=c(0.95,1.05),breaks=c(0.95,1,1.05))+
+  labs(y='acrophase (rad)',x='relative frequency')+clean_theme()
+plt = plt + theme(legend.direction='horizontal',legend.position='bottom')
+r1=plt
+
 length(mt)
 evalMinEig(mt,year_hr/24)
 evalMinEig(mt,year_hr/24/7/4)
 
-Nacro     = 2^7+1
-acros     = seq(0,2*pi,length.out=Nacro)
-acros     = acros[1:(length(acros)-1)]
+Figsup = p3+r1 + plot_annotation(tag_levels='A')+
+  plot_layout(widths = c(1,2))
+show_temp_plt(Figsup,6,3.5)
 
-pars = expand.grid(period = log_interp,
-                   acro = acros)
-pwr_vec =c(1:dim(pars)[1]) |> mclapply(mc.cores=12,function(ii){
-  x = pars[ii,]
-  acro = x$acro
-  period = 10^(x$period)
- 
-  freq = year_hr/period 
-  return(evalPower(mt,acro=acro,freq=freq,Amp=.5) )
-})
-
-pars$power = pwr_vec |> as.numeric()
-
-pars |> ggplot(aes(x=period,y=acro,fill=power))+geom_raster()+
-  geom_vline(xintercept = log10(24),linetype='dashed')+
-  geom_vline(xintercept = log10(24*7*4),linetype='dashed')+
-  geom_vline(xintercept = log10(12*24*7*4),linetype='dashed')+
-  scale_fill_viridis_c()
-
-# Subpanels for immmediate vicinity of periods of interest
-
-#(p1/p2 + (q1/q2)+ plot_layout(widths=c(1,1,1)))/first_col/second_col
-#((p1+p2)/(q1+q2))/first_col/second_col +
-#  plot_annotation(tag_levels=c('A'))
-#
-#
-#Fig= ((p1/p2/p3)+plot_layout(heights=c(1.5,2,2))|first_row|second_row) +
-#  plot_layout(widths=c(1.5,1,1))+
-#  plot_annotation(tag_levels=list(c('A','B','C','D','','','E')))
-#Fig
-
-#ggsave('PLOSfigures/fig6.tiff',
-#       Fig,
-#       width=6,height=3.5,
-#       device='tiff',
-#       dpi=600)
-ggsave('PLOSfigures/fig6.png',
-       Fig,
-       width=6,height=4.5,
+ggsave('PLOSfigures/fig6sup.png',
+       Figsup,
+       width=6,height=3.5,
        device='png',
        dpi=600)
+
