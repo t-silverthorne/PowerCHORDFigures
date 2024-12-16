@@ -38,7 +38,7 @@ run_sim = function(mtloc,acrovec,state){
   
   # lomb scargle analysis 
   df = c(1:Nmc) |> mclapply(mc.cores=mc_cores,function(ind){
-    lomb = lsp(Ydat[ind,],times=mtloc,plot=F,from = 1,to=8,ofac=10)
+    lomb = lsp(Ydat[ind,],times=mtloc,plot=F,from = 1,to=8,ofac=30)
     return(data.frame(ind=ind,
                       freq  = lomb$scanned,
                       power = lomb$power))
@@ -85,36 +85,130 @@ pdf=rbind(cbind(resu$pvdf,type='equispaced'),
 dfgrp = dfall |> group_by(type,freq) |> 
   summarise(mean_power = mean(power))
 
+###########################
+# Plot raw measurement times 
+###########################
+Nm=12
+tunif   = c(1:Nm)/Nm-1/Nm
+tirr    = tau[Xraw[3,]>1e-12]
+df=rbind(data.frame(time=tunif,type='equispaced'),
+         data.frame(time=tirr,type='methodically balanced'),
+         data.frame(time=tirr_b,type='fast-slow alternative'))
+dat_bands = data.frame(start=c(0:12)*2,end=(c(0:12)*2+1))
+head(df)
+df$type = factor(df$type,levels=c('equispaced','fast-slow alternative','methodically balanced'))
+plt = df %>% ggplot(aes(x=24*time,y=1))+geom_point(size=.5)+
+geom_rect(data=dat_bands,
+  aes(xmin=start,xmax=end,ymin=-Inf,ymax=Inf),alpha=.4,
+  inherit.aes = F,fill=c('lightblue'))+
+  facet_wrap(~type,ncol=1)
+plt = plt + clean_theme()
+plt = plt + theme(axis.title.y=element_blank()) 
+plt = plt + theme(axis.text.y=element_blank()) 
+plt = plt + labs(x=element_text('time (hr)'))
+plt = plt+scale_x_continuous(limits=c(0,24),breaks=seq(0,24,4))
+plt = plt+theme(axis.line.y = element_blank())
+plt = plt+theme(axis.ticks.y = element_blank())
+p0  = plt
+
+
+###########################
+# Matt's spectrum idea
+###########################
+
+
 
 ###########################
 # Plot Lomb-Scargle 
 ###########################
-p1 = dfgrp |> ggplot(aes(x=freq,y=mean_power,group=type,color=type))+geom_line()
-p1=p1+theme(legend.position='bottom')
 
+dfgrp$type <- factor(dfgrp$type, 
+                     levels = c("equispaced", "bad alt", "good alt"), 
+                     labels = c("equispaced", "fast-slow", "balanced"))
+custom_colors = c(
+  c("equispaced"='black',
+    "fast-slow"=rgb(1,0,0.5),
+    "balanced"=rgb(.36,.54,.66)
+      )
+)
+plt = dfgrp |> ggplot(aes(x=freq,y=mean_power,group=type,color=type))+
+  geom_line()+
+  geom_vline(xintercept = 1, linetype = "dashed")+
+  geom_vline(xintercept = 6, linetype = "dashed")
+  
+plt = plt + clean_theme()
+plt = plt+theme(legend.position='bottom')
+plt = plt + labs(x='frequency (cycles/day)',y='average intensity')
+plt = plt + scale_color_manual(values=custom_colors)
+plt
+p1=plt
+p1=p1+theme(legend.position='right')
 ###########################
 # Plot acro distribution 
 ###########################
 p2a = pdf |>  filter(pval<.05 & type=='equispaced') |> 
-  ggplot(aes(x=acro))+geom_histogram(bins=30)+
+  ggplot(aes(x=acro_true))+geom_histogram(bins=30)+
   facet_wrap(~sig,scales='free_y',nrow=2)
 p2a
 
 p2b = pdf |>  filter(pval<.05 & type=='bad alt') |> 
-  ggplot(aes(x=acro))+geom_histogram(bins=30)+
+  ggplot(aes(x=acro_true))+geom_histogram(bins=30)+
   facet_wrap(~sig,scales='free_y',nrow=2)
 p2b
 
 p2c = pdf |>  filter(pval<.05 & type=='good alt') |> 
-  ggplot(aes(x=acro))+geom_histogram(bins=30)+
+  ggplot(aes(x=acro_true))+geom_histogram(bins=30)+
   facet_wrap(~sig,scales='free_y',nrow=2)
 p2c
 
 p2 = p2a|p2b|p2c
 
+###########################
+# Nicer plot of acro distribution 
+###########################
+pdf$typef <- factor(pdf$type, 
+                     levels = c("equispaced", "bad alt", "good alt"), 
+                     labels = c("equispaced", "fast-slow alternative", "methodically balanced"))
 
+pdf$cmap_var = paste0(pdf$typef,pdf$rfreq)
+pdf = pdf |> mutate(per_label = ifelse(rfreq==1,'T = 24 hr','T = 4 hr'))
+cmap_cust = c('methodically balanced1'=rgb(.05,0.5,.06),
+          'equispaced1'=rgb(.05,0.5,.06),
+          'fast-slow alternative1'=rgb(.81,.06,.13),
+          'methodically balanced6'=rgb(.05,0.5,.06),
+          'fast-slow alternative6'=rgb(.05,0.5,.06),
+          'equispaced6'=rgb(.81,.06,.13))
+
+plt = pdf |> filter(pval<.05) |> 
+  ggplot(aes(x=acro_true,fill=cmap_var))+
+  geom_histogram()+facet_grid(per_label~typef)+
+  scale_fill_manual(values=cmap_cust)
+plt = plt + scale_x_continuous(limits=c(0,2*pi),
+                                breaks =rad_brk,
+                                labels = rad_lab)
+plt = plt+clean_theme()
+plt = plt + theme(legend.position='none')
+plt = plt + labs(x=element_text('acrophase'),
+                  y=element_text('count'))
+plt
+p2=plt
+###########################
 # assemble plot
-(p0/p1/p2) + plot_layout(heights=c(1,2,4)) + plot_annotation(tag_levels='A')
+###########################
+p1=p1+theme(legend.position='bottom')
+Fig = (((p0|p1)+
+          plot_layout(widths = c(1,2))&plot_layout(guides='collect')&
+          theme(legend.position='bottom'))/p2) +
+  plot_layout(heights=c(1.2,2)) +plot_annotation(tag_levels='A')
+
+Fig
+#Fig=(p0/p1/p2) + plot_layout(heights=c(0.5,2,4)) + plot_annotation(tag_levels='A')
+ggsave(paste0('PLOSfigures/',
+              'fig1.png'),
+       Fig,
+       width=6,height=3.55,
+       device='png',
+       dpi=600)
 
 #pdf |> filter(pval<.05 & type=='bad alt' & sig=='circadian' & state=='circ' ) |> 
 #    ggplot(aes(x=acro_true))+geom_histogram(bins=30)

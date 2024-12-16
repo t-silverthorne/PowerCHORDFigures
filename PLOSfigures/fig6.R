@@ -35,6 +35,53 @@ plt = plt+theme(axis.ticks.y = element_blank())
 p1=plt
 
 ###########################
+# Cycle diagram
+###########################
+plt=data.frame(time=topt,rr=2*(1+((24*topt)%%2))) |> 
+  ggplot(aes(x=time*2*pi,y=rr))+
+  geom_point(size=1)+coord_polar(theta='x',clip='off')+theme_minimal()+
+  scale_x_continuous(breaks=c(0,pi/2,pi,3*pi/2),
+                     labels = c('0','6','12','18'),
+                     limits = c(0,2*pi))+
+  geom_hline(yintercept = seq(2, 5, by = 1), linetype = "dashed", 
+             color = "black") +
+  scale_y_continuous(labels=c(),limits=c(1,6),breaks=NULL)+
+  labs(x='phase (along 24hr cycle)',y=NULL)
+plt=plt+clean_theme()
+plt = plt + theme(
+  plot.margin = margin(0,0,0,0),
+  #axis.title.x = element_blank(),
+  axis.title.y = element_blank(),
+  axis.ticks.x = element_blank(),
+  axis.ticks.y = element_blank(),
+  axis.line = element_blank()
+)
+plt
+q1=plt
+
+plt=data.frame(time=2*pi*((24*topt)%%2)/2,phase=24*topt+1) |> 
+  ggplot(aes(x=time,y=phase))+
+  geom_point(size=1)+coord_polar(theta='x')+theme_minimal()+
+  scale_x_continuous(breaks=c(0,pi/2,pi,3*pi/2),
+                     labels = c('0','1/2','1','3/2'),
+                     limits = c(0,2*pi))+
+  geom_hline(yintercept = seq(4, 24, by = 6), 
+             linetype = "dashed", color = "black") +
+  scale_y_continuous(labels=c(),limits=c(0,24),breaks=NULL)+
+  labs(x='phase (along 2hr cycle)',y=NULL)
+plt=plt+clean_theme()
+plt = plt + theme(
+  plot.margin = margin(0,0,0,0),
+  #axis.title.x = element_blank(),
+  axis.title.y = element_blank(),
+  axis.ticks.x = element_blank(),
+  axis.ticks.y = element_blank(),
+  axis.line = element_blank()
+)
+plt
+q2=plt
+
+###########################
 # ncp across freqs 
 ###########################
 fvec = seq(0,16,.01)
@@ -60,7 +107,7 @@ plt = edf %>% ggplot(aes(x=freq,y=emin,group=type,color=type))+geom_line()+
   geom_vline(xintercept = 1,linetype='dashed')+
   scale_x_continuous(limits=c(0,16),breaks=seq(0,16,4))+
   scale_color_manual(values=color_scale)+
-  labs(x='frequency (cycles/day)',y='noncentrality parameter')+
+  labs(x='frequency (cycles/day)',y='noncentrality')+
   guides(color=guide_legend(title=NULL))
 plt = plt+clean_theme()
 plt = plt+theme(legend.position='bottom')
@@ -99,6 +146,8 @@ plt = rdf %>% ggplot(aes(x=eig1,y=eig12,color=type,size=type,
   scale_alpha_manual(values = alpha_scale)+
   scale_color_manual(values=color_scale)+
   scale_shape_manual(values=type_scale)+
+  geom_hline(yintercept = 6,color='purple',linetype='dashed')+
+  geom_vline(xintercept = 6,color='purple',linetype='dashed')+
   geom_label_repel(data = subset(rdf, type %in% c("equispaced", "optimal")),
                   aes(label = type),show.legend=F)+
   labs(x='noncentrality (f=1)',y='noncentrality (f=12)')+
@@ -196,6 +245,7 @@ calendar_with_dots <- create_calendar(
 empty_calendar <- create_calendar(calendar_data)
 
 first_row <- (calendar_with_dots / empty_calendar / empty_calendar)
+first_col <- (calendar_with_dots | empty_calendar | empty_calendar)
 
 # Second row of calendars, dots separated by weeks
 dots_first_week <- create_calendar(
@@ -217,19 +267,84 @@ dots_third_fourth_weeks <- create_calendar(
 )
 
 second_row <- (dots_first_week / dots_second_week / dots_third_fourth_weeks) 
+second_col <- (dots_first_week | dots_second_week | dots_third_fourth_weeks) 
 frgp = as.ggplot(first_row)
 srgp = as.ggplot(second_row)
 
-
 # Combine the rows
-full_cal = ( frgp / srgp)
+full_cal  = ( frgp / srgp)
 ####################################
 
-Fig= ((p1/p2/p3)+plot_layout(heights=c(1.5,2,2))|first_row|second_row) +
-  plot_layout(widths=c(1.5,1,1))+
-  plot_annotation(tag_levels=list(c('A','B','C','D','','','E')))
-Fig
+Fig=(p1|p2)/ ( ((q1/q2) |(first_col/second_col)) +plot_layout(widths=c(1.5,3))) + 
+  plot_layout(heights=c(1.5,8))+
+  plot_annotation(tag_levels=list(c('A','B','C','D','E','','','F')))
 show_temp_plt(Fig,6,4.5)
+ggsave('PLOSfigures/fig6.png',
+       Fig,
+       width=6,height=4.5,
+       device='png',
+       dpi=600)
+
+####################################
+# Supp fig part
+####################################
+
+#logscale freq to show circadian/circalunar/circannual spectrum
+
+pers = c(24, 24*7*4, 24*7*4*12)
+
+# Log-transform the values
+log_pers <- log10(pers)
+
+# Create a sequence of evenly spaced points in the log space
+log_interp <- seq(from = log_pers[1], to = log_pers[3], length.out = 1e3)
+
+year_hr = pers[3]
+
+mt0 = c(0,6,12,18)
+mt = c(mt0,mt0+7*24,mt0+14*24,mt0+21*24)
+mt0 = mt
+mt  = c(mt0,mt0+3*4*7*24,mt0+6*4*7*24,mt0+9*4*7*24)
+mt  = mt/year_hr
+
+length(mt)
+evalMinEig(mt,year_hr/24)
+evalMinEig(mt,year_hr/24/7/4)
+
+Nacro     = 2^7+1
+acros     = seq(0,2*pi,length.out=Nacro)
+acros     = acros[1:(length(acros)-1)]
+
+pars = expand.grid(period = log_interp,
+                   acro = acros)
+pwr_vec =c(1:dim(pars)[1]) |> mclapply(mc.cores=12,function(ii){
+  x = pars[ii,]
+  acro = x$acro
+  period = 10^(x$period)
+ 
+  freq = year_hr/period 
+  return(evalPower(mt,acro=acro,freq=freq,Amp=.5) )
+})
+
+pars$power = pwr_vec |> as.numeric()
+
+pars |> ggplot(aes(x=period,y=acro,fill=power))+geom_raster()+
+  geom_vline(xintercept = log10(24),linetype='dashed')+
+  geom_vline(xintercept = log10(24*7*4),linetype='dashed')+
+  geom_vline(xintercept = log10(12*24*7*4),linetype='dashed')+
+  scale_fill_viridis_c()
+
+# Subpanels for immmediate vicinity of periods of interest
+
+#(p1/p2 + (q1/q2)+ plot_layout(widths=c(1,1,1)))/first_col/second_col
+#((p1+p2)/(q1+q2))/first_col/second_col +
+#  plot_annotation(tag_levels=c('A'))
+#
+#
+#Fig= ((p1/p2/p3)+plot_layout(heights=c(1.5,2,2))|first_row|second_row) +
+#  plot_layout(widths=c(1.5,1,1))+
+#  plot_annotation(tag_levels=list(c('A','B','C','D','','','E')))
+#Fig
 
 #ggsave('PLOSfigures/fig6.tiff',
 #       Fig,
