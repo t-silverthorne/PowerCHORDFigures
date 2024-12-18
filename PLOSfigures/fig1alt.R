@@ -112,11 +112,6 @@ plt = plt+theme(axis.ticks.y = element_blank())
 p0  = plt
 
 
-###########################
-# Matt's spectrum idea
-###########################
-
-
 
 ###########################
 # Plot Lomb-Scargle 
@@ -124,11 +119,11 @@ p0  = plt
 
 dfgrp$type <- factor(dfgrp$type, 
                      levels = c("equispaced", "bad alt", "good alt"), 
-                     labels = c("equispaced", "fast-slow", "balanced"))
+                     labels = c("equispaced", "fast-slow", "methodically balanced"))
 custom_colors = c(
   c("equispaced"='black',
     "fast-slow"=rgb(1,0,0.5),
-    "balanced"=rgb(.36,.54,.66)
+    "methodically balanced"=rgb(.36,.54,.66)
       )
 )
 plt = dfgrp |> ggplot(aes(x=freq,y=mean_power,group=type,color=type))+

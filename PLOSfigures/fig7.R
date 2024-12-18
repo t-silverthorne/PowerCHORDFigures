@@ -9,6 +9,7 @@ require(GeneCycle)
 require(devtools)
 require(ggh4x)
 require(dplyr)
+require(tidyr)
 require(patchwork)
 devtools::load_all("PowerCHORD")
 # load data 
@@ -65,6 +66,30 @@ sdf = c(1:dim(pars)[1]) |> lapply(function(ind){
 }
 ) |> rbindlist() |> data.frame()
 
+
+############# Fisher stats
+head(sdf)
+
+
+
+temp = sdf[,c('probe','p_osc','per','sampling')] |>
+  filter(per %in% c(12,24)) |> 
+  pivot_wider(names_from = sampling, values_from = p_osc)
+
+(p.adjust(temp$full,method='none')<.05) |> summary()
+(p.adjust(temp$sub,method='none')<.05) |> summary()
+(p.adjust(temp$optimal,method='none')<.05) |> summary()
+
+fisher.test(temp$full<.05,temp$sub<.05) 
+fisher.test(temp$full<.05,temp$optimal<.05) 
+
+
+
+temp2 = sdf[,c('probe','p_osc','per','sampling')] |>
+  filter(per %in% c(8)) |> 
+  pivot_wider(names_from = sampling, values_from = p_osc)
+
+############# figure
 sdf_copy = sdf
 source('PLOSfigures/clean_theme.R')
 sdf$samp_wrap = factor(sdf$sampling, levels = c("full", "optimal", "sub"),

@@ -207,14 +207,12 @@ p3
 p1t = p1 +theme(axis.text.x = element_text(size=6))
 Fig = ((p1t/p2 + plot_layout(heights=c(3,1)))|p3)  + 
   plot_layout(guides='collect',widths=c(3,1)) +
-  plot_annotation(tag_levels='A')& theme(legend.position='bottom') & guides(color='none',fill='none')
+  plot_annotation(tag_levels='A')&
+  theme(legend.position='bottom',
+        plot.margin=margin(1,1,1,1)) & 
+  guides(color='none',fill='none')
 show_temp_plt(Fig,6,4)
 
-ggsave('PLOSfigures/fig5.tiff',
-       Fig,
-       width=6,height=4,
-       device='tiff',
-       dpi=600)
 ggsave('PLOSfigures/fig5.png',
        Fig,
        width=6,height=4,

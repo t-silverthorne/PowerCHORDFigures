@@ -23,7 +23,7 @@ clean_theme=function(){
       margin = margin(b = mar,r =mar,t=mar,l=mar)
     )),
     theme(
-    plot.margin = margin(0,0,0,0),
+    plot.margin = margin(1,1,1,1),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.text.x = element_text(vjust = 0.25)),
