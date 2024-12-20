@@ -1,11 +1,6 @@
 source("PLOSfigures/clean_theme.R")
 
-strict=T # strict => no measurements at night
-if (strict){
-  ff='PLOSfigures/data/window_sols_fp2_strict.csv'
-}else{
-  ff='PLOSfigures/data/window_sols_fp2.csv'
-}
+ff='PLOSfigures/data/window_sols_fp2_strict.csv'
 df = read.csv2(ff,sep=',',header = F)
 df = na.omit(df)
 
@@ -23,26 +18,15 @@ for (ind in c(1:dim(df)[1])){
   lenw = wvec[ind]-1
   pv   = rep(1,lenw)
   found_window = F
-  if (strict){
-    for (ii in c(0:(n-1))){
-      if (t(bvec[1+(0:(lenw-1) + ii)%%n])%*%pv == 0){
-        if (!found_window){
-          found_window=T
-          wstart[ind]= ii
-        }
-      }
-    }
-  }else{
-    
-    for (ii in c(0:(n-1))){
-      if (t(bvec[1+(0:(lenw-1) + ii)%%n])%*%pv == 1){
-        if (!found_window){
-          found_window=T
-          wstart[ind]= ii
-        }
+  for (ii in c(0:(n-1))){
+    if (t(bvec[1+(0:(lenw-1) + ii)%%n])%*%pv == 0){
+      if (!found_window){
+        found_window=T
+        wstart[ind]= ii
       }
     }
   }
+  
 }
 wstart
 
@@ -59,21 +43,12 @@ tdf = c(1:dim(df)[1]) %>% lapply(function(ii){
 
 # naive designs 
 ndf = seq(12,24,2) |> lapply(function(ii){
-  if (strict){
-    ww    = ii/48
-    N     = 8  
-    Nm1   = N-1
-    unm   = c(0:Nm1)/Nm1
-    tvec  = ww+(1-ww)*unm
-    tvec  = (tvec+0.5) %% 1
-  }else{
-    N     = 8  
-    Nm1   = N-2
-    ww    = ii/48
-    unm   = c(0:Nm1)/Nm1  
-    tvec  = c(ww/2,ww + (1-ww)*unm)
-    tvec  = (tvec+0.5) %% 1
-  }
+  ww    = ii/48
+  N     = 8  
+  Nm1   = N-1
+  unm   = c(0:Nm1)/Nm1
+  tvec  = ww+(1-ww)*unm
+  tvec  = (tvec+0.5) %% 1
   return(data.frame(window=ii,time=tvec,type='naive'))
 }) |> rbindlist() |> data.frame()
 

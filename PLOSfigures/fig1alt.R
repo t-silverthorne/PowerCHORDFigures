@@ -179,8 +179,8 @@ plt = pdf |> filter(pval<.05) |>
   geom_histogram()+facet_grid(per_label~typef)+
   scale_fill_manual(values=cmap_cust)
 plt = plt + scale_x_continuous(limits=c(0,2*pi),
-                                breaks =rad_brk,
-                                labels = rad_lab)
+                                breaks =c(rad_brk[1],rad_brk[5]),
+                                labels =c(rad_lab[1],rad_lab[5]))
 plt = plt+clean_theme()
 plt = plt + theme(legend.position='none')
 plt = plt + labs(x=element_text('acrophase'),

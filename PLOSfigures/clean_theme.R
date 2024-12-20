@@ -47,7 +47,7 @@ rad_lab = c(expression(0),
             expression(3*pi/2),
             expression(2*pi))
 
-mc_cores=12 # number of cores on your machine
+mc_cores=16 # number of cores on your machine
 
 
 rowCosinor <- function(theData, zts, per=24,method=c('qr','ginv')) {

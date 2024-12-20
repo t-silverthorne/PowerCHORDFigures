@@ -6,7 +6,7 @@ Amp      = 1
 
 
 # load differential evolution results 
-am = readRDS('PLOSfigures/data/powerCHORD_even_sols.RDS')
+am = readRDS('PLOSfigures/data/diffEvolveOutput.RDS')
 am = am[am@''$method=='diffEVCR',]
 df = am@''
 
@@ -140,10 +140,4 @@ ggsave('PLOSfigures/fig2.png',
        Fig1,
        width=6,height=3.5,
        device='png',
-       dpi=600)
-
-ggsave('PLOSfigures/fig2.tiff',
-       Fig1,
-       width=6,height=3.5,
-       device='tiff',
        dpi=600)

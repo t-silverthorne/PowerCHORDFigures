@@ -1,7 +1,6 @@
 source('PLOSfigures/clean_theme.R')
 Nfreq    = 2^10
 Amp      = 1
-mc_cores = 12
 
 
 ###########################
@@ -20,7 +19,7 @@ pars=expand.grid(Amp=c(1),
                  freq=freqs_plt,
                  type=c('equispaced design'))
 
-pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=12,function(ii){
+pwr_vec = c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ii){
   x      = pars[ii,]
   Nmeas  = as.numeric(x[['Nmeas']])
   acro   = as.numeric(x[['acro']])
@@ -95,11 +94,6 @@ lplt=lplt+theme(legend.direction='vertical',
 
 Fig = (phmap|lplt)+plot_annotation(tag_levels='A')
 
-ggsave('PLOSfigures/suppfig2.tiff',
-       Fig,
-       width=6,height=2,
-       device='tiff',
-       dpi=600)
 ggsave('PLOSfigures/suppfig2.png',
        Fig,
        width=6,height=2,
