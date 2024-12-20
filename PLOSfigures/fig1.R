@@ -68,7 +68,7 @@ dfplt$design =factor(dfplt$design,
                      )
 
 # Create the raster plot
-dfplt |> ggplot( aes(y = freq, x = bin, fill = log10(count)))+
+Fig = dfplt |> ggplot( aes(y = freq, x = bin, fill = log10(count)))+
   geom_raster() + facet_wrap(~design,nrow=1)+ 
   scale_fill_viridis_c(name = "Count") +  
   labs( y = "frequency (cycles/day)") +
@@ -80,5 +80,12 @@ dfplt |> ggplot( aes(y = freq, x = bin, fill = log10(count)))+
     labels= c("0", "π", "2π")
   )+clean_theme() 
   
+
+ggsave(paste0('PLOSfigures/',
+              'fig1spec.png'),
+       Fig,
+       width=6,height=3.55,
+       device='png',
+       dpi=600)
 
 # plot acrophase distributions after filtering for significance as a raster plot
