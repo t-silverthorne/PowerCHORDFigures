@@ -15,6 +15,12 @@ n        = 48;
 freqs    = [1 2 3]*2;
 
 tau = (1:n)/n - 1/n;
+%% nmeas = 6
+[mu,eta] = run_yalmip(freqs,6,n);
+plot(tau(value(mu)>0)*48,1,'.k')
+xlim([0,48])
+eta
+writematrix(value(mu),'mu_opt6.txt')
 
 %% nmeas = 8
 [mu,eta] = run_yalmip(freqs,8,n);

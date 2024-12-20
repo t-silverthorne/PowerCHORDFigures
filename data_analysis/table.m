@@ -16,18 +16,25 @@ for ii=1:length(Nvec)
     end
 end
 hvec
+hvec
 
 %% solve equivalent optimization problem and report power
 ii             = 7
 ovec = NaN(1,length(Nvec));
 evec = NaN(1,length(Nvec));
 for ii=1:length(Nvec)
-    [mu,eta,optim] = run_yalmip_timelim(1:Nvec(ii),Nvec(ii),48*2,20);
+    if Nvec(ii)>24
+        [mu,eta,optim] = run_yalmip_timelim(1:hvec(ii),Nvec(ii),48*2,30);
+    else
+        [mu,eta,optim] = run_yalmip_timelim(1:hvec(ii),Nvec(ii),48,30);
+    end
     ovec(ii)=optim.problem;
     evec(ii) = value(eta);
     ovec
+    evec
 end
-
+%%
+%%
 
 function [mu,eta,optim]=run_yalmip_timelim(freqs,Nmeas,n,tlim)
 tau   = ((1:n)/n - 1/n)';
