@@ -156,6 +156,6 @@ show_temp_plt(Fig,6,2.75)
 
 ggsave('PLOSfigures/fig3.png',
        Fig,
-       width=6,height=2.75,
+       width=6,height=2.8,
        device='png',
        dpi=600)
