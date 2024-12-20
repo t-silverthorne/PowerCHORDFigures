@@ -2,7 +2,7 @@ addpath('../PowerCHORD/MATLAB/utils/')
 addpath('../PowerCHORD/MATLAB/optim_methods/')
 
 %% find first harmonic which cannot be resolved
-Nvec = 6:48;
+Nvec = 6:4:48;
 nh   = 100;
 hvec = NaN(1,length(Nvec));
 for ii=1:length(Nvec)
@@ -19,21 +19,23 @@ hvec
 hvec
 
 %% solve equivalent optimization problem and report power
-ii             = 7
+ii   = 7
 ovec = NaN(1,length(Nvec));
 evec = NaN(1,length(Nvec));
 for ii=1:length(Nvec)
     if Nvec(ii)>24
         [mu,eta,optim] = run_yalmip_timelim(1:hvec(ii),Nvec(ii),48*2,30);
     else
-        [mu,eta,optim] = run_yalmip_timelim(1:hvec(ii),Nvec(ii),48,30);
+        [mu,eta,optim] = run_yalmip_timelim(1:hvec(ii),Nvec(ii),48/2,30);
     end
     ovec(ii)=optim.problem;
     evec(ii) = value(eta);
     ovec
     evec
 end
-%%
+
+
+
 %%
 
 function [mu,eta,optim]=run_yalmip_timelim(freqs,Nmeas,n,tlim)
@@ -50,7 +52,7 @@ for freq=freqs
     X=[uvec cvec svec];
     F=[F,X'*diag(mu)*X >= eta*eye(3)];
 end
-options=sdpsettings('solver','cutsdp');
+options=sdpsettings('solver','cutsdp','lower','MOSEK');
 options.cutsdp.maxtime=tlim;
 optim=optimize(F,-eta,options)
 end
