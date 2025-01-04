@@ -9,7 +9,6 @@ if (pub_qual){
   freq_vals = seq(1,30,1)
 }
 
-mc_cores  = 8 
 pars      = expand.grid(freq=freq_vals,
                         Nmeas=c(32,40,48),
                         Amp = c(1,2),

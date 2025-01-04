@@ -10,7 +10,7 @@ require(devtools)
 require(pROC)
 require(lomb)
 devtools::load_all('PowerCHORD')
-pub_qual=F
+pub_qual=T
 mar=2
 
 source('PLOSfigures/processDiffEvolveOutput/csv_to_RDS.R')
@@ -47,4 +47,4 @@ rad_lab = c(expression(0),
             expression(3*pi/2),
             expression(2*pi))
 
-mc_cores=12 # number of cores on your machine
+mc_cores=20 # number of cores on your machine
