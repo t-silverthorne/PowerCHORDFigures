@@ -111,11 +111,6 @@ p2=plt
 
 Fig=(p1/p2)  + plot_annotation(tag_levels='A')+plot_layout(guides='collect')& theme(legend.position='bottom')
 Fig
-ggsave('PLOSfigures/fig4.tiff',
-       Fig,
-       width=6,height=3,
-       device='tiff',
-       dpi=600)
 ggsave('PLOSfigures/fig4.png',
        Fig,
        width=6,height=3,

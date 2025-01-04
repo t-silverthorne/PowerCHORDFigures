@@ -30,11 +30,6 @@ scale_x_continuous(breaks=seq(4,20,4))+
 plt=plt+clean_theme()
 show_temp_plt(plt,6,2)
 
-ggsave('PLOSfigures/suppfig3.tiff',
-       plt,
-       width=6,height=2,
-       device='tiff',
-       dpi=600)
 ggsave('PLOSfigures/suppfig3.png',
        plt,
        width=6,height=2,
