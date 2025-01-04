@@ -321,7 +321,7 @@ pars = expand.grid(freq_type  = c('circadian','circalunar','circannual'),
                    freq_delta = seq(0.95,1.05,length.out=1e3),
                    acro       = acros)
 
-pwr_vec =c(1:dim(pars)[1]) |> mclapply(mc.cores=12,function(ii){
+pwr_vec =c(1:dim(pars)[1]) |> mclapply(mc.cores=mc_cores,function(ii){
   x          = pars[ii,]
   acro       = x$acro
   freq_type  = x$freq_type

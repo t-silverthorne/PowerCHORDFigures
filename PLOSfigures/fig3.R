@@ -3,7 +3,7 @@ Nfreq    = 2^10
 Amp      = 1
 
 # load differential evolution results 
-am = readRDS('PLOSfigures/data/powerCHORD_even_sols.RDS')
+am = readRDS('PLOSfigures/data/diffEvolveOutput.RDS')
 am = am[am@''$method=='diffEVCR',]
 df = am@''
 
@@ -154,13 +154,8 @@ Fig=psol/prob + plot_layout(heights=c(2,1.5))+plot_annotation(tag_levels='A')
 
 show_temp_plt(Fig,6,2.75)
 
-ggsave('PLOSfigures/fig3.tiff',
-       Fig,
-       width=6,height=2.75,
-       device='tiff',
-       dpi=600)
 ggsave('PLOSfigures/fig3.png',
        Fig,
-       width=6,height=2.75,
+       width=6,height=2.8,
        device='png',
        dpi=600)

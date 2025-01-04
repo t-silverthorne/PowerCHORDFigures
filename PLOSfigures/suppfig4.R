@@ -140,11 +140,6 @@ p2=plt
 Fig_tot = Fig2/(p1+p2)+plot_annotation(tag_levels='A')+plot_layout(heights=c(0.5,1))
 
 
-ggsave('PLOSfigures/suppfig4.tiff',
-       Fig_tot,
-       width=6,height=5,
-       device='tiff',
-       dpi=600)
 ggsave('PLOSfigures/suppfig4.png',
        Fig_tot,
        width=6,height=5,
