@@ -274,14 +274,40 @@ srgp = as.ggplot(second_row)
 # Combine the rows
 full_cal  = ( frgp / srgp)
 ####################################
+#  
+####################################
+ht            = read.csv2('PLOSfigures/harmonic_table.csv',sep=',',header=F)
+names(ht)     = c('N','opt','evec')
+ht$is_optimal = NaN
+ht[ht$opt==0,]$is_optimal = 'Optimal'
+ht[ht$opt==3,]$is_optimal = 'Suboptimal'
+ht$evec       = as.numeric(ht$evec)
+ht$N          = as.numeric(ht$N)
+ht$half_N     = ht$N/2
 
+p3=ht |> ggplot(aes(x=N,y=evec,color=is_optimal))+geom_point(size=1)+
+  geom_line(aes(y = half_N), linetype = "dashed", color = "black")+
+scale_color_manual(
+  values = c("Optimal" = "black", "Suboptimal" =rgb(.36,.54,.66)))+
+  clean_theme()+
+  labs(y='noncentrality',x='sample size')+theme(legend.title=element_blank())
+
+
+####################################
+# Combine main fig
+####################################
 Fig=(p1|p2)/ ( ((q1/q2) |(first_col/second_col)) +plot_layout(widths=c(1.5,3))) + 
   plot_layout(heights=c(1.5,8))+
   plot_annotation(tag_levels=list(c('A','B','C','D','E','','','F')))
-show_temp_plt(Fig,6,4.5)
+
+Fig = ((p1/p2 + plot_layout(heights=c(1,2))) | (q1/q2))/( ((first_col/second_col) | p3)+ plot_layout(widths=c(2,1)))+
+  plot_layout(heights=c(1.5,1)) + plot_annotation(tag_levels=list(c('A','B','C','D','E','','','F','','','G')))+
+  plot_layout(guides='collect')&theme(legend.position='bottom')
+Fig
+show_temp_plt(Fig,6,5.5)
 ggsave('PLOSfigures/fig6.png',
        Fig,
-       width=6,height=4.5,
+       width=6,height=5.5,
        device='png',
        dpi=600)
 
