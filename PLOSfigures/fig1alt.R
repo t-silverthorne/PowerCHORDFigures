@@ -1,52 +1,52 @@
 # setup
-source('plosfigures/clean_theme.r')
+source('PLOSfigures/clean_theme.R')
 rm()
 gc()
 n      = 48
 tau    = c(1:n)/n -1/n
-xraw   = read.csv2('plosfigures/data/cutsdp_sols.csv',header = f,sep=',')
-amp    = sqrt(2) 
-nm     = 12 
-tunif  = c(1:nm)/nm-1/nm # equispaced
-tirr   = tau[xraw[3,]>1e-12] # good irregular
+Xraw   = read.csv2('PLOSfigures/data/cutsdp_sols.csv',header = F,sep=',')
+Amp    = sqrt(2) 
+Nm     = 12 
+tunif  = c(1:Nm)/Nm-1/Nm # equispaced
+tirr   = tau[Xraw[3,]>1e-12] # good irregular
 
-nm1    = 8   
-nm2    = nm-nm1
+Nm1    = 8   
+Nm2    = Nm-Nm1
 lamb   = 4/24
-t1     = c(1:nm1)/nm1 -1/nm1
-t2     = c(1:nm2)/nm2 -1/nm2
+t1     = c(1:Nm1)/Nm1 -1/Nm1
+t2     = c(1:Nm2)/Nm2 -1/Nm2
 tirr_b = c(t1*lamb,lamb +t2*(1-lamb))
 
 
-nmc     = 1e5
+Nmc     = 1e5
 mt      = tunif
-acrovec = 2*pi*runif(nmc)
+acrovec = 2*pi*runif(Nmc)
 p24     = .5
 pnull   = 0 
 p4      = .5
 state   = sample(x=c('circ','null','ultra'),
                  prob = c(p24,pnull,p4),
-                 size=nmc,replace=t)
+                 size=Nmc,replace=T)
 
 run_sim = function(mtloc,acrovec,state){
   # generate simulated data
-  ydat = matrix(rnorm(nmc*nm),nrow=nmc)
-  ydat[state=='circ',] =ydat[state=='circ',]+ 
-    amp*cos(outer(acrovec[state=='circ'],2*pi*mtloc,'-'))
-  ydat[state=='ultra',] =ydat[state=='ultra',]+ 
-    amp*cos(outer(acrovec[state=='ultra'],2*pi*6*mtloc,'-'))
+  Ydat = matrix(rnorm(Nmc*Nm),nrow=Nmc)
+  Ydat[state=='circ',] =Ydat[state=='circ',]+ 
+    Amp*cos(outer(acrovec[state=='circ'],2*pi*mtloc,'-'))
+  Ydat[state=='ultra',] =Ydat[state=='ultra',]+ 
+    Amp*cos(outer(acrovec[state=='ultra'],2*pi*6*mtloc,'-'))
   
   # lomb scargle analysis 
-  df = c(1:nmc) |> mclapply(mc.cores=mc_cores,function(ind){
-    lomb = lsp(ydat[ind,],times=mtloc,plot=f,from = 1,to=8,ofac=30)
+  df = c(1:Nmc) |> mclapply(mc.cores=mc_cores,function(ind){
+    lomb = lsp(Ydat[ind,],times=mtloc,plot=F,from = 1,to=8,ofac=30)
     return(data.frame(ind=ind,
                       freq  = lomb$scanned,
                       power = lomb$power))
   }) |> rbindlist() |> data.frame()
   
   # run cosinor at peaks 
-  rowc_c = matrixtests::row_cosinor(ydat,mtloc,1) 
-  rowc_u = matrixtests::row_cosinor(ydat,mtloc,1/6) 
+  rowc_c = matrixTests::row_cosinor(Ydat,mtloc,1) 
+  rowc_u = matrixTests::row_cosinor(Ydat,mtloc,1/6) 
   pvalc =  rowc_c |> (\(x) x$pvalue)()
   acroc =  rowc_c |> (\(x) 2*pi*x$acrophase*1)()
   pvalu =  rowc_u |> (\(x) x$pvalue)()
@@ -69,26 +69,30 @@ run_sim = function(mtloc,acrovec,state){
   return(list(lombdf=df,pvdf=dfp))
 }
 resu   = run_sim(tunif,acrovec,state)
+resi   = run_sim(tirr,acrovec,state)
 resb   = run_sim(tirr_b,acrovec,state)
 
 dfunif = cbind(resu$lombdf,type='equispaced')
+dfirr  = cbind(resi$lombdf,type='good alt')
 dfirb  = cbind(resb$lombdf,type='bad alt')
 
-dfall  = rbind(dfunif,dfirb)
+dfall  = rbind(dfunif,dfirr,dfirb)
 
 pdf=rbind(cbind(resu$pvdf,type='equispaced'),
+          cbind(resi$pvdf,type='good alt'),
           cbind(resb$pvdf,type='bad alt'))
 
 dfgrp = dfall |> group_by(type,freq) |> 
   summarise(mean_power = mean(power))
 
 ###########################
-# plot raw measurement times 
+# Plot raw measurement times 
 ###########################
-nm=12
+Nm=12
 tunif   = c(1:Nm)/Nm-1/Nm
 tirr    = tau[Xraw[3,]>1e-12]
 df=rbind(data.frame(time=tunif,type='equispaced'),
+         data.frame(time=tirr,type='methodically balanced'),
          data.frame(time=tirr_b,type='fast-slow alternative'))
 dat_bands = data.frame(start=c(0:12)*2,end=(c(0:12)*2+1))
 head(df)
@@ -147,21 +151,26 @@ p2b = pdf |>  filter(pval<.05 & type=='bad alt') |>
   facet_wrap(~sig,scales='free_y',nrow=2)
 p2b
 
+p2c = pdf |>  filter(pval<.05 & type=='good alt') |> 
+  ggplot(aes(x=acro_true))+geom_histogram(bins=30)+
+  facet_wrap(~sig,scales='free_y',nrow=2)
+p2c
 
-p2 = p2a|p2b
+p2 = p2a|p2b|p2c
 
 ###########################
 # Nicer plot of acro distribution 
 ###########################
 pdf$typef <- factor(pdf$type, 
-                     levels = c("equispaced", "bad alt"), 
-                     labels = c("equispaced", "fast-slow alternative"))
+                     levels = c("equispaced", "bad alt", "good alt"), 
+                     labels = c("equispaced", "fast-slow alternative", "methodically balanced"))
 
 pdf$cmap_var = paste0(pdf$typef,pdf$rfreq)
 pdf = pdf |> mutate(per_label = ifelse(rfreq==1,'T = 24 hr','T = 4 hr'))
-cmap_cust = c(
+cmap_cust = c('methodically balanced1'=rgb(.05,0.5,.06),
           'equispaced1'=rgb(.05,0.5,.06),
           'fast-slow alternative1'=rgb(.81,.06,.13),
+          'methodically balanced6'=rgb(.05,0.5,.06),
           'fast-slow alternative6'=rgb(.05,0.5,.06),
           'equispaced6'=rgb(.81,.06,.13))
 
@@ -177,6 +186,7 @@ plt = plt + theme(legend.position='none')
 plt = plt + labs(x=element_text('acrophase'),
                   y=element_text('count'))
 plt
+p2=plt
 ###########################
 # assemble plot
 ###########################
@@ -184,14 +194,14 @@ p1=p1+theme(legend.position='bottom')
 Fig = (((p0|p1)+
           plot_layout(widths = c(1,2))&plot_layout(guides='collect')&
           theme(legend.position='bottom'))/p2) +
-  plot_layout(heights=c(1,2.5)) +plot_annotation(tag_levels='A')
+  plot_layout(heights=c(1.2,2)) +plot_annotation(tag_levels='A')
 
-show_temp_plt(Fig,6,3.5)
+Fig
 #Fig=(p0/p1/p2) + plot_layout(heights=c(0.5,2,4)) + plot_annotation(tag_levels='A')
 ggsave(paste0('PLOSfigures/',
               'fig1.png'),
        Fig,
-       width=6,height=3.5,
+       width=6,height=3.55,
        device='png',
        dpi=600)
 
