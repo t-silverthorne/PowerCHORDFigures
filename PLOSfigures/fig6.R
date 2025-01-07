@@ -159,7 +159,7 @@ plt = rdf %>% ggplot(aes(x=eig1,y=eig12,color=type,size=type,
 plt = plt+clean_theme()
 plt = plt+theme(legend.position='bottom')
 p3  = plt
-p3
+p3scatter = p3
 
 
 ##############
@@ -279,8 +279,8 @@ full_cal  = ( frgp / srgp)
 ht            = read.csv2('PLOSfigures/harmonic_table.csv',sep=',',header=F)
 names(ht)     = c('N','opt','evec')
 ht$is_optimal = NaN
-ht[ht$opt==0,]$is_optimal = 'Optimal'
-ht[ht$opt==3,]$is_optimal = 'Suboptimal'
+ht[ht$opt==0,]$is_optimal = 'Convergent'
+ht[ht$opt==3,]$is_optimal = 'Non-convergent'
 ht$evec       = as.numeric(ht$evec)
 ht$N          = as.numeric(ht$N)
 ht$half_N     = ht$N/2
@@ -288,7 +288,7 @@ ht$half_N     = ht$N/2
 p3=ht |> ggplot(aes(x=N,y=evec,color=is_optimal))+geom_point(size=1)+
   geom_line(aes(y = half_N), linetype = "dashed", color = "black")+
 scale_color_manual(
-  values = c("Optimal" = "black", "Suboptimal" =rgb(.36,.54,.66)))+
+  values = c("Convergent" = "black", "Non-convergent" =rgb(.36,.54,.66)))+
   clean_theme()+
   labs(y='noncentrality',x='sample size')+theme(legend.title=element_blank())
 
@@ -299,13 +299,25 @@ scale_color_manual(
 Fig = (((p1/p2 + plot_layout(heights=c(1,1))) | (q1/q2)) +plot_layout(widths=c(2,1)))/( ((first_col/second_col) | p3)+ plot_layout(widths=c(1,1)))+
   plot_layout(heights=c(1.5,1)) + plot_annotation(tag_levels=list(c('A','B','C','D','E','','','F','','','G')))+
   plot_layout(guides='collect')&theme(legend.position='bottom')
-Fig
-show_temp_plt(Fig,6,5)
+
+Fig=(p1|p2)/( ( (q1/q2) |(first_col/second_col)) + plot_layout(widths=c(1,2.5)) ) +
+  plot_layout(heights=c(1,4))+
+  plot_annotation(tag_levels=list(c('A','B','C','D','E','','','F','','')))+
+show_temp_plt(Fig,6,3.75)
 ggsave('PLOSfigures/fig6.png',
        Fig,
        width=6,height=5,
        device='png',
        dpi=600)
+Fig = p3
+p3c=p3
+show_temp_plt(Fig,6,2)
+ggsave('PLOSfigures/supp_conic.png',
+       Fig,
+       width=6,height=2,
+       device='png',
+       dpi=600)
+
 
 ####################################
 # Supp fig part
@@ -375,13 +387,14 @@ length(mt)
 evalMinEig(mt,year_hr/24)
 evalMinEig(mt,year_hr/24/7/4)
 
-Figsup = p3+r1 + plot_annotation(tag_levels='A')+
-  plot_layout(widths = c(1,2))
-show_temp_plt(Figsup,6,3.5)
+Figsup = (p3scatter+r1+p3c) + plot_annotation(tag_levels='A')+
+  plot_layout(widths = c(1,1.5,1),guides = 'collect')&
+  theme(legend.position = 'bottom')
+show_temp_plt(Figsup,6,3)
 
 ggsave('PLOSfigures/fig6sup.png',
        Figsup,
-       width=6,height=3.5,
+       width=6,height=3,
        device='png',
        dpi=600)
 
