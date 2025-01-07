@@ -40,8 +40,8 @@ p1=plt
 plt=data.frame(time=topt,rr=2*(1+((24*topt)%%2))) |> 
   ggplot(aes(x=time*2*pi,y=rr))+
   geom_point(size=1)+coord_polar(theta='x',clip='off')+theme_minimal()+
-  scale_x_continuous(breaks=c(0,pi/2,pi,3*pi/2),
-                     labels = c('0','6','12','18'),
+  scale_x_continuous(breaks=c(0,pi),
+                     labels = c('0hr','12hr'),
                      limits = c(0,2*pi))+
   geom_hline(yintercept = seq(2, 5, by = 1), linetype = "dashed", 
              color = "black") +
@@ -62,8 +62,8 @@ q1=plt
 plt=data.frame(time=2*pi*((24*topt)%%2)/2,phase=24*topt+1) |> 
   ggplot(aes(x=time,y=phase))+
   geom_point(size=1)+coord_polar(theta='x')+theme_minimal()+
-  scale_x_continuous(breaks=c(0,pi/2,pi,3*pi/2),
-                     labels = c('0','1/2','1','3/2'),
+  scale_x_continuous(breaks=c(0,pi),
+                     labels = c('0hr','1hr'),
                      limits = c(0,2*pi))+
   geom_hline(yintercept = seq(4, 24, by = 6), 
              linetype = "dashed", color = "black") +
@@ -296,18 +296,14 @@ scale_color_manual(
 ####################################
 # Combine main fig
 ####################################
-Fig=(p1|p2)/ ( ((q1/q2) |(first_col/second_col)) +plot_layout(widths=c(1.5,3))) + 
-  plot_layout(heights=c(1.5,8))+
-  plot_annotation(tag_levels=list(c('A','B','C','D','E','','','F')))
-
-Fig = ((p1/p2 + plot_layout(heights=c(1,2))) | (q1/q2))/( ((first_col/second_col) | p3)+ plot_layout(widths=c(2,1)))+
+Fig = (((p1/p2 + plot_layout(heights=c(1,1))) | (q1/q2)) +plot_layout(widths=c(2,1)))/( ((first_col/second_col) | p3)+ plot_layout(widths=c(1,1)))+
   plot_layout(heights=c(1.5,1)) + plot_annotation(tag_levels=list(c('A','B','C','D','E','','','F','','','G')))+
   plot_layout(guides='collect')&theme(legend.position='bottom')
 Fig
-show_temp_plt(Fig,6,5.5)
+show_temp_plt(Fig,6,5)
 ggsave('PLOSfigures/fig6.png',
        Fig,
-       width=6,height=5.5,
+       width=6,height=5,
        device='png',
        dpi=600)
 

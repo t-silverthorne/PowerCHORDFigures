@@ -72,8 +72,8 @@ plt = tdf %>% filter(window!=18) %>%
   geom_point()+facet_grid(type~window,switch='y')+
   geom_col(data=tdf,aes(y = 0.1, x = pi,fill=as.factor(wlen)),just = 0,width=tdf$wlen) +  
   coord_polar(theta='x',clip='off')+theme_minimal()+
-  scale_x_continuous(breaks=c(0,pi/2,pi,3*pi/2),
-                     labels = c('0','6','12','18'),
+  scale_x_continuous(breaks=c(0,pi),
+                     labels = c('0hr','12hr'),
                      limits = c(0,2*pi))+
   scale_y_continuous(labels=c(),limits = c(0,1.2))+
   scale_fill_manual(values = f_colors)+

@@ -2,7 +2,7 @@ addpath('../PowerCHORD/MATLAB/utils/')
 addpath('../PowerCHORD/MATLAB/optim_methods/')
 
 %% find first harmonic which cannot be resolved
-Nvec = 6:2:48;
+Nvec = 1+6:2:48;
 nh   = 100;
 hvec = NaN(1,length(Nvec));
 for ii=1:length(Nvec)
