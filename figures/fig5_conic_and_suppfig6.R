@@ -276,7 +276,7 @@ full_cal  = ( frgp / srgp)
 ####################################
 #  
 ####################################
-ht            = read.csv2('figures/harmonic_table.csv',sep=',',header=F)
+ht            = read.csv2('figures/data/harmonic_table.csv',sep=',',header=F)
 names(ht)     = c('N','opt','evec')
 ht$is_optimal = NaN
 ht[ht$opt==0,]$is_optimal = 'Convergent'

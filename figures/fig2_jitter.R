@@ -78,7 +78,7 @@ Nmvec  = c(24,32,48)
 nrep   = 100
 scales = c(0,seq(1,30,2))/60/24
 pars   = expand.grid(scale=scales,type=c('irregular','equispaced'),Nm=Nmvec)
-sols   = readRDS('figures/data/powerCHORD_even_sols.RDS')
+sols   = readRDS('figures/data/diffEvolveOutput.RDS')
 
 
 df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ii){
@@ -130,15 +130,15 @@ thresh_df_summary = thresh_df |> left_join(tdf0,by="Nm") |>
   group_by(Nm) |> 
   slice_min(scale) |> 
   mutate(time=scale*24*60)
-saveRDS(thresh_df_summary,'temp_sum.RDS')
 
+thresh_df_summary
 
 # summary statistic: delta between noiseless and final
 tds_2 = df_grp |> filter(type=='irregular') |> 
   group_by(Nm) |> 
   summarise(dpower = Power[scale==0] - Power[scale==max(scale)],
             max_scale = max(scale))
-saveRDS(tds_2,'temp_sum2.RDS')
+tds_2
 
 plt=df_grp  |>  filter(scale>0) |>  ggplot(aes(x=time,y=Power,group=type,color=type)) +geom_line() +
   geom_errorbar(aes(ymin=lower,ymax=upper))+
