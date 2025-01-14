@@ -387,8 +387,8 @@ length(mt)
 evalMinEig(mt,year_hr/24)
 evalMinEig(mt,year_hr/24/7/4)
 
-Figsup = (p3scatter+r1+p3c) + plot_annotation(tag_levels='A')+
-  plot_layout(widths = c(1,1.5,1),guides = 'collect')&
+Figsup = (p3scatter+p3c+r1) + plot_annotation(tag_levels='A')+
+  plot_layout(widths = c(1,1,1.5),guides = 'collect')&
   theme(legend.position = 'bottom')
 show_temp_plt(Figsup,6,3)
 
