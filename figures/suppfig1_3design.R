@@ -1,10 +1,10 @@
 # setup
-source('PLOSfigures/clean_theme.R')
+source('figures/clean_theme.R')
 rm()
 gc()
 n      = 48
 tau    = c(1:n)/n -1/n
-Xraw   = read.csv2('PLOSfigures/data/cutsdp_sols.csv',header = F,sep=',')
+Xraw   = read.csv2('figures/data/cutsdp_sols.csv',header = F,sep=',')
 Amp    = sqrt(2) 
 Nm     = 12 
 tunif  = c(1:Nm)/Nm-1/Nm # equispaced
@@ -187,6 +187,7 @@ plt = plt + labs(x=element_text('acrophase'),
                   y=element_text('count'))
 plt
 p2=plt
+
 ###########################
 # assemble plot
 ###########################
@@ -197,22 +198,10 @@ Fig = (((p0|p1)+
   plot_layout(heights=c(1.2,2)) +plot_annotation(tag_levels='A')
 
 Fig
-#Fig=(p0/p1/p2) + plot_layout(heights=c(0.5,2,4)) + plot_annotation(tag_levels='A')
-ggsave(paste0('PLOSfigures/',
-              'fig1.png'),
+
+ggsave(paste0('figures/',
+              'suppfig1_3design.png'),
        Fig,
        width=6,height=3.55,
        device='png',
        dpi=600)
-
-#pdf |> filter(pval<.05 & type=='bad alt' & sig=='circadian' & state=='circ' ) |> 
-#    ggplot(aes(x=acro_true))+geom_histogram(bins=30)
-#mt = tunif
-#fnow=5.95k
-#Ydat = matrix(rnorm(1e3*length(mt)),ncol=length(mt))
-#r1= row_cosinor(Ydat,mt,period=1/fnow)
-#r2= rowCosinor(Ydat,mt,per=1/fnow,method='ginv')
-#
-#data.frame(qr_phase=r1$acrophase,
-#         ginv_phase=r2$phase) |> 
-#  ggplot(aes(x=qr_phase,y=ginv_phase))+geom_point(size=.5)

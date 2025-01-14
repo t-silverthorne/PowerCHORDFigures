@@ -1,9 +1,9 @@
-source('PLOSfigures/clean_theme.R')
+source('figures/clean_theme.R')
 Nfreq    = 2^10
 Amp      = 1
 
 # load differential evolution results 
-am = readRDS('PLOSfigures/data/diffEvolveOutput.RDS')
+am = readRDS('figures/data/diffEvolveOutput.RDS')
 am = am[am@''$method=='diffEVCR',]
 df = am@''
 
@@ -78,7 +78,7 @@ Nmvec  = c(24,32,48)
 nrep   = 100
 scales = c(0,seq(1,30,2))/60/24
 pars   = expand.grid(scale=scales,type=c('irregular','equispaced'),Nm=Nmvec)
-sols   = readRDS('PLOSfigures/data/powerCHORD_even_sols.RDS')
+sols   = readRDS('figures/data/powerCHORD_even_sols.RDS')
 
 
 df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ii){
@@ -154,7 +154,7 @@ Fig=psol/prob + plot_layout(heights=c(2,1.5))+plot_annotation(tag_levels='A')
 
 show_temp_plt(Fig,6,2.75)
 
-ggsave('PLOSfigures/fig3.png',
+ggsave('figures/figure_output/fig2_jitter.png',
        Fig,
        width=6,height=2.8,
        device='png',

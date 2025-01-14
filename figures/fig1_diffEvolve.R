@@ -1,4 +1,4 @@
-source('PLOSfigures/clean_theme.R')
+source('figures/clean_theme.R')
 
 # define parameters
 Nfreq    = 2^10
@@ -6,7 +6,7 @@ Amp      = 1
 
 
 # load differential evolution results 
-am = readRDS('PLOSfigures/data/diffEvolveOutput.RDS')
+am = readRDS('figures/data/diffEvolveOutput.RDS')
 am = am[am@''$method=='diffEVCR',]
 df = am@''
 
@@ -136,7 +136,7 @@ phmap
 Fig1=plt_gainWC/phmap+ plot_annotation(tag_levels='A')+
   plot_layout(heights=c(1,1))
 
-ggsave('PLOSfigures/fig2.png',
+ggsave('figures/figure_output/fig1_diffEvolve.png',
        Fig1,
        width=6,height=3.5,
        device='png',

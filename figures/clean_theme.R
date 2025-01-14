@@ -13,7 +13,7 @@ devtools::load_all('PowerCHORD')
 pub_qual=T
 mar=2
 
-source('PLOSfigures/processDiffEvolveOutput/csv_to_RDS.R')
+source('figures/processDiffEvolveOutput/csv_to_RDS.R')
 clean_theme=function(){
   list(
     theme_classic(),

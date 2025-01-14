@@ -1,4 +1,4 @@
-source('PLOSfigures/clean_theme.R')
+source('figures/clean_theme.R')
 ###########################
 # bad scaling
 ###########################
@@ -106,7 +106,7 @@ p2=plt
 p2
 Fig =(p2|p1)+plot_annotation(tag_levels='A') + plot_layout(widths=c(1,1))
 
-ggsave('PLOSfigures/suppfig1.png',
+ggsave('figures/suppfig2_formulaCompare.png',
        Fig,
        width=6,height=3,
        device='png',

@@ -1,4 +1,4 @@
-source('PLOSfigures/clean_theme.R')
+source('figures/clean_theme.R')
 Nfreq    = 2^10
 Amp      = 1
 
@@ -94,7 +94,7 @@ lplt=lplt+theme(legend.direction='vertical',
 
 Fig = (phmap|lplt)+plot_annotation(tag_levels='A')
 
-ggsave('PLOSfigures/suppfig2.png',
+ggsave('figures/figure_output/suppfig3_criticalFreqs.png',
        Fig,
        width=6,height=2,
        device='png',

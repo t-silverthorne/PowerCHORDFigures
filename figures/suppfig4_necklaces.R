@@ -1,10 +1,10 @@
 require(tidyverse)
 require(tidyr)
-source('PLOSfigures/clean_theme.R')
+source('figures/clean_theme.R')
 #TDOO: check that this is present in git-lfs
 
 # load in enumeration of necklaces
-Cmat = read_csv('PLOSfigures/data/neck_counts.csv',col_names = F)
+Cmat = read_csv('figures/data/neck_counts.csv',col_names = F)
 Cmat = Cmat %>% data.frame()
 Cmat = 10^Cmat
 Cmat = Cmat %>% t()
@@ -30,7 +30,7 @@ scale_x_continuous(breaks=seq(4,20,4))+
 plt=plt+clean_theme()
 show_temp_plt(plt,6,2)
 
-ggsave('PLOSfigures/suppfig3.png',
+ggsave('figures/suppfig4_necklaces.png',
        plt,
        width=6,height=2,
        device='png',

@@ -1,4 +1,4 @@
-source('PLOSfigures/clean_theme.R')
+source('figures/clean_theme.R')
 require(ggrepel)
 
 # load in CUTSDP solutions
@@ -6,7 +6,7 @@ N     = 12
 n     = 48
 tau   = c(1:n)/n -1/n
 freqs = c(2,4,6,8,10,12)
-Xraw  = read.csv2('PLOSfigures/data/cutsdp_sols.csv',header = F,sep=',')
+Xraw  = read.csv2('figures/data/cutsdp_sols.csv',header = F,sep=',')
 
 ###########################
 # Plot of raw solutions
@@ -276,7 +276,7 @@ full_cal  = ( frgp / srgp)
 ####################################
 #  
 ####################################
-ht            = read.csv2('PLOSfigures/harmonic_table.csv',sep=',',header=F)
+ht            = read.csv2('figures/harmonic_table.csv',sep=',',header=F)
 names(ht)     = c('N','opt','evec')
 ht$is_optimal = NaN
 ht[ht$opt==0,]$is_optimal = 'Convergent'
@@ -304,19 +304,13 @@ Fig=(p1|p2)/( ( (q1/q2) |(first_col/second_col)) + plot_layout(widths=c(1,2.5)) 
   plot_layout(heights=c(1,4))+
   plot_annotation(tag_levels=list(c('A','B','C','D','E','','','F','','')))+
 show_temp_plt(Fig,6,3.75)
-ggsave('PLOSfigures/fig6.png',
+ggsave('figures/fig5_conic.png',
        Fig,
        width=6,height=5,
        device='png',
        dpi=600)
 Fig = p3
 p3c=p3
-show_temp_plt(Fig,6,2)
-ggsave('PLOSfigures/supp_conic.png',
-       Fig,
-       width=6,height=2,
-       device='png',
-       dpi=600)
 
 
 ####################################
@@ -392,7 +386,7 @@ Figsup = (p3scatter+p3c+r1) + plot_annotation(tag_levels='A')+
   theme(legend.position = 'bottom')
 show_temp_plt(Figsup,6,3)
 
-ggsave('PLOSfigures/fig6sup.png',
+ggsave('figures/figure_output/fig5sup.png',
        Figsup,
        width=6,height=3,
        device='png',

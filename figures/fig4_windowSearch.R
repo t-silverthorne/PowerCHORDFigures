@@ -1,6 +1,6 @@
-source("PLOSfigures/clean_theme.R")
+source("figures/clean_theme.R")
 
-ff='PLOSfigures/data/window_sols_fp2_strict.csv'
+ff='figures/data/window_sols_fp2_strict.csv'
 df = read.csv2(ff,sep=',',header = F)
 df = na.omit(df)
 
@@ -188,7 +188,7 @@ Fig = ((p1t/p2 + plot_layout(heights=c(3,1)))|p3)  +
   guides(color='none',fill='none')
 show_temp_plt(Fig,6,4)
 
-ggsave('PLOSfigures/fig5.png',
+ggsave('figures/figure_output/fig4_windowSearch.png',
        Fig,
        width=6,height=4,
        device='png',
