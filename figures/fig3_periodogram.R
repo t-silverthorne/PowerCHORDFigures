@@ -63,7 +63,7 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){
     stop('unknown acro distribution')
   }
   
-  # simualte p-values
+  # simulate p-values
   pvdf = c(1:dim(Ydat)[1]) %>% lapply(function(ii){
     x              = Ydat[ii,]
     lomb_std       = lsp(x,times=mt,plot=F,normalize = 'standard')
