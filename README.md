@@ -13,4 +13,9 @@ This project uses `renv` to manage external dependencies, depending on your `R` 
 If you see a library path that is contained within your current working directory (i.e. your clone of this repository), then `renv` is aware of your local library. 
 
 ## PowerCHORD setup
-Only require the basic `R` functions in PowerCHORD are required for recreating the figures. If you want to explore the code on a deeper level and solve your own optimization problems, you will need to follow the full installation instructions in the [PowerCHORD repo](https://github.com/t-silverthorne/PowerCHORD).
+Only the basic `R` functions in PowerCHORD are required for recreating the figures. To load these functions, simply ensure that the git submodule is initialized
+```bash
+git submodule init
+git submodule update --remote
+```
+If you want to explore the code on a deeper level and solve your own optimization problems, you will need to follow the full installation instructions in the [PowerCHORD repo](https://github.com/t-silverthorne/PowerCHORD).
