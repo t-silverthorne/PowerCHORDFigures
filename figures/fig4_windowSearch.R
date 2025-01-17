@@ -1,6 +1,6 @@
-source("PLOSfigures/clean_theme.R")
+source("figures/clean_theme.R")
 
-ff='PLOSfigures/data/window_sols_fp2_strict.csv'
+ff='figures/data/window_sols_fp2_strict.csv'
 df = read.csv2(ff,sep=',',header = F)
 df = na.omit(df)
 
@@ -72,8 +72,8 @@ plt = tdf %>% filter(window!=18) %>%
   geom_point()+facet_grid(type~window,switch='y')+
   geom_col(data=tdf,aes(y = 0.1, x = pi,fill=as.factor(wlen)),just = 0,width=tdf$wlen) +  
   coord_polar(theta='x',clip='off')+theme_minimal()+
-  scale_x_continuous(breaks=c(0,pi/2,pi,3*pi/2),
-                     labels = c('0','6','12','18'),
+  scale_x_continuous(breaks=c(0,pi),
+                     labels = c('0hr','12hr'),
                      limits = c(0,2*pi))+
   scale_y_continuous(labels=c(),limits = c(0,1.2))+
   scale_fill_manual(values = f_colors)+
@@ -188,7 +188,7 @@ Fig = ((p1t/p2 + plot_layout(heights=c(3,1)))|p3)  +
   guides(color='none',fill='none')
 show_temp_plt(Fig,6,4)
 
-ggsave('PLOSfigures/fig5.png',
+ggsave('figures/figure_output/fig4_windowSearch.png',
        Fig,
        width=6,height=4,
        device='png',

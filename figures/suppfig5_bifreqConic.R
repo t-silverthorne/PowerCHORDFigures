@@ -1,10 +1,10 @@
-source('PLOSfigures/clean_theme.R')
+source('figures/clean_theme.R')
 
 # load in CUTSDP solutions
 n     = 48
 tau   = c(1:n)/n -1/n
 freqs = c(2,4,6,8,10,12)
-Xraw  = read.csv2('PLOSfigures/data/cutsdp_sols.csv',header = F,sep=',')
+Xraw  = read.csv2('figures/data/cutsdp_sols.csv',header = F,sep=',')
 
 ###########################
 # Plot of raw solutions
@@ -140,7 +140,7 @@ p2=plt
 Fig_tot = Fig2/(p1+p2)+plot_annotation(tag_levels='A')+plot_layout(heights=c(0.5,1))
 
 
-ggsave('PLOSfigures/suppfig4.png',
+ggsave('figures/suppfig5_bifreqConic.png',
        Fig_tot,
        width=6,height=5,
        device='png',

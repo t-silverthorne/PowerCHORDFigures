@@ -13,7 +13,7 @@ devtools::load_all('PowerCHORD')
 pub_qual=T
 mar=2
 
-source('PLOSfigures/processDiffEvolveOutput/csv_to_RDS.R')
+source('figures/processDiffEvolveOutput/csv_to_RDS.R')
 clean_theme=function(){
   list(
     theme_classic(),
@@ -47,7 +47,7 @@ rad_lab = c(expression(0),
             expression(3*pi/2),
             expression(2*pi))
 
-mc_cores=20 # number of cores on your machine
+mc_cores=12 # number of cores on your machine
 
 
 rowCosinor <- function(theData, zts, per=24,method=c('qr','ginv')) {

@@ -1,4 +1,4 @@
-source('PLOSfigures/clean_theme.R')
+source('figures/clean_theme.R')
 require(ggrepel)
 
 # load in CUTSDP solutions
@@ -6,7 +6,7 @@ N     = 12
 n     = 48
 tau   = c(1:n)/n -1/n
 freqs = c(2,4,6,8,10,12)
-Xraw  = read.csv2('PLOSfigures/data/cutsdp_sols.csv',header = F,sep=',')
+Xraw  = read.csv2('figures/data/cutsdp_sols.csv',header = F,sep=',')
 
 ###########################
 # Plot of raw solutions
@@ -40,8 +40,8 @@ p1=plt
 plt=data.frame(time=topt,rr=2*(1+((24*topt)%%2))) |> 
   ggplot(aes(x=time*2*pi,y=rr))+
   geom_point(size=1)+coord_polar(theta='x',clip='off')+theme_minimal()+
-  scale_x_continuous(breaks=c(0,pi/2,pi,3*pi/2),
-                     labels = c('0','6','12','18'),
+  scale_x_continuous(breaks=c(0,pi),
+                     labels = c('0hr','12hr'),
                      limits = c(0,2*pi))+
   geom_hline(yintercept = seq(2, 5, by = 1), linetype = "dashed", 
              color = "black") +
@@ -62,8 +62,8 @@ q1=plt
 plt=data.frame(time=2*pi*((24*topt)%%2)/2,phase=24*topt+1) |> 
   ggplot(aes(x=time,y=phase))+
   geom_point(size=1)+coord_polar(theta='x')+theme_minimal()+
-  scale_x_continuous(breaks=c(0,pi/2,pi,3*pi/2),
-                     labels = c('0','1/2','1','3/2'),
+  scale_x_continuous(breaks=c(0,pi),
+                     labels = c('0hr','1hr'),
                      limits = c(0,2*pi))+
   geom_hline(yintercept = seq(4, 24, by = 6), 
              linetype = "dashed", color = "black") +
@@ -159,7 +159,7 @@ plt = rdf %>% ggplot(aes(x=eig1,y=eig12,color=type,size=type,
 plt = plt+clean_theme()
 plt = plt+theme(legend.position='bottom')
 p3  = plt
-p3
+p3scatter = p3
 
 
 ##############
@@ -274,16 +274,44 @@ srgp = as.ggplot(second_row)
 # Combine the rows
 full_cal  = ( frgp / srgp)
 ####################################
+#  
+####################################
+ht            = read.csv2('figures/data/harmonic_table.csv',sep=',',header=F)
+names(ht)     = c('N','opt','evec')
+ht$is_optimal = NaN
+ht[ht$opt==0,]$is_optimal = 'Convergent'
+ht[ht$opt==3,]$is_optimal = 'Non-convergent'
+ht$evec       = as.numeric(ht$evec)
+ht$N          = as.numeric(ht$N)
+ht$half_N     = ht$N/2
 
-Fig=(p1|p2)/ ( ((q1/q2) |(first_col/second_col)) +plot_layout(widths=c(1.5,3))) + 
-  plot_layout(heights=c(1.5,8))+
-  plot_annotation(tag_levels=list(c('A','B','C','D','E','','','F')))
-show_temp_plt(Fig,6,4.5)
-ggsave('PLOSfigures/fig6.png',
+p3=ht |> ggplot(aes(x=N,y=evec,color=is_optimal))+geom_point(size=1)+
+  geom_line(aes(y = half_N), linetype = "dashed", color = "black")+
+scale_color_manual(
+  values = c("Convergent" = "black", "Non-convergent" =rgb(.36,.54,.66)))+
+  clean_theme()+
+  labs(y='noncentrality',x='sample size')+theme(legend.title=element_blank())
+
+
+####################################
+# Combine main fig
+####################################
+Fig = (((p1/p2 + plot_layout(heights=c(1,1))) | (q1/q2)) +plot_layout(widths=c(2,1)))/( ((first_col/second_col) | p3)+ plot_layout(widths=c(1,1)))+
+  plot_layout(heights=c(1.5,1)) + plot_annotation(tag_levels=list(c('A','B','C','D','E','','','F','','','G')))+
+  plot_layout(guides='collect')&theme(legend.position='bottom')
+
+Fig=(p1|p2)/( ( (q1/q2) |(first_col/second_col)) + plot_layout(widths=c(1,2.5)) ) +
+  plot_layout(heights=c(1,4))+
+  plot_annotation(tag_levels=list(c('A','B','C','D','E','','','F','','')))+
+show_temp_plt(Fig,6,3.75)
+ggsave('figures/fig5_conic.png',
        Fig,
-       width=6,height=4.5,
+       width=6,height=5,
        device='png',
        dpi=600)
+Fig = p3
+p3c=p3
+
 
 ####################################
 # Supp fig part
@@ -353,13 +381,14 @@ length(mt)
 evalMinEig(mt,year_hr/24)
 evalMinEig(mt,year_hr/24/7/4)
 
-Figsup = p3+r1 + plot_annotation(tag_levels='A')+
-  plot_layout(widths = c(1,2))
-show_temp_plt(Figsup,6,3.5)
+Figsup = (p3scatter+p3c+r1) + plot_annotation(tag_levels='A')+
+  plot_layout(widths = c(1,1,1.5),guides = 'collect')&
+  theme(legend.position = 'bottom')
+show_temp_plt(Figsup,6,3)
 
-ggsave('PLOSfigures/fig6sup.png',
+ggsave('figures/figure_output/fig5sup.png',
        Figsup,
-       width=6,height=3.5,
+       width=6,height=3,
        device='png',
        dpi=600)
 

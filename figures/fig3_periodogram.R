@@ -1,4 +1,4 @@
-source("PLOSfigures/clean_theme.R")
+source("figures/clean_theme.R")
 # turn on for higher quality figure
 pub_qual = T 
 if (pub_qual){
@@ -14,7 +14,7 @@ pars      = expand.grid(freq=freq_vals,
                         Amp = c(1,2),
                         p_osc = c(0.5),
                         type=c('irregular','equispaced'))
-sols      = readRDS('PLOSfigures/data/diffEvolveOutput.RDS')
+sols      = readRDS('figures/data/diffEvolveOutput.RDS')
 
 acro_dist   = 'average' 
 
@@ -86,9 +86,9 @@ df=c(1:dim(pars)[1]) %>% mclapply(mc.cores=mc_cores,function(ind){
   
   return(data.frame(cbind(pars[ind,],data.frame(AUC=roc$auc,TPR=TPR,FPR=FPR))))
 }) %>% rbindlist() %>% data.frame()
-saveRDS(df,'PLOSfigures/data/lomb_out.RDS')
+saveRDS(df,'figures/data/lomb_out.RDS')
 
-df=readRDS('PLOSfigures/data/lomb_out.RDS')
+df=readRDS('figures/data/lomb_out.RDS')
 plt=df %>% filter(Amp==2 & freq <= Nmeas/2 & Nmeas==40) %>% 
   ggplot(aes(x=freq,y=AUC,group=type,color=type))+geom_line()+
   geom_vline(aes(xintercept = Nmeas / 2), linetype = "dashed", color = "black")+
@@ -111,7 +111,7 @@ p2=plt
 
 Fig=(p1/p2)  + plot_annotation(tag_levels='A')+plot_layout(guides='collect')& theme(legend.position='bottom')
 Fig
-ggsave('PLOSfigures/fig4.png',
+ggsave('figures/figure_output/fig3_periodogram.png',
        Fig,
        width=6,height=3,
        device='png',
