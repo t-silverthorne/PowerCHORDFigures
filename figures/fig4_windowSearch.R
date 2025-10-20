@@ -4,8 +4,7 @@ ff='figures/data/window_sols_fp2_strict.csv'
 df = read.csv2(ff,sep=',',header = F)
 df = na.omit(df)
 
-wvec=seq(12,24,2)
-n = 48
+n   = 48
 tau = c(1:n)/n-1/n
 
 ###########################
@@ -188,8 +187,11 @@ Fig = ((p1t/p2 + plot_layout(heights=c(3,1)))|p3)  +
   guides(color='none',fill='none')
 show_temp_plt(Fig,6,4)
 
-ggsave('figures/figure_output/fig4_windowSearch.png',
-       Fig,
-       width=6,height=4,
-       device='png',
-       dpi=600)
+ggsave(
+  filename = "vector_figures/Main01.eps",
+  plot = Fig,
+  device = "eps",
+  width = 6,
+  height = 4,
+  units = "in"          # match your PNG units
+)
