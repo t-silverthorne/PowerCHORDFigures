@@ -51,8 +51,8 @@ plt = fdf %>% ggplot(aes(x=fmin,y=fmax,color=dpower_plt))+geom_point(size=3)+
   scale_y_continuous(breaks=c(4,8,12,16,20,24))+
   guides(fill = guide_colorbar(barheight = unit(0.4, "inches"))) 
 plt=plt+clean_theme()
-plt = plt + labs(x=element_text('minimum frequency (cycles/day)'),
-                 y=element_text('maximum frequency\n(cycles/day)'),
+plt = plt + labs(x='minimum frequency (cycles/day)',
+                 y='maximum frequency\n(cycles/day)',
                  color='power difference')
 plt=plt+guides(color=guide_colorbar(title.position='right'))
 plt=plt+theme(legend.direction='vertical',

@@ -28,7 +28,7 @@ plt=plt+clean_theme()
 plt = plt + theme(axis.title.y=element_blank()) 
 plt = plt + theme(axis.text.y=element_blank()) 
 plt = plt + theme(axis.text.y=element_blank()) 
-plt = plt + labs(x=element_text('time (hr)'))
+plt = plt + labs(x='time (hr)')
 plt = plt+scale_x_continuous(limits=c(0,24),breaks=seq(0,24,2))
 plt = plt+theme(axis.line.y = element_blank())
 plt = plt+theme(axis.ticks.y = element_blank())
@@ -280,7 +280,7 @@ full_cal  = ( frgp / srgp)
 ####################################
 Fig=(p1|p2)/( ( (q1/q2) |(first_col/second_col)) + plot_layout(widths=c(1,2.5)) ) +
   plot_layout(heights=c(1,4))+
-  plot_annotation(tag_levels=list(c('A','B','C','D','E','','','F','','')))+
+  plot_annotation(tag_levels=list(c('A','B','C','D','E','','','F','','')))
 ggsave(
   filename = "vector_figures/Main02.pdf",
   plot = Fig,

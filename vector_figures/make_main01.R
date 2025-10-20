@@ -5,6 +5,7 @@ df = read.csv2(ff,sep=',',header = F)
 df = na.omit(df)
 
 n   = 48
+wvec=seq(12,24,2)
 tau = c(1:n)/n-1/n
 
 ###########################
@@ -146,8 +147,8 @@ plt= pdf %>% ggplot(aes(x=acro,y=power,group=gvar,color=as.factor(window),linety
 plt=plt+clean_theme()
 plt=plt+theme(legend.position='bottom',
               legend.direction = "horizontal")
-plt=plt+labs(x=element_text('acrophase (rad)'),
-                 y=element_text('power'))
+plt=plt+labs(x='acrophase (rad)',
+             y='power')
 p2=plt
 p2
 
@@ -186,7 +187,6 @@ Fig = ((p1t/p2 + plot_layout(heights=c(3,1)))|p3)  +
         plot.margin=margin(1,1,1,1)) & 
   guides(color='none',fill='none')
 show_temp_plt(Fig,6,4)
-
 ggsave(
   filename = "vector_figures/Main01.pdf",
   plot = Fig,
@@ -195,3 +195,4 @@ ggsave(
   height = 4,
   units = "in"          # match your PNG units
 )
+

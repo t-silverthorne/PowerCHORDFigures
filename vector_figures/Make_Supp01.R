@@ -106,7 +106,7 @@ geom_rect(data=dat_bands,
 plt = plt + clean_theme()
 plt = plt + theme(axis.title.y=element_blank()) 
 plt = plt + theme(axis.text.y=element_blank()) 
-plt = plt + labs(x=element_text('time (hr)'))
+plt = plt + labs(x='time (hr)')
 plt = plt+scale_x_continuous(limits=c(0,24),breaks=seq(0,24,4))
 plt = plt+theme(axis.line.y = element_blank())
 plt = plt+theme(axis.ticks.y = element_blank())

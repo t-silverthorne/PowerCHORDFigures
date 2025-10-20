@@ -26,7 +26,7 @@ plt=splt[splt$Nmeas %in% Nmeas_vals, ] %>% ggplot(aes(x=value,y=0))+geom_point(s
 plt = plt + clean_theme()
 plt = plt + theme(axis.title.y=element_blank()) 
 plt = plt + theme(axis.text.y=element_blank()) 
-plt = plt + labs(x=element_text('time (hr)'))
+plt = plt + labs(x='time (hr)')
 plt = plt+scale_x_continuous(labels=seq(0,24,4),
   breaks=seq(0,1,4/24),
   limits=c(0,1))
@@ -62,7 +62,7 @@ plt = tdf %>%  ggplot(aes(x=time,y=0))+geom_point(size=.5)+
 plt = plt + clean_theme()
 plt = plt + theme(axis.title.y=element_blank()) 
 plt = plt + theme(axis.text.y=element_blank()) 
-plt = plt + labs(x=element_text('time (hr)'))
+plt = plt + labs(x='time (hr)')
 plt = plt+scale_x_continuous(labels=seq(0,24,4),
   breaks=seq(0,1,4/24),
   limits=c(0,1))
@@ -144,8 +144,8 @@ plt=df_grp  |>  filter(scale>0) |>  ggplot(aes(x=time,y=Power,group=type,color=t
   geom_errorbar(aes(ymin=lower,ymax=upper))+
   facet_wrap(~Nm,nrow=1)
 plt = plt+clean_theme()
-plt = plt + labs(x=element_text('collection time standard deviation (minutes)'),
-                 y=element_text('power'),
+plt = plt + labs(x='collection time standard deviation (minutes)',
+                 y='power',
                  color='design')
 plt = plt + theme(legend.position='right')
 prob = plt

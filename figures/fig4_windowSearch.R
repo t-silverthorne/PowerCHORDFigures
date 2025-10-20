@@ -5,6 +5,7 @@ df = read.csv2(ff,sep=',',header = F)
 df = na.omit(df)
 
 n   = 48
+wvec=seq(12,24,2)
 tau = c(1:n)/n-1/n
 
 ###########################

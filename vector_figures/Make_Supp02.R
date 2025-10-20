@@ -61,8 +61,8 @@ plt=pdf %>% ggplot(aes(x=scale,y=Power,group=method,color=method))+
   geom_errorbar(aes(ymin=lower,ymax=upper))+
   scale_color_manual(values=cmap_cust)
 plt=plt+clean_theme()
-plt = plt + labs(x=element_text('scale'),
-                 y=element_text('power'))
+plt = plt + labs(x='scale',
+                 y='power')
 plt = plt + theme(legend.position='bottom')
 p1=plt
 
@@ -101,7 +101,7 @@ plt=pdf %>% ggplot(aes(x=bias,fill=method,group=method))+
   scale_fill_manual(values=cmap_cust)
 plt=plt+clean_theme()
 plt = plt + theme(legend.position='bottom')
-plt = plt + labs(x=element_text('MC power difference'))
+plt = plt + labs(x='MC power difference')
 p2=plt
 p2
 Fig =(p2|p1)+plot_annotation(tag_levels='A') + plot_layout(widths=c(1,1))
