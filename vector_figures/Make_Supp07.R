@@ -374,7 +374,7 @@ ggsave(
   plot = Figsup,
   device = "pdf",
   width = 6,
-  height = 5,
+  height = 3,
   units = "in"    
 )
 
